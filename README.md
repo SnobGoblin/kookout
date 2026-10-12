@@ -33,6 +33,13 @@ Then open http://localhost:8000.
 
 ## Deploy
 
+Automatic: every push to `main` that changes `index.html` or `apple-touch-icon.png` runs
+[the deploy workflow](.github/workflows/deploy.yml), which uploads the files to Domeneshop with SFTP.
+The FTP password is stored as the repository secret `FTP_PASSWORD`.
+You can also start it by hand under **Actions → Deploy to sternell.com → Run workflow**.
+
+By hand, from this folder:
+
 ```bash
 printf 'put index.html www/wind/index.html\nput apple-touch-icon.png www/wind/apple-touch-icon.png\n' | sftp sternell@ftp.domeneshop.no
 ```
