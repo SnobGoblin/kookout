@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wingfoil alert</title>
+  <meta name="apple-mobile-web-app-title" content="Wingfoil alert">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii00NCAtNCA2OTYgNjk2Ij48c3R5bGU+cGF0aHtmaWxsOiMxMmExNTB9QG1lZGlhKHByZWZlcnMtY29sb3Itc2NoZW1lOmRhcmspe3BhdGh7ZmlsbDojM2NjZjdhfX08L3N0eWxlPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTSAyOTIgMCBMIDI2OSAwIEwgMjY4IDEgTCAyNjAgMSBMIDI0MCA1IEwgMjE3IDEzIEwgMjAxIDIxIEwgMTk3IDI2IEwgMTk5IDMyIEwgMjEzIDQ1IEwgMjI2IDYzIEwgMjM1IDc5IEwgMjQ1IDEwMyBMIDI1NiAxMzggTCAyNjcgMTkxIEwgMjcwIDIxNiBMIDI2NiAyMjAgTCAyNjQgMjI1IEwgMjQ3IDIzNSBMIDIyMiAyNDUgTCAyMTEgMjUxIEwgMjA3IDI1MSBMIDE4NSAyNDUgTCAxNzUgMjQ0IEwgMTU2IDIzNCBMIDEzNyAyMzAgTCAxMzYgMjI5IEwgMTM3IDIyNCBMIDE0OSAyMjQgTCAxNTEgMjIyIEwgMTUxIDIxNyBMIDE1MyAyMTMgTCAxNTMgMjEwIEwgMTU4IDIwNSBMIDE1NCAxOTUgTCAxNTUgMTk0IEwgMTU0IDE4MSBMIDE1OSAxNzggTCAxNjEgMTcxIEwgMTU3IDE2NCBMIDE1MiAxNjYgTCAxMzYgMTYxIEwgMTIzIDE2MSBMIDExNiAxNjQgTCAxMTIgMTYzIEwgMTA5IDE2OCBMIDEwMCAxNzUgTCAxMDEgMTc5IEwgOTggMTg1IEwgOTYgMjAwIEwgOTcgMjAyIEwgOTggMjAxIEwgMTAwIDIwMyBMIDEwMiAyMTAgTCAxMDcgMjE2IEwgMTA2IDIyNSBMIDEwNCAyMjggTCA4OCAyMzYgTCA4MCAyNDQgTCA3NSAyNTYgTCA3NSAyNzYgTCA4MSAzMDcgTCA4MyAzMTEgTCA4OCAzMzIgTCA5NSAzNTAgTCA5NyAzNjIgTCAxMDMgMzc1IEwgMTEyIDM4NSBMIDEyMSAzOTEgTCAxMjcgMzkzIEwgMTQyIDQwNiBMIDE3NiA0MzIgTCAxNzYgNDQ3IEwgMTgwIDQ2NiBMIDE5NSA0OTIgTCAyMDEgNTA1IEwgMjAxIDUxNyBMIDE5OSA1MTkgTCAxNTggNTM0IEwgMTIwIDU1MiBMIDExMyA1NTggTCAxMTIgNTY0IEwgMTE1IDU2NyBMIDEyMyA1NzAgTCAxNDQgNTcwIEwgMTQ1IDU2OSBMIDE1NCA1NjkgTCAxNTUgNTY4IEwgMTYzIDU2OCBMIDE3NyA1NjUgTCAxOTAgNTY0IEwgMjQwIDU1NCBMIDI0MiA1NTkgTCAyNDMgNTY5IEwgMjU4IDY0MyBMIDI1NCA2NDQgTCAyNDIgNjQxIEwgMjIwIDY0MSBMIDIwNCA2NDQgTCAxOTggNjQ2IEwgMTkyIDY1MCBMIDE5NCA2NTIgTCAyMDUgNjUzIEwgMjEwIDY1NSBMIDI2MCA2NjQgTCAyNjIgNjY2IEwgMjY0IDY4NiBMIDI2NyA2ODggTCAyNzYgNjg4IEwgMjc3IDY4NyBMIDI4NiA2ODcgTCAyOTEgNjgzIEwgMjkyIDY2NiBMIDI5MyA2NjUgTCAzMTggNjYyIEwgMzM3IDY1NyBMIDM2MSA2NDYgTCAzNzEgNjM4IEwgMzcwIDYzNCBMIDM2NSA2MzQgTCAzMzQgNjQwIEwgMzI4IDY0MCBMIDMyNyA2NDEgTCAzMjEgNjQxIEwgMzIwIDY0MiBMIDMxNCA2NDIgTCAzMTMgNjQzIEwgMzA3IDY0MyBMIDI5MSA2NDYgTCAyODkgNjQ0IEwgMjg4IDYzMiBMIDI4NyA2MzEgTCAyODcgNjI2IEwgMjg2IDYyNSBMIDI4NiA2MjAgTCAyODMgNjA4IEwgMjgzIDYwMyBMIDI4MiA2MDIgTCAyODIgNTk3IEwgMjc5IDU4NSBMIDI3MyA1NDcgTCAyNzcgNTQ1IEwgMjk2IDU0MSBMIDMwMCA1MzkgTCAzMTEgNTM3IEwgMzM1IDUyOSBMIDMzOCA1MjkgTCAzNzcgNTE2IEwgNDIwIDQ5OSBMIDQ0NCA0ODcgTCA0NDYgNDg3IEwgNDc3IDQ2OSBMIDQ4OCA0NTkgTCA0ODkgNDUyIEwgNDg1IDQ0OCBMIDQ4MSA0NDcgTCA0NTIgNDQ5IEwgNDUxIDQ1MCBMIDQ0NiA0NTAgTCA0NDUgNDUxIEwgNDQwIDQ1MSBMIDQwOCA0NTcgTCAzNDcgNDcyIEwgMzQzIDQ3NCBMIDMzOSA0NzMgTCAzMjIgNDc0IEwgMzA2IDQ3MCBMIDMwMSA0NzEgTCAyNzQgNDIyIEwgMjU2IDM5NSBMIDI1NCAzODkgTCAyNDcgMzc3IEwgMjIxIDM2MiBMIDE4NyAzNDUgTCAxNzMgMzM5IEwgMTU4IDMzNSBMIDE2MCAzMzIgTCAxNjAgMzI4IEwgMTU5IDMyNyBMIDE1OSAzMTggTCAxNTggMzE3IEwgMTU2IDMwMSBMIDE1OSAyODcgTCAxNTkgMjczIEwgMTYzIDI3MiBMIDE4MyAyNzcgTCAyMDYgMjc5IEwgMjA3IDI4MCBMIDIxNiAyNzkgTCAyMzEgMjcyIEwgMjQwIDI2NiBMIDI3MCAyNDAgTCAyODUgMjM4IEwgMjkzIDIzMyBMIDI5NSAyMzMgTCAzNTYgMjcwIEwgMzg3IDI5MiBMIDQyMSAzMTkgTCA0MzggMzM0IEwgNDY2IDM2MyBMIDQ3OCAzNzkgTCA0ODQgMzk0IEwgNDg5IDM5NCBMIDQ5OCAzODkgTCA1MTUgMzcyIEwgNTI3IDM1MSBMIDUzMSAzMzkgTCA1MzIgMzI5IEwgNTMzIDMyOCBMIDUzMyAyOTggTCA1MzIgMjk3IEwgNTMxIDI4NSBMIDUyMyAyNTMgTCA1MTUgMjMwIEwgNTEyIDIyNSBMIDUwNyAyMTEgTCA0OTMgMTgzIEwgNDY1IDEzNiBMIDQ0NyAxMTAgTCA0MzAgODggTCA0MDkgNjQgTCAzODcgNDMgTCAzNjkgMjkgTCAzNTMgMTkgTCAzMzQgMTAgTCAzMTEgMyBMIDMwMSAxIEwgMjkzIDEgWiBNIDE3MSAzODkgTCAxNzQgMzg4IEwgMTk1IDM5NiBMIDIyNCA0MDQgTCAyMjYgNDA2IEwgMjM2IDQyNyBMIDI0MSA0MzQgTCAyODEgNDc2IEwgMjg1IDQ5MCBMIDI4MiA0OTIgTCAyNjMgNDk3IEwgMjMyIDUwOCBMIDIyMiA1MDIgTCAyMTkgNDk4IEwgMjE2IDQ4NiBMIDIxMyA0NjcgTCAyMDYgNDM5IEwgMjA1IDQyMyBMIDIwMyA0MTcgTCAxODcgMzk5IFogTSA0NDYgMTQ1IEwgNDQ3IDE0OCBMIDQ0NiAxNTIgTCA0NDIgMTU2IEwgNDQwIDE1NiBMIDQxMCAxNzEgTCAzOTUgMTc3IEwgMzAyIDIyMSBMIDMwMCAyMTQgTCAyOTYgMjExIEwgMjg5IDIxMSBMIDI4NCAyMTMgTCAyODEgMjEyIEwgMjg3IDIwOCBMIDMxOCAxOTUgTCAzMzEgMTg4IEwgMzU3IDE3NyBMIDQzNSAxNDAgTCA0NDIgMTQwIFoiLz48L3N2Zz4=">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <style>
+    :root {
+      --bg: #ffffff; --text: #1b2330; --muted: #6b7686; --border: #e6e9ee;
+      --accent: #1f6fd1; --chip: #f1f3f6; --rain: #2f86e0; --dayrow: #f6f7f9;
+      --good: #12a150; --good-bg: #e3f6ea; --snow: #3b82f6; --snow-bg: #e3edfd;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #11161d; --text: #e6ebf2; --muted: #8b97a8; --border: #232c38;
+              --accent: #6aa8ff; --chip: #1c2430; --rain: #5aa5f5; --dayrow: #161d26;
+              --good: #3ccf7a; --good-bg: #13301f; --snow: #7fb0ff; --snow-bg: #172640; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text);
+           font: 15px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 640px; margin: 0 auto; padding: 12px 16px 40px; }
+
+    /* Location picker: a scrollable row of chips */
+    nav { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 10px;
+          position: sticky; top: 0; background: var(--bg); z-index: 2; }
+    nav button { flex: 0 0 auto; font: inherit; font-size: .9rem; padding: 6px 12px; border-radius: 999px;
+                 border: 1px solid var(--border); background: var(--chip); color: var(--text); cursor: pointer; }
+    nav button.good { border-color: var(--good); box-shadow: inset 0 0 0 1px var(--good); }
+    nav button.snow { border-color: var(--snow); box-shadow: inset 0 0 0 1px var(--snow); }
+    nav button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+    nav .badge { font-size: .8rem; margin-left: 4px; }
+    .ico { height: 1.6em; width: auto; fill: currentColor; vertical-align: -0.45em; }
+    nav button.good .badge { color: var(--good); }
+    nav button[aria-pressed="true"] .badge { color: inherit; }
+
+    h1 { font-size: 1.15rem; margin: 6px 0 2px; }
+    .sub { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
+    .sub a { color: var(--accent); }
+    .rule { color: var(--muted); font-size: .8rem; margin-bottom: 10px; }
+
+    /* The hourly list */
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th { text-align: right; font-weight: 500; color: var(--muted); font-size: .78rem; padding: 4px 6px; }
+    th:first-child { text-align: left; }
+    th:last-child { text-align: left; padding-left: 10px; }
+    td { padding: 4px 6px; border-top: 1px solid var(--border); text-align: right; white-space: nowrap; }
+    td:first-child { text-align: left; color: var(--muted); }
+    td img { width: 30px; height: 30px; vertical-align: middle; }
+    .day td { background: var(--dayrow); color: var(--text); font-weight: 600; text-align: left; padding: 8px 6px; }
+    .day .tag { font-weight: 500; font-size: .85rem; margin-left: 8px; }
+    .day .tag.good { color: var(--good); }
+    .day .tag.snow { color: var(--snow); }
+    .day .suntimes { float: right; font-weight: 400; font-size: .8rem; color: var(--muted); }
+    tr.good td { background: var(--good-bg); }
+    tr.good td:first-child { box-shadow: inset 4px 0 0 var(--good); color: var(--text); }
+    tr.snow td { background: var(--snow-bg); }
+    tr.snow td:first-child { box-shadow: inset 4px 0 0 var(--snow); color: var(--text); }
+    .cold { color: var(--rain); }
+    .rain { color: var(--rain); }
+    .gust { color: var(--muted); }
+    td.dir { text-align: left; padding-left: 10px; }
+    td.dir span { display: inline-block; min-width: 2.4em; margin-left: 6px; vertical-align: middle; }
+    .arrow { display: inline-block; width: 20px; height: 20px; vertical-align: middle; }
+    .note td { color: var(--muted); font-size: .8rem; text-align: center; padding: 10px 6px; border-top: 2px solid var(--border); }
+    .error { color: #d33; }
+    footer { color: var(--muted); font-size: .8rem; margin-top: 16px; }
+    footer a { color: var(--accent); }
+  </style>
+</head>
+<body>
+<main>
+  <!-- Wing foiler icon, defined once and reused with <use href="#wing"> -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="wing" viewBox="71 -4 466 696"><path fill-rule="evenodd" d="M 292 0 L 269 0 L 268 1 L 260 1 L 240 5 L 217 13 L 201 21 L 197 26 L 199 32 L 213 45 L 226 63 L 235 79 L 245 103 L 256 138 L 267 191 L 270 216 L 266 220 L 264 225 L 247 235 L 222 245 L 211 251 L 207 251 L 185 245 L 175 244 L 156 234 L 137 230 L 136 229 L 137 224 L 149 224 L 151 222 L 151 217 L 153 213 L 153 210 L 158 205 L 154 195 L 155 194 L 154 181 L 159 178 L 161 171 L 157 164 L 152 166 L 136 161 L 123 161 L 116 164 L 112 163 L 109 168 L 100 175 L 101 179 L 98 185 L 96 200 L 97 202 L 98 201 L 100 203 L 102 210 L 107 216 L 106 225 L 104 228 L 88 236 L 80 244 L 75 256 L 75 276 L 81 307 L 83 311 L 88 332 L 95 350 L 97 362 L 103 375 L 112 385 L 121 391 L 127 393 L 142 406 L 176 432 L 176 447 L 180 466 L 195 492 L 201 505 L 201 517 L 199 519 L 158 534 L 120 552 L 113 558 L 112 564 L 115 567 L 123 570 L 144 570 L 145 569 L 154 569 L 155 568 L 163 568 L 177 565 L 190 564 L 240 554 L 242 559 L 243 569 L 258 643 L 254 644 L 242 641 L 220 641 L 204 644 L 198 646 L 192 650 L 194 652 L 205 653 L 210 655 L 260 664 L 262 666 L 264 686 L 267 688 L 276 688 L 277 687 L 286 687 L 291 683 L 292 666 L 293 665 L 318 662 L 337 657 L 361 646 L 371 638 L 370 634 L 365 634 L 334 640 L 328 640 L 327 641 L 321 641 L 320 642 L 314 642 L 313 643 L 307 643 L 291 646 L 289 644 L 288 632 L 287 631 L 287 626 L 286 625 L 286 620 L 283 608 L 283 603 L 282 602 L 282 597 L 279 585 L 273 547 L 277 545 L 296 541 L 300 539 L 311 537 L 335 529 L 338 529 L 377 516 L 420 499 L 444 487 L 446 487 L 477 469 L 488 459 L 489 452 L 485 448 L 481 447 L 452 449 L 451 450 L 446 450 L 445 451 L 440 451 L 408 457 L 347 472 L 343 474 L 339 473 L 322 474 L 306 470 L 301 471 L 274 422 L 256 395 L 254 389 L 247 377 L 221 362 L 187 345 L 173 339 L 158 335 L 160 332 L 160 328 L 159 327 L 159 318 L 158 317 L 156 301 L 159 287 L 159 273 L 163 272 L 183 277 L 206 279 L 207 280 L 216 279 L 231 272 L 240 266 L 270 240 L 285 238 L 293 233 L 295 233 L 356 270 L 387 292 L 421 319 L 438 334 L 466 363 L 478 379 L 484 394 L 489 394 L 498 389 L 515 372 L 527 351 L 531 339 L 532 329 L 533 328 L 533 298 L 532 297 L 531 285 L 523 253 L 515 230 L 512 225 L 507 211 L 493 183 L 465 136 L 447 110 L 430 88 L 409 64 L 387 43 L 369 29 L 353 19 L 334 10 L 311 3 L 301 1 L 293 1 Z M 171 389 L 174 388 L 195 396 L 224 404 L 226 406 L 236 427 L 241 434 L 281 476 L 285 490 L 282 492 L 263 497 L 232 508 L 222 502 L 219 498 L 216 486 L 213 467 L 206 439 L 205 423 L 203 417 L 187 399 Z M 446 145 L 447 148 L 446 152 L 442 156 L 440 156 L 410 171 L 395 177 L 302 221 L 300 214 L 296 211 L 289 211 L 284 213 L 281 212 L 287 208 L 318 195 L 331 188 L 357 177 L 435 140 L 442 140 Z"/></symbol>
+  </svg>
+  <nav id="places"></nav>
+  <h1 id="name"></h1>
+  <div class="sub" id="sub"></div>
+  <div class="rule" id="rule"></div>
+  <div id="list"><p class="sub">Laster…</p></div>
+  <footer>Data fra <a href="https://www.yr.no">yr.no</a> / Meteorologisk institutt (CC BY 4.0).</footer>
+</main>
+
+<script>
+// ---- 1. Locations and what counts as "good" at each -------------------------
+// wind:   good when (wind >= min AND gust >= gust) OR wind >= min + 1, from one of `dirs`, for 2+ hours in a row,
+//         between sunrise and sunset. sunny: {min, gust} is a lower limit that applies on days that are mostly sunny (sea breeze).
+// powder: good when a day has > 10 mm precipitation, stays below +2°, and isn't too windy.
+const SOUTH  = ["SE", "SSE", "S", "SSW", "SW"];
+const WEST   = ["SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+const PLACES = [
+  { name: "Drøbaksundet",     lat: 59.6732, lon: 10.6161, alt: 0,   yr: "1-2314605",
+    wind: { min: 5, gust: 9, dirs: SOUTH, sunny: { min: 4, gust: 8 } } },
+  { name: "Brattestø",        lat: 59.0561, lon: 10.9193, alt: 0,   yr: "1-34165",
+    wind: { min: 5, gust: 9, dirs: ["S", "SSW", "SW", "WSW", "W"] } },
+  { name: "Larkollen lykt",   lat: 59.3232, lon: 10.6678, alt: 0,   yr: "1-2779456",
+    wind: { min: 5, gust: 9, dirs: ["S", "SSW", "SW", "WSW"] } },
+  { name: "Lysakerfjorden",   lat: 59.9029, lon: 10.6466, alt: 0,   yr: "1-72928" },
+  { name: "Ørekroken",        lat: 59.0304, lon: 11.0105, alt: 0,   yr: "1-34234",
+    wind: { min: 5, gust: 9, dirs: ["SW"] } },
+  { name: "Hemsedal 690 MOH", lat: 60.8598, lon: 8.5189,  alt: 690, yr: "11-63588",
+    powder: { mm: 10, maxTemp: 2, maxWind: 8 } },
+  { name: "Apelviken",        lat: 57.0832, lon: 12.2668, alt: 6,   yr: "2-2725565",
+    wind: { min: 5, gust: 9, dirs: WEST } },
+  { name: "Borestranda",      lat: 58.7961, lon: 5.5675,  alt: 6,   yr: "10-1027661",
+    wind: { min: 5, gust: 9, dirs: WEST } },
+  { name: "Møvik",            lat: 59.3331, lon: 10.7185, alt: 0,   yr: "1-2289533",
+    wind: { min: 5, gust: 9, dirs: ["SW", "SSW"] } },
+  { name: "Presteskjær",      lat: 59.8091, lon: 10.7035, alt: 1,   yr: "1-73291",
+    wind: { min: 5, gust: 9, dirs: ["N", "NNE", "NE"] } },
+];
+
+// "complete" (instead of "compact") also gives us wind gusts.
+const API = "https://api.met.no/weatherapi/locationforecast/2.0/complete";
+const icon = code => `https://cdn.jsdelivr.net/gh/metno/weathericons@main/weather/svg/${code}.svg`;
+const WEEK = 7 * 24 * 3600 * 1000;
+
+// ---- 2. Fetch (cached in memory, so switching back and forth is instant) ----
+const cache = {};
+function getForecast(p) {
+  if (!cache[p.name]) {
+    const url = `${API}?lat=${p.lat}&lon=${p.lon}&altitude=${p.alt}`;
+    cache[p.name] = fetch(url).then(res => {
+      if (!res.ok) throw new Error(`MET svarte ${res.status}`);
+      return res.json();
+    });
+    cache[p.name].catch(() => delete cache[p.name]); // allow retry after an error
+  }
+  return cache[p.name];
+}
+
+// ---- 3. Turn MET's data into simple rows, then judge them ------------------
+const COMPASS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+const compass = deg => COMPASS[Math.round(deg / 22.5) % 16];
+const dayKey  = d => d.toLocaleDateString("en-CA"); // YYYY-MM-DD in local time
+
+function toRows(data) {
+  // Hourly steps first (roughly the next 2½ days), then MET's 6-hour steps up to a week ahead.
+  const series = data.properties.timeseries;
+  const hourly = series.filter(t => t.data.next_1_hours);
+  const lastHourly = new Date(hourly.at(-1).time);
+  const sixHourly = series.filter(t => {
+    const time = new Date(t.time);
+    return time > lastHourly && t.data.next_6_hours && time - Date.now() < WEEK;
+  });
+  const row = (t, hours) => {
+    const time = new Date(t.time);
+    const now = t.data.instant.details;
+    const step = hours === 1 ? t.data.next_1_hours : t.data.next_6_hours;
+    return {
+      time, hours, day: dayKey(time),
+      symbol: step.summary.symbol_code,
+      temp: now.air_temperature,
+      rain: step.details.precipitation_amount ?? 0,
+      wind: now.wind_speed,
+      gust: now.wind_speed_of_gust ?? null, // MET only gives gusts in the hourly part
+      deg: now.wind_from_direction,
+      dir: compass(now.wind_from_direction),
+    };
+  };
+  return [...hourly.map(t => row(t, 1)), ...sixHourly.map(t => row(t, 6))];
+}
+
+// Sunrise and sunset for a given day and place (the standard "sunrise equation";
+// accurate to a minute or two, which is plenty here). Returns Dates, or null in polar night/midnight sun.
+function sunTimes(date, lat, lon) {
+  const rad = Math.PI / 180;
+  const noon = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12);
+  const n = Math.round(noon / 864e5 + 2440587.5 - 2451545);           // days since year 2000
+  const Jstar = n - lon / 360;
+  const M = (357.5291 + 0.98560028 * Jstar) % 360;                     // sun's mean anomaly
+  const C = 1.9148 * Math.sin(M * rad) + 0.02 * Math.sin(2 * M * rad) + 0.0003 * Math.sin(3 * M * rad);
+  const L = (M + C + 180 + 102.9372) % 360;                            // ecliptic longitude
+  const transit = 2451545 + Jstar + 0.0053 * Math.sin(M * rad) - 0.0069 * Math.sin(2 * L * rad);
+  const decl = Math.asin(Math.sin(L * rad) * Math.sin(23.4397 * rad));
+  const cosH = (Math.sin(-0.833 * rad) - Math.sin(lat * rad) * Math.sin(decl)) / (Math.cos(lat * rad) * Math.cos(decl));
+  if (Math.abs(cosH) > 1) return null;
+  const H = Math.acos(cosH) / rad / 360;
+  const toDate = jd => new Date((jd - 2440587.5) * 864e5);
+  return { rise: toDate(transit - H), set: toDate(transit + H) };
+}
+
+// A row counts as daylight if the middle of its time span is between sunrise and sunset.
+function markDaylight(rows, p) {
+  const sun = {};
+  for (const r of rows) {
+    const s = sun[r.day] ??= sunTimes(r.time, p.lat, p.lon);
+    const mid = new Date(r.time.getTime() + r.hours * 1800e3);
+    r.daylight = !s || (mid > s.rise && mid < s.set);
+    r.sun = s;
+  }
+}
+
+// Share of daytime hours (08–18) with a clear or fair symbol, per day.
+function sunnyDays(rows) {
+  const days = {};
+  for (const r of rows) {
+    const h = r.time.getHours();
+    if (h < 8 || h >= 18) continue;
+    const d = days[r.day] ??= { sun: 0, all: 0 };
+    d.all += r.hours;
+    if (/^(clearsky|fair)/.test(r.symbol)) d.sun += r.hours;
+  }
+  return Object.fromEntries(Object.entries(days).map(([k, d]) => [k, d.sun / d.all > 0.5]));
+}
+
+function judgeWind(rows, rule) {
+  const sunny = rule.sunny ? sunnyDays(rows) : {};
+  // Strong enough: e.g. 5 (9), or a mean wind of 6+ where gusts don't matter.
+  // Compare the rounded numbers, so the rule matches exactly what the list shows.
+  const strong = (r, min, gust) => {
+    const w = Math.round(r.wind), g = r.gust === null ? null : Math.round(r.gust);
+    return w >= min + 1 || (w >= min && (g === null || g >= gust));
+  };
+  const ok = rows.map(r => r.daylight && rule.dirs.includes(r.dir) &&
+    (strong(r, rule.min, rule.gust) || (sunny[r.day] && strong(r, rule.sunny.min, rule.sunny.gust))));
+  // Hourly rows need a neighbour that's also ok (2+ hours in a row).
+  // A 6-hour row already covers several hours, so it counts on its own.
+  rows.forEach((r, i) => {
+    const prev = ok[i - 1] && rows[i - 1].hours === 1;
+    const next = ok[i + 1] && rows[i + 1].hours === 1;
+    if (ok[i] && (r.hours === 6 || prev || next)) r.good = true;
+  });
+}
+
+function judgePowder(rows, rule) {
+  const days = {};
+  for (const r of rows) {
+    const d = days[r.day] ??= { mm: 0, maxTemp: -99, maxWind: 0 };
+    d.mm += r.rain;
+    d.maxTemp = Math.max(d.maxTemp, r.temp);
+    d.maxWind = Math.max(d.maxWind, r.wind);
+  }
+  for (const r of rows) {
+    const d = days[r.day];
+    if (d.mm > rule.mm && d.maxTemp < rule.maxTemp && d.maxWind < rule.maxWind) {
+      r.powderDay = d.mm;
+      if (r.rain > 0) r.snow = true;
+    }
+  }
+}
+
+function analyse(p, data) {
+  const rows = toRows(data);
+  markDaylight(rows, p);
+  if (p.wind) judgeWind(rows, p.wind);
+  if (p.powder) judgePowder(rows, p.powder);
+  return rows;
+}
+
+// ---- 4. Render ---------------------------------------------------------------
+const $ = id => document.getElementById(id);
+const dayFmt  = new Intl.DateTimeFormat("nb-NO", { weekday: "long", day: "numeric", month: "long" });
+const hourFmt = new Intl.DateTimeFormat("nb-NO", { hour: "2-digit", minute: "2-digit" });
+const hhFmt   = new Intl.DateTimeFormat("nb-NO", { hour: "2-digit" });
+const wdFmt   = new Intl.DateTimeFormat("nb-NO", { weekday: "short" });
+
+// Wind direction is where the wind comes FROM, so the arrow points the opposite way
+// (same convention as yr: an arrow pointing down means wind from the north).
+const arrow = deg => `<svg class="arrow" viewBox="0 0 20 20" style="transform:rotate(${deg + 180}deg)">
+  <path d="M10 1 L17 10 H12.5 V19 H7.5 V10 H3 Z" fill="currentColor"/></svg>`;
+
+// The wing foiler icon takes the colour of the text around it.
+const WING = `<svg class="ico" viewBox="71 -4 466 696" aria-label="Bra vind"><use href="#wing"/></svg>`;
+
+const endOf = r => new Date(r.time.getTime() + r.hours * 3600e3);
+
+function dayTag(dayRows) {
+  const good = dayRows.filter(r => r.good);
+  if (good.length) {
+    return `<span class="tag good">${WING} Bra vind ${hhFmt.format(good[0].time)}–${hhFmt.format(endOf(good.at(-1)))}</span>`;
+  }
+  if (dayRows[0].powderDay) {
+    return `<span class="tag snow">❄️ Pudder (${dayRows[0].powderDay.toFixed(0)} mm)</span>`;
+  }
+  return "";
+}
+
+function ruleText(p) {
+  if (p.wind) {
+    const w = p.wind;
+    return `${WING} Bra vind: ${w.min} (${w.gust}) eller ${w.min + 1}+ m/s uansett kast, fra ${w.dirs.join(", ")}, ` +
+      `minst 2 timer på rad i dagslys` +
+      (w.sunny ? `. På dager med mest sol holder ${w.sunny.min} (${w.sunny.gust}) eller ${w.sunny.min + 1}+` : "") + ".";
+  }
+  if (p.powder) {
+    const s = p.powder;
+    return `❄️ Pudder: over ${s.mm} mm nedbør på en dag, kaldere enn +${s.maxTemp}° og vind under ${s.maxWind} m/s.`;
+  }
+  return "";
+}
+
+function render(p, data) {
+  const rows = analyse(p, data);
+  let html = "";
+  let note = false;
+
+  const byDay = new Map();
+  for (const r of rows) byDay.set(r.day, [...(byDay.get(r.day) ?? []), r]);
+  for (const dayRows of byDay.values()) {
+    const name = dayFmt.format(dayRows[0].time);
+    const s = dayRows[0].sun;
+    const sunText = s ? `<span class="suntimes">☀︎ ${hourFmt.format(s.rise)}–${hourFmt.format(s.set)}</span>` : "";
+    html += `<tr class="day"><td colspan="6">${name[0].toUpperCase() + name.slice(1)}${dayTag(dayRows)}${sunText}</td></tr>`;
+    for (const r of dayRows) {
+      if (r.hours === 6 && !note) {
+        html += `<tr class="note"><td colspan="6">Videre: 6-timers varsel</td></tr>`;
+        note = true;
+      }
+      const temp = Math.round(r.temp);
+      const label = r.hours === 1 ? hourFmt.format(r.time)
+                                  : `${hhFmt.format(r.time)}–${hhFmt.format(endOf(r))}`;
+      html += `<tr class="${r.good ? "good" : r.snow ? "snow" : ""}">
+        <td>${label}</td>
+        <td><img src="${icon(r.symbol)}" alt="${r.symbol}"></td>
+        <td class="${temp <= 0 ? "cold" : ""}">${temp}°</td>
+        <td class="rain">${r.rain > 0 ? r.rain.toFixed(1) : ""}</td>
+        <td>${Math.round(r.wind)} <span class="gust">(${r.gust === null ? "–" : Math.round(r.gust)})</span></td>
+        <td class="dir">${arrow(r.deg)}<span>${r.dir}</span></td>
+      </tr>`;
+    }
+  }
+
+  $("list").innerHTML = `<table>
+    <thead><tr><th>Tid</th><th></th><th>Temp</th><th>mm</th><th>Vind m/s</th><th>Fra</th></tr></thead>
+    <tbody>${html}</tbody></table>`;
+
+  const updated = hourFmt.format(new Date(data.properties.meta.updated_at));
+  $("sub").innerHTML = `${p.alt > 50 ? p.alt + " moh · " : ""}Oppdatert ${updated} ·
+    <a href="https://www.yr.no/nb/v%C3%A6rvarsel/timetabell/${p.yr}/" target="_blank">Åpne på yr</a>`;
+  $("rule").innerHTML = ruleText(p);
+}
+
+// Mark a location button when something good is coming, e.g. "[wing] ons".
+function badge(i, data) {
+  const p = PLACES[i];
+  const rows = analyse(p, data);
+  const first = rows.find(r => r.good || r.powderDay);
+  const btn = $("places").children[i];
+  btn.classList.toggle("good", !!first?.good);
+  btn.classList.toggle("snow", !!first && !first.good);
+  if (!first) return;
+  const when = first.day === dayKey(new Date()) ? "i dag" : wdFmt.format(first.time).replace(".", "");
+  btn.querySelector(".badge").innerHTML = `${first.good ? WING : "❄️"} ${when}`;
+}
+
+let current = null;
+async function show(i) {
+  const p = PLACES[i];
+  current = i;
+  try { localStorage.setItem("place", i); } catch {}
+  document.querySelectorAll("nav button").forEach((b, j) => b.setAttribute("aria-pressed", i === j));
+  $("name").textContent = p.name;
+  $("sub").textContent = "";
+  $("rule").textContent = "";
+  $("list").innerHTML = `<p class="sub">Laster…</p>`;
+  try {
+    const data = await getForecast(p);
+    if (current === i) render(p, data); // ignore if the user already tapped another place
+  } catch (err) {
+    $("list").innerHTML = `<p class="error">Kunne ikke hente varselet: ${err.message}</p>`;
+  }
+}
+
+// ---- 5. Build the buttons, show the last-used place, and check all spots ---
+$("places").innerHTML = PLACES.map((p, i) =>
+  `<button aria-pressed="false" onclick="show(${i})">${p.name}<span class="badge"></span></button>`).join("");
+
+let start = 0;
+try { start = Number(localStorage.getItem("place")) || 0; } catch {}
+show(start < PLACES.length ? start : 0);
+
+PLACES.forEach((p, i) => {
+  if (p.wind || p.powder) getForecast(p).then(data => badge(i, data)).catch(() => {});
+});
+</script>
+</body>
+</html>
