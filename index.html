@@ -50,8 +50,8 @@
     .live:empty { display: none; }
     .live .arrow { width: 16px; height: 16px; margin: 0 2px; }
     .live small { color: var(--muted); }
-    .live:has(iframe) { padding: 0; background: none; }
-    .live iframe { display: block; width: 100%; height: 250px; border: 0; border-radius: 8px; }
+    .live summary { cursor: pointer; }
+    .live iframe { display: block; width: 100%; height: 250px; border: 0; border-radius: 8px; margin-top: 8px; }
     .live.good { background: var(--good-bg); box-shadow: inset 4px 0 0 var(--good); }
     .stations button { display: flex; justify-content: space-between; gap: 8px; width: 100%; text-align: left;
                        background: none; border: 0; border-top: 1px solid var(--border); padding: 8px 0; cursor: pointer; }
@@ -545,7 +545,13 @@ const holfuyWidget = id => `<iframe class="holfuy" title="Holfuy ${id}" loading=
 
 async function showLive(p) {
   const chosen = stationOf(p);
-  if (chosen?.holfuy) { $("live").classList.remove("good"); $("live").innerHTML = holfuyWidget(chosen.holfuy); return; }
+  if (chosen?.holfuy) {
+    // Holfuy's widget is big and busy, so it stays folded away until someone taps "Se vind nå".
+    $("live").classList.remove("good");
+    $("live").innerHTML = `<details><summary><b>Se vind nå</b> <small>· ${esc(chosen.name || "Holfuy " + chosen.holfuy)}</small></summary>
+      ${holfuyWidget(chosen.holfuy)}</details>`;
+    return;
+  }
   try {
     const s = await liveReading(p);
     if (current !== p.id) return;
