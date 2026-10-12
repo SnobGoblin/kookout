@@ -3,3 +3,14 @@
 name = "wingfoil-relay"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
+workers_dev = true
+preview_urls = false
+
+# Stored NOAA wave forecasts (NOAA's server is slow from Cloudflare, and waves only change every 6 hours)
+[[kv_namespaces]]
+binding = "WAVES"
+id = "dab72f0bb79e44ceb8dad18acb85adf9"
+
+# Refresh the stored wave forecasts every 3 hours
+[triggers]
+crons = ["17 */3 * * *"]

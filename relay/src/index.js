@@ -21,7 +21,12 @@ const NWS_HEADERS = { "User-Agent": "WingfoilRelay/1.0 (github.com/SnobGoblin/wi
 const WIND = ["wind_speed", "wind_from_direction", "max(wind_speed_of_gust PT10M)", "max(wind_speed_of_gust PT1H)"];
 
 export default {
-  async fetch(request, env) {
+  // Every 3 hours (see wrangler.toml): refresh the stored NOAA wave forecasts.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(refreshStoredWaves(env));
+  },
+
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const origin = request.headers.get("Origin");
     const cors = ALLOWED_ORIGINS.includes(origin) ? { "Access-Control-Allow-Origin": origin, Vary: "Origin" } : {};
@@ -77,7 +82,18 @@ export default {
       if (url.pathname === "/waves") {
         const lat = parseFloat(url.searchParams.get("lat")), lon = parseFloat(url.searchParams.get("lon"));
         if (!Number.isFinite(lat) || !Number.isFinite(lon)) return reply({ error: "lat and lon required" }, 400);
-        return reply(await metWaves(lat, lon) ?? await noaaWaves(lat, lon) ?? { source: null, points: [] });
+        // MET has the better wave heights in Scandinavia but no wave period, so we borrow NOAA's period there.
+        const [met, noaa] = await Promise.all([metWaves(lat, lon), storedNoaaWaves(lat, lon, env, ctx)]);
+        if (met && noaa) {
+          const periods = noaa.points.map(pt => ({ t: Date.parse(pt.time), period: pt.period }));
+          for (const pt of met.points) {
+            const t = Date.parse(pt.time);
+            const near = periods.reduce((b, x) => !b || Math.abs(x.t - t) < Math.abs(b.t - t) ? x : b, null);
+            if (near && Math.abs(near.t - t) <= 3 * 3600e3) pt.period = near.period;
+          }
+          met.periodFrom = "NOAA";
+        }
+        return reply(met ?? noaa ?? { source: null, points: [] });
       }
 
       return reply({ error: "Not found. Use /near, /obs or /waves" }, 404);
@@ -185,9 +201,49 @@ async function metWaves(lat, lon) {
   return points.length ? { source: "MET", points } : null;
 }
 
+// NOAA answers are kept in KV per 0.5° cell. Fresh for 3 hours; older ones are still served
+// (the forecast reaches a week ahead) while a new copy is fetched in the background.
+const cellKey = (lat, lon) => `noaa:${(Math.round(lat * 2) / 2).toFixed(1)}:${(Math.round(lon * 2) / 2).toFixed(1)}`;
+const FRESH_MS = 3 * 3600e3;
+
+async function storedNoaaWaves(lat, lon, env, ctx) {
+  const key = cellKey(lat, lon);
+  const stored = await env.WAVES.get(key, "json");
+  const upcoming = d => ({ ...d, points: d.points.filter(pt => Date.parse(pt.time) > Date.now() - 3600e3) });
+  if (stored && Date.now() - stored.fetched < FRESH_MS) return upcoming(stored.data);
+  if (stored) { ctx.waitUntil(fetchAndStore(lat, lon, env)); return upcoming(stored.data); }
+  return await fetchAndStore(lat, lon, env); // first time for this cell: we have to wait
+}
+
+async function fetchAndStore(lat, lon, env) {
+  const data = await noaaWaves(lat, lon);
+  if (data) await env.WAVES.put(cellKey(lat, lon), JSON.stringify({ fetched: Date.now(), lat, lon, data }),
+                                { expirationTtl: 7 * 86400 }); // cells nobody asks about disappear after a week
+  return data;
+}
+
+async function refreshStoredWaves(env) {
+  const { keys } = await env.WAVES.list({ prefix: "noaa:" });
+  for (const { name } of keys.slice(0, 10)) { // a few per run keeps us inside Cloudflare's free limits
+    const stored = await env.WAVES.get(name, "json");
+    if (stored && Date.now() - stored.fetched > FRESH_MS - 600e3) await fetchAndStore(stored.lat, stored.lon, env);
+  }
+}
+
 // NOAA WaveWatch III: global, 0.5° grid (~50 km). Cells along the coast often count as land,
 // so we use the nearest cell at sea within about 1°.
 const WW3 = "https://coastwatch.pfeg.noaa.gov/erddap/griddap/NWW3_Global_Best.json";
+// NOAA's data server is sometimes slow or answers with an empty page, so ask up to twice,
+// and don't let Cloudflare keep a copy (a bad answer would otherwise stick around).
+async function erddap(query) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(`${WW3}?${encodeURI(query)}`, { headers: NWS_HEADERS, signal: AbortSignal.timeout(15000) });
+      if (res.ok) return (await res.json()).table;
+    } catch {}
+  }
+  return null;
+}
 async function noaaWaves(lat, lon) {
   try { return await noaaWavesRaw(lat, lon); } catch { return null; }
 }
@@ -201,17 +257,17 @@ async function noaaWavesRaw(lat, lon) {
     const now = new Date(Date.now() - 3600e3); now.setUTCMinutes(0, 0, 0);
     const t = now.toISOString().replace(".000", "");
     const box = `Thgt[(${t})][(0.0)][(${la - 1}):(${la + 1})][(${Math.max(0, lo - 1)}):(${Math.min(359.5, lo + 1)})]`;
-    const near = await fetch(`${WW3}?${encodeURI(box)}`, { headers: NWS_HEADERS, cf: { cacheTtl: 21600 } });
-    if (!near.ok) return null;
-    const cells = (await near.json()).table.rows.filter(r => r[4] != null);
+    const near = await erddap(box);
+    if (!near) return null;
+    const cells = near.rows.filter(r => r[4] != null);
     if (!cells.length) return null;
     const cosLat = Math.cos(lat * Math.PI / 180);
     const [, , cLat, cLon] = cells.reduce((best, r) =>
       Math.hypot(r[2] - lat, (r[3] - lon360) * cosLat) < Math.hypot(best[2] - lat, (best[3] - lon360) * cosLat) ? r : best);
     const at = `[(${t}):1:(last)][(0.0)][(${cLat})][(${cLon})]`;
-    const res = await fetch(`${WW3}?${encodeURI(`Thgt${at},Tper${at},Tdir${at}`)}`, { headers: NWS_HEADERS, cf: { cacheTtl: 3600 } });
-    if (!res.ok) return null;
-    const { columnNames: c, rows } = (await res.json()).table;
+    const series = await erddap(`Thgt${at},Tper${at},Tdir${at}`);
+    if (!series) return null;
+    const { columnNames: c, rows } = series;
     const [iT, iH, iP, iD] = ["time", "Thgt", "Tper", "Tdir"].map(n => c.indexOf(n));
     const points = rows.filter(r => r[iH] != null)
       .map(r => ({ time: r[iT], height: round(r[iH], 2), period: round(r[iP], 1), dir: round(r[iD], 0) }));
