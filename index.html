@@ -95,6 +95,9 @@
     .sh h2 { font-size: 1.05rem; margin: 0; text-align: center; }
     .sh > :last-child { justify-self: end; }
     .link { background: none; border: 0; color: var(--accent); cursor: pointer; padding: 6px 0; }
+    .sh .link { min-height: 44px; min-width: 64px; padding: 10px 12px; margin: -6px -12px; font-size: 1rem; }
+    .sh > :last-child.link { text-align: right; }
+    .sh > :first-child.link { text-align: left; justify-self: start; }
     .link.danger, .wide.danger { color: var(--danger); }
     .lbl { color: var(--muted); font-size: .8rem; margin: 16px 0 6px; }
     .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
@@ -579,7 +582,7 @@ async function showLive(p) {
 let view = { name: "list" };
 const sheet = $("sheet");
 
-function openSettings() { view = { name: "list" }; renderSettings(); $("settings").hidden = false; }
+function openSettings() { view = { name: "list" }; shownView = ""; renderSettings(); $("settings").hidden = false; }
 function closeSettings() {
   $("settings").hidden = true;
   buildNav();
@@ -587,7 +590,10 @@ function closeSettings() {
 }
 $("cog").onclick = openSettings;
 
+let shownView = "";
 function renderSettings() {
+  const key = view.name + (view.i ?? "");
+  if (key !== shownView) { $("settings").scrollTop = 0; shownView = key; }
   if (view.name === "list") sheet.innerHTML = listView();
   if (view.name === "edit") { sheet.innerHTML = editView(settings.spots[view.i]); stationChoices(settings.spots[view.i]); }
   if (view.name === "add")  { sheet.innerHTML = addView(); initMap(); }
@@ -657,17 +663,6 @@ function compassPicker(dirs) {
   return `<svg class="compass" viewBox="0 0 210 210" role="group" aria-label="Retninger">${svg}</svg>`;
 }
 
-// Holfuy stations (common at kite/windsurf spots) are picked by their number from holfuy.com/en/weather/<number>.
-function holfuyChoice(p) {
-  const h = stationOf(p)?.holfuy;
-  return `<div class="lbl">… eller en annen Holfuy-stasjon (nummeret fra holfuy.com/en/weather/<b>1815</b>)</div>
-    <form class="search" data-act="holfuy">
-      <input class="txt" name="nr" inputmode="numeric" pattern="[0-9]*" placeholder="Stasjonsnummer" value="${h ?? ""}">
-      <button>${h ? "Endre" : "Bruk"}</button>
-    </form>
-    ${h ? `<p class="sub">✓ Bruker Holfuy-stasjon ${h}${stationOf(p).name ? ` (${esc(stationOf(p).name)})` : ""}.</p>` : ""}`;
-}
-
 // The stations near a spot, to pick from. "Nærmeste" means: always use whichever is nearest.
 async function stationChoices(p) {
   const box = $("stations");
@@ -684,10 +679,9 @@ async function stationChoices(p) {
       (list.length ? "" : `<p class="sub">Ingen MET-stasjoner med ferske vindmålinger innen 50 km. MET dekker mest Norge.</p>`) +
       (holfuy.length ? `<div class="lbl">Holfuy-stasjoner (viser Holfuys egen widget)</div>` +
         holfuy.map(h => `<button data-act="station" data-holfuy="${h.holfuy}" aria-pressed="${h.holfuy === stationOf(p)?.holfuy}">
-          <span>${esc(h.name)}</span><small>${h.km} km · ${esc(h.type ?? "")}</small></button>`).join("") : "") +
-      holfuyChoice(p);
+          <span>${esc(h.name)}</span><small>${h.km} km · ${esc(h.type ?? "")}</small></button>`).join("") : "");
   } catch {
-    box.innerHTML = `<p class="error">Fikk ikke hentet MET-stasjoner akkurat nå.</p>` + holfuyChoice(p);
+    box.innerHTML = `<p class="error">Fikk ikke hentet stasjoner akkurat nå.</p>`;
   }
 }
 
@@ -849,6 +843,9 @@ sheet.addEventListener("click", e => {
       p.station = s ? { id: s.id, name: s.name, km: s.km } : null;
     }
     save();
+    // Only move the checkmark; redrawing the whole view would make the screen jump.
+    document.querySelectorAll('#stations [data-act="station"]').forEach(b => b.setAttribute("aria-pressed", b === el));
+    return;
   }
   if (act === "delete" && confirm(`Slette ${p.name}?`)) {
     spots.splice(view.i, 1);
@@ -902,13 +899,6 @@ sheet.addEventListener("input", e => {
 
 sheet.addEventListener("submit", e => {
   e.preventDefault();
-  if (e.target.dataset.act === "holfuy") {
-    const nr = parseInt(e.target.nr.value, 10);
-    const p = settings.spots[view.i];
-    p.station = nr > 0 ? { holfuy: nr, name: p.station?.holfuy === nr ? p.station.name : "" } : null;
-    save();
-    return renderSettings();
-  }
   const q = e.target.q.value.trim();
   if (q) search(q);
 });
