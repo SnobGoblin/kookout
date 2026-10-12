@@ -23,6 +23,19 @@ The page fetches forecasts straight from MET's
 [Locationforecast API](https://api.met.no/weatherapi/locationforecast/2.0/documentation)
 in the browser.
 
+## Live wind ("Nå")
+
+Each spot shows the latest reading from a nearby weather station (MET's
+[Frost API](https://frost.met.no)), green when it's blowing right now in a way that works there.
+Browsers can't call Frost directly, so the page asks a small relay on Cloudflare Workers
+([`relay/`](relay/src/index.js)), which asks Frost immediately and passes the answer back.
+
+```bash
+cd relay
+npx wrangler deploy                     # publish the relay
+npx wrangler secret put FROST_CLIENT_ID # the Frost client ID, stored as a secret
+```
+
 ## Settings (⚙︎)
 
 - Add spots by searching or tapping the map ([OpenStreetMap](https://www.openstreetmap.org/copyright)

@@ -46,6 +46,15 @@
     .sub { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
     .sub a { color: var(--accent); }
     .rule { color: var(--muted); font-size: .8rem; margin-bottom: 10px; }
+    .live { font-size: .9rem; margin: -2px 0 10px; padding: 6px 10px; border-radius: 8px; background: var(--dayrow); }
+    .live:empty { display: none; }
+    .live .arrow { width: 16px; height: 16px; margin: 0 2px; }
+    .live small { color: var(--muted); }
+    .live.good { background: var(--good-bg); box-shadow: inset 4px 0 0 var(--good); }
+    .stations button { display: flex; justify-content: space-between; gap: 8px; width: 100%; text-align: left;
+                       background: none; border: 0; border-top: 1px solid var(--border); padding: 8px 0; cursor: pointer; }
+    .stations button[aria-pressed="true"] { color: var(--good); font-weight: 500; }
+    .stations small { color: var(--muted); white-space: nowrap; }
 
     /* The hourly list */
     table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
@@ -141,6 +150,7 @@
   <h1 id="name"></h1>
   <div class="sub" id="sub"></div>
   <div class="rule" id="rule"></div>
+  <div class="live" id="live"></div>
   <div id="list"><p class="sub">Laster…</p></div>
   <footer>Data fra <a href="https://www.yr.no">yr.no</a> / Meteorologisk institutt (CC BY 4.0).
     Stedssøk og kart fra <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</footer>
@@ -168,13 +178,13 @@ const DEFAULT_SPOTS = [
   { id: "drobak",    name: "Drøbaksundet",     lat: 59.6732, lon: 10.6161, alt: 0,   yr: "1-2314605",
     wind: standardWind({ dirs: SOUTH, sunny: { min: 4, gust: 8, steady: 5 } }) },
   { id: "brattesto", name: "Brattestø",        lat: 59.0561, lon: 10.9193, alt: 0,   yr: "1-34165",
-    wind: standardWind({ dirs: ["S", "SSW", "SW", "WSW", "W"] }) },
+    wind: standardWind({ dirs: ["S", "SSW", "SW", "WSW", "W"] }), station: { id: "SN17000", name: "Strømtangen Fyr" } },
   { id: "larkollen", name: "Larkollen lykt",   lat: 59.3232, lon: 10.6678, alt: 0,   yr: "1-2779456",
-    wind: standardWind({ dirs: ["S", "SSW", "SW", "WSW"] }) },
+    wind: standardWind({ dirs: ["S", "SSW", "SW", "WSW"] }), station: { id: "SN17280", name: "Gullholmen" } },
   { id: "lysaker",   name: "Lysakerfjorden",   lat: 59.9029, lon: 10.6466, alt: 0,   yr: "1-72928",
     wind: standardWind({ dirs: [] }) },
   { id: "orekroken", name: "Ørekroken",        lat: 59.0304, lon: 11.0105, alt: 0,   yr: "1-34234",
-    wind: standardWind({ dirs: ["SW"] }) },
+    wind: standardWind({ dirs: ["SW"] }), station: { id: "SN17000", name: "Strømtangen Fyr" } },
   { id: "hemsedal",  name: "Hemsedal 690 MOH", lat: 60.8598, lon: 8.5189,  alt: 690, yr: "11-63588",
     powder: { mm: 10, maxTemp: 2, maxWind: 8 } },
   { id: "apelviken", name: "Apelviken",        lat: 57.0832, lon: 12.2668, alt: 6,   yr: "2-2725565",
@@ -182,7 +192,7 @@ const DEFAULT_SPOTS = [
   { id: "bore",      name: "Borestranda",      lat: 58.7961, lon: 5.5675,  alt: 6,   yr: "10-1027661",
     wind: standardWind({ dirs: WEST }) },
   { id: "movik",     name: "Møvik",            lat: 59.3331, lon: 10.7185, alt: 0,   yr: "1-2289533",
-    wind: standardWind({ dirs: ["SW", "SSW"] }) },
+    wind: standardWind({ dirs: ["SW", "SSW"] }), station: { id: "SN17280", name: "Gullholmen" } },
   { id: "presteskjaer", name: "Presteskjær",   lat: 59.8091, lon: 10.7035, alt: 1,   yr: "1-73291",
     wind: standardWind({ dirs: ["N", "NNE", "NE"] }) },
 ];
@@ -300,14 +310,15 @@ function sunnyDays(rows) {
   return Object.fromEntries(Object.entries(days).map(([k, d]) => [k, d.sun / d.all > 0.5]));
 }
 
+// Strong enough: e.g. 5 (9), or a steady mean wind of 6+ where gusts don't matter.
+// Compare the rounded numbers in the chosen unit, so the rule matches exactly what the list shows.
+function strong(r, lim) {
+  const mean = w(r.wind), gust = r.gust == null ? null : w(r.gust);
+  return mean >= w(lim.steady) || (mean >= w(lim.min) && (gust === null || gust >= w(lim.gust)));
+}
+
 function judgeWind(rows, rule) {
   const sunny = rule.sunny ? sunnyDays(rows) : {};
-  // Strong enough: e.g. 5 (9), or a steady mean wind of 6+ where gusts don't matter.
-  // Compare the rounded numbers in the chosen unit, so the rule matches exactly what the list shows.
-  const strong = (r, lim) => {
-    const mean = w(r.wind), gust = r.gust === null ? null : w(r.gust);
-    return mean >= w(lim.steady) || (mean >= w(lim.min) && (gust === null || gust >= w(lim.gust)));
-  };
   const ok = rows.map(r => (!rule.daylight || r.daylight) && rule.dirs.includes(r.dir) &&
     (strong(r, rule) || (sunny[r.day] && strong(r, rule.sunny))));
   // Hourly rows count when there are `hours` ok rows in a row.
@@ -476,7 +487,7 @@ async function show(id) {
   const p = spots.find(s => s.id === id) ?? spots[0];
   if (!p) {
     $("name").textContent = "Ingen spotter";
-    $("sub").textContent = $("rule").textContent = "";
+    $("sub").textContent = $("rule").textContent = $("live").textContent = "";
     $("list").innerHTML = `<p class="sub">Legg til en spot under ⚙︎.</p>`;
     return;
   }
@@ -486,7 +497,9 @@ async function show(id) {
   $("name").textContent = p.name;
   $("sub").textContent = "";
   $("rule").textContent = "";
+  $("live").textContent = "";
   $("list").innerHTML = `<p class="sub">Laster…</p>`;
+  showLive(p);
   try {
     const data = await getForecast(p);
     if (current === p.id) render(p, data); // ignore if the user already tapped another place
@@ -495,7 +508,50 @@ async function show(id) {
   }
 }
 
-// ---- 7. Settings ---------------------------------------------------------------
+// ---- 7. Live wind right now, from the nearest weather station ----------------
+// The browser isn't allowed to ask MET's observation API (Frost) directly, so it asks our own
+// small relay on Cloudflare (see relay/ in the repo), which asks Frost straight away.
+const RELAY = "https://wingfoil-relay.wingfoil-relay.workers.dev";
+const relay = path => fetch(RELAY + path).then(res => res.ok ? res.json() : Promise.reject(new Error(res.status)));
+
+// Which station a spot uses: one chosen in settings, the default for that spot, or null = nearest.
+const stationOf = p => p.station !== undefined ? p.station : DEFAULT_SPOTS.find(d => d.id === p.id)?.station ?? null;
+
+const nearCache = {}; // stations near each spot, kept while the page is open
+const nearby = p => nearCache[p.id] ??= relay(`/near?lat=${p.lat}&lon=${p.lon}`)
+  .then(d => d.stations).catch(e => { delete nearCache[p.id]; throw e; });
+
+async function liveReading(p) {
+  const chosen = stationOf(p);
+  if (!chosen) return (await nearby(p))[0] ?? null; // nearest station that measures wind
+  const [r] = (await relay(`/obs?ids=${chosen.id}`)).stations;
+  return r ? { ...r, name: chosen.name, km: chosen.km } : null;
+}
+
+function liveText(s) {
+  const mins = Math.round((Date.now() - new Date(s.time)) / 60000);
+  const ago = mins < 2 ? "akkurat nå" : mins < 90 ? `${mins} min siden` : `${Math.round(mins / 60)} t siden`;
+  const dir = s.dir != null ? `${arrow(s.dir)}${compass(s.dir)}` : "";
+  return `<b>Nå:</b> ${w(s.wind)} (${s.gust != null ? w(s.gust) : "–"}) ${unit()} ${dir}
+    <small>· ${esc(s.name)}${s.km != null ? `, ${s.km} km` : ""} · ${ago}</small>`;
+}
+
+async function showLive(p) {
+  try {
+    const s = await liveReading(p);
+    if (current !== p.id) return;
+    if (!s) { $("live").innerHTML = `<small>Ingen målestasjon med ferske data i nærheten.</small>`; return; }
+    $("live").innerHTML = liveText(s);
+    // Green when it's blowing right now in a direction and strength that works here.
+    const r = p.wind;
+    const good = r && s.dir != null && r.dirs.includes(compass(s.dir)) && strong(s, r);
+    $("live").classList.toggle("good", !!good);
+  } catch {
+    if (current === p.id) $("live").innerHTML = `<small>Fikk ikke hentet målinger akkurat nå.</small>`;
+  }
+}
+
+// ---- 8. Settings ---------------------------------------------------------------
 // One full-screen sheet with three views: the spot list, editing a spot, and adding a spot.
 // Every change is saved straight away; "Ferdig" just closes the sheet.
 let view = { name: "list" };
@@ -511,7 +567,7 @@ $("cog").onclick = openSettings;
 
 function renderSettings() {
   if (view.name === "list") sheet.innerHTML = listView();
-  if (view.name === "edit") sheet.innerHTML = editView(settings.spots[view.i]);
+  if (view.name === "edit") { sheet.innerHTML = editView(settings.spots[view.i]); stationChoices(settings.spots[view.i]); }
   if (view.name === "add")  { sheet.innerHTML = addView(); initMap(); }
 }
 
@@ -579,6 +635,24 @@ function compassPicker(dirs) {
   return `<svg class="compass" viewBox="0 0 210 210" role="group" aria-label="Retninger">${svg}</svg>`;
 }
 
+// The stations near a spot, to pick from. "Nærmeste" means: always use whichever is nearest.
+async function stationChoices(p) {
+  const box = $("stations");
+  try {
+    const list = await nearby(p);
+    if ($("stations") !== box) return; // the view changed meanwhile
+    view.stations = list;
+    const chosen = stationOf(p)?.id ?? "";
+    const reading = s => `${w(s.wind)} (${s.gust != null ? w(s.gust) : "–"}) ${s.dir != null ? compass(s.dir) : ""}`;
+    box.innerHTML = `<button data-act="station" data-id="" aria-pressed="${!chosen}">Nærmeste automatisk</button>` +
+      list.map(s => `<button data-act="station" data-id="${s.id}" aria-pressed="${s.id === chosen}">
+        <span>${esc(s.name)}</span><small>${s.km} km · nå ${reading(s)}</small></button>`).join("") +
+      (list.length ? "" : `<p class="sub">Fant ingen stasjoner med ferske vindmålinger i nærheten.</p>`);
+  } catch {
+    box.innerHTML = `<p class="error">Fikk ikke hentet stasjoner akkurat nå.</p>`;
+  }
+}
+
 function editView(p) {
   let rules = "";
   if (p.wind) {
@@ -610,6 +684,8 @@ function editView(p) {
     <div class="lbl">Navn</div>
     <input class="txt" data-act="name" value="${esc(p.name)}" maxlength="40">
     ${rules}
+    <div class="lbl">Målestasjon for «Nå»-linjen</div>
+    <div class="stations" id="stations"><p class="sub">Henter stasjoner i nærheten…</p></div>
     <button class="wide danger" data-act="delete">Slett spot</button>`;
 }
 
@@ -726,6 +802,11 @@ sheet.addEventListener("click", e => {
     obj[last] = v;
     save();
   }
+  if (act === "station") {
+    const s = view.stations.find(x => x.id === el.dataset.id);
+    p.station = s ? { id: s.id, name: s.name, km: s.km } : null;
+    save();
+  }
   if (act === "delete" && confirm(`Slette ${p.name}?`)) {
     spots.splice(view.i, 1);
     save();
@@ -782,7 +863,7 @@ sheet.addEventListener("submit", e => {
   if (q) search(q);
 });
 
-// ---- 8. Start: build the buttons and show the last-used spot ----------------
+// ---- 9. Start: build the buttons and show the last-used spot ----------------
 let start = null;
 try { start = localStorage.getItem("place"); } catch {}
 buildNav();
