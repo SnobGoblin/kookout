@@ -2,7 +2,8 @@
 // The browser can't call Frost directly (no CORS, and the client ID must stay secret),
 // so the page asks this Worker, which asks Frost right away and passes the answer back.
 //
-//   GET /near?lat=59.43&lon=10.58  -> stations within 50 km that measure wind, with their latest reading
+//   GET /near?lat=59.43&lon=10.58  -> MET stations within 50 km that measure wind, with their latest reading,
+//                                     plus Holfuy stations within 50 km (number, name, distance)
 //   GET /obs?ids=SN17280,SN17000   -> the latest reading for the given stations
 
 const FROST = "https://frost.met.no";
@@ -45,7 +46,7 @@ export default {
           .filter(s => byId[s.id]) // only stations that actually have a recent wind reading
           .map(s => ({ ...byId[s.id], name: tidy(s.name), km: round(s.distance, 1),
                        lat: s.geometry?.coordinates?.[1], lon: s.geometry?.coordinates?.[0] }));
-        return reply({ stations });
+        return reply({ stations, holfuy: await holfuyNear(lat, lon) });
       }
 
       return reply({ error: "Not found. Use /near?lat=&lon= or /obs?ids=" }, 404);
@@ -54,6 +55,31 @@ export default {
     }
   },
 };
+
+// Holfuy's public station directory. It changes rarely, so Cloudflare keeps a copy for a day.
+async function holfuyNear(lat, lon) {
+  try {
+    const res = await fetch("https://api.holfuy.com/stations/stations.json", { cf: { cacheTtl: 86400 } });
+    if (!res.ok) return [];
+    const list = (await res.json()).holfuyStationsList ?? [];
+    return list
+      .filter(s => s.location?.latitude != null && s.location?.longitude != null)
+      .map(s => ({ holfuy: s.id, name: (s.name ?? "").trim(), type: s.type,
+                   km: round(distanceKm(lat, lon, s.location.latitude, s.location.longitude), 1) }))
+      .filter(s => s.km <= MAX_KM)
+      .sort((a, b) => a.km - b.km)
+      .slice(0, 10);
+  } catch {
+    return []; // Holfuy being unavailable shouldn't break the MET stations
+  }
+}
+
+// Distance in km between two points (accurate enough for "how far away is this station").
+function distanceKm(lat1, lon1, lat2, lon2) {
+  const r = Math.PI / 180;
+  const x = (lon2 - lon1) * r * Math.cos((lat1 + lat2) / 2 * r), y = (lat2 - lat1) * r;
+  return 6371 * Math.hypot(x, y);
+}
 
 // The latest wind reading (within the last 3 hours) for each station.
 async function latest(frost, ids) {

@@ -520,13 +520,14 @@ const relay = path => fetch(RELAY + path).then(res => res.ok ? res.json() : Prom
 // Which station a spot uses: one chosen in settings, the default for that spot, or null = nearest.
 const stationOf = p => p.station !== undefined ? p.station : DEFAULT_SPOTS.find(d => d.id === p.id)?.station ?? null;
 
-const nearCache = {}; // stations near each spot, kept while the page is open
+const nearCache = {}; // stations near each spot, kept while the page is open: { stations: [MET…], holfuy: [Holfuy…] }
 const nearby = p => nearCache[p.id] ??= relay(`/near?lat=${p.lat}&lon=${p.lon}`)
-  .then(d => d.stations).catch(e => { delete nearCache[p.id]; throw e; });
+  .then(d => ({ stations: d.stations ?? [], holfuy: d.holfuy ?? [] }))
+  .catch(e => { delete nearCache[p.id]; throw e; });
 
 async function liveReading(p) {
   const chosen = stationOf(p);
-  if (!chosen) return (await nearby(p))[0] ?? null; // nearest station that measures wind
+  if (!chosen) return (await nearby(p)).stations[0] ?? null; // nearest MET station that measures wind
   const [r] = (await relay(`/obs?ids=${chosen.id}`)).stations;
   return r ? { ...r, name: chosen.name, km: chosen.km } : null;
 }
@@ -544,7 +545,13 @@ const holfuyWidget = id => `<iframe class="holfuy" title="Holfuy ${id}" loading=
   src="https://widget.holfuy.com/?station=${id}&su=${settings.units === "kn" ? "knots" : "m/s"}&t=C&lang=en&mode=detailed"></iframe>`;
 
 async function showLive(p) {
-  const chosen = stationOf(p);
+  let chosen = stationOf(p);
+  if (!chosen) {
+    // "Nærmeste automatisk": a MET station if there is one within 50 km, otherwise the nearest Holfuy station.
+    const near = await nearby(p).catch(() => null);
+    if (current !== p.id) return;
+    if (near && !near.stations.length && near.holfuy.length) chosen = near.holfuy[0];
+  }
   if (chosen?.holfuy) {
     // Holfuy's widget is big and busy, so it stays folded away until someone taps "Se vind nå".
     $("live").classList.remove("good");
@@ -555,7 +562,7 @@ async function showLive(p) {
   try {
     const s = await liveReading(p);
     if (current !== p.id) return;
-    if (!s) { $("live").innerHTML = `<small>Ingen MET-målestasjon innen 50 km. Har spotten en Holfuy-stasjon? Legg den inn under ⚙︎.</small>`; return; }
+    if (!s) { $("live").innerHTML = `<small>Ingen målestasjon funnet innen 50 km.</small>`; return; }
     $("live").innerHTML = liveText(s);
     // Green when it's blowing right now in a direction and strength that works here.
     const r = p.wind;
@@ -653,7 +660,7 @@ function compassPicker(dirs) {
 // Holfuy stations (common at kite/windsurf spots) are picked by their number from holfuy.com/en/weather/<number>.
 function holfuyChoice(p) {
   const h = stationOf(p)?.holfuy;
-  return `<div class="lbl">… eller en Holfuy-stasjon (nummeret fra holfuy.com/en/weather/<b>1815</b>)</div>
+  return `<div class="lbl">… eller en annen Holfuy-stasjon (nummeret fra holfuy.com/en/weather/<b>1815</b>)</div>
     <form class="search" data-act="holfuy">
       <input class="txt" name="nr" inputmode="numeric" pattern="[0-9]*" placeholder="Stasjonsnummer" value="${h ?? ""}">
       <button>${h ? "Endre" : "Bruk"}</button>
@@ -665,15 +672,19 @@ function holfuyChoice(p) {
 async function stationChoices(p) {
   const box = $("stations");
   try {
-    const list = await nearby(p);
+    const { stations: list, holfuy } = await nearby(p);
     if ($("stations") !== box) return; // the view changed meanwhile
     view.stations = list;
+    view.holfuy = holfuy;
     const chosen = stationOf(p)?.id ?? "";
     const reading = s => `${w(s.wind)} (${s.gust != null ? w(s.gust) : "–"}) ${s.dir != null ? compass(s.dir) : ""}`;
     box.innerHTML = `<button data-act="station" data-id="" aria-pressed="${!stationOf(p)}">Nærmeste automatisk</button>` +
       list.map(s => `<button data-act="station" data-id="${s.id}" aria-pressed="${s.id === chosen}">
         <span>${esc(s.name)}</span><small>${s.km} km · nå ${reading(s)}</small></button>`).join("") +
-      (list.length ? "" : `<p class="sub">Ingen MET-stasjoner med ferske vindmålinger innen 50 km. MET dekker mest Norge; utenfor Norge kan du bruke en Holfuy-stasjon.</p>`) +
+      (list.length ? "" : `<p class="sub">Ingen MET-stasjoner med ferske vindmålinger innen 50 km. MET dekker mest Norge.</p>`) +
+      (holfuy.length ? `<div class="lbl">Holfuy-stasjoner (viser Holfuys egen widget)</div>` +
+        holfuy.map(h => `<button data-act="station" data-holfuy="${h.holfuy}" aria-pressed="${h.holfuy === stationOf(p)?.holfuy}">
+          <span>${esc(h.name)}</span><small>${h.km} km · ${esc(h.type ?? "")}</small></button>`).join("") : "") +
       holfuyChoice(p);
   } catch {
     box.innerHTML = `<p class="error">Fikk ikke hentet MET-stasjoner akkurat nå.</p>` + holfuyChoice(p);
@@ -830,8 +841,13 @@ sheet.addEventListener("click", e => {
     save();
   }
   if (act === "station") {
-    const s = view.stations.find(x => x.id === el.dataset.id);
-    p.station = s ? { id: s.id, name: s.name, km: s.km } : null;
+    if (el.dataset.holfuy) {
+      const h = view.holfuy.find(x => x.holfuy === Number(el.dataset.holfuy));
+      p.station = { holfuy: h.holfuy, name: h.name, km: h.km };
+    } else {
+      const s = view.stations.find(x => x.id === el.dataset.id);
+      p.station = s ? { id: s.id, name: s.name, km: s.km } : null;
+    }
     save();
   }
   if (act === "delete" && confirm(`Slette ${p.name}?`)) {
