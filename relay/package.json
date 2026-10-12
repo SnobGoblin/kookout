@@ -1,0 +1,12 @@
+{
+  "name": "wingfoil-relay",
+  "private": true,
+  "description": "Live relay from the Wingfoil alert page to MET's Frost API (wind observations).",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "4.142.0"
+  }
+}

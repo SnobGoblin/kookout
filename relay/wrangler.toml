@@ -1,0 +1,5 @@
+# Cloudflare Worker that relays live wind observations from MET's Frost API to the page.
+# The Frost client ID is a secret (FROST_CLIENT_ID), set with: npx wrangler secret put FROST_CLIENT_ID
+name = "wingfoil-relay"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
