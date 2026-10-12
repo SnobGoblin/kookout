@@ -8,6 +8,8 @@
 //                                     in the US also NOAA's National Weather Service),
 //                                     plus Holfuy stations within 50 km (number, name, distance)
 //   GET /obs?ids=SN17280,KV:8925059,NWS:KDLS,NDBC:FTPC1  -> the latest reading for the given stations
+//   GET /waves?lat=58.80&lon=5.55   -> wave forecast (total height in m, period, direction) about a week ahead:
+//                                     MET's Oceanforecast in Scandinavian waters, NOAA WaveWatch III elsewhere
 //
 // All wind speeds are returned in m/s.
 
@@ -72,7 +74,13 @@ export default {
         return reply({ stations: all, holfuy });
       }
 
-      return reply({ error: "Not found. Use /near?lat=&lon= or /obs?ids=" }, 404);
+      if (url.pathname === "/waves") {
+        const lat = parseFloat(url.searchParams.get("lat")), lon = parseFloat(url.searchParams.get("lon"));
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return reply({ error: "lat and lon required" }, 400);
+        return reply(await metWaves(lat, lon) ?? await noaaWaves(lat, lon) ?? { source: null, points: [] });
+      }
+
+      return reply({ error: "Not found. Use /near, /obs or /waves" }, 404);
     } catch (err) {
       return reply({ error: String(err) }, 502);
     }
@@ -160,6 +168,56 @@ async function kvNear(lat, lon) {
   return (await kvReadings())
     .map(r => ({ ...r, km: round(distanceKm(lat, lon, r.lat, r.lon), 1) }))
     .filter(r => r.km <= MAX_KM);
+}
+
+// ---- Wave forecasts ------------------------------------------------------------------------
+// Wave forecasts only update every few hours, so Cloudflare may keep a copy for an hour.
+
+// MET's Oceanforecast: detailed, but only covers Scandinavian waters (it answers 422 elsewhere).
+async function metWaves(lat, lon) {
+  const res = await fetch(`https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`,
+    { headers: NWS_HEADERS, cf: { cacheTtl: 3600 } });
+  if (!res.ok) return null;
+  const points = ((await res.json()).properties?.timeseries ?? [])
+    .map(t => ({ time: t.time, height: t.data.instant.details.sea_surface_wave_height,
+                 dir: t.data.instant.details.sea_surface_wave_from_direction }))
+    .filter(p => p.height != null);
+  return points.length ? { source: "MET", points } : null;
+}
+
+// NOAA WaveWatch III: global, 0.5° grid (~50 km). Cells along the coast often count as land,
+// so we use the nearest cell at sea within about 1°.
+const WW3 = "https://coastwatch.pfeg.noaa.gov/erddap/griddap/NWW3_Global_Best.json";
+async function noaaWaves(lat, lon) {
+  try { return await noaaWavesRaw(lat, lon); } catch { return null; }
+}
+async function noaaWavesRaw(lat, lon) {
+  if (Math.abs(lat) > 77) return null;
+  {
+    const lon360 = ((lon % 360) + 360) % 360;
+    const snap = v => Math.round(v * 2) / 2;
+    const [la, lo] = [snap(lat), snap(lon360)];
+    // Start from the previous whole hour: right after the hour turns, NOAA may not have the new hour yet.
+    const now = new Date(Date.now() - 3600e3); now.setUTCMinutes(0, 0, 0);
+    const t = now.toISOString().replace(".000", "");
+    const box = `Thgt[(${t})][(0.0)][(${la - 1}):(${la + 1})][(${Math.max(0, lo - 1)}):(${Math.min(359.5, lo + 1)})]`;
+    const near = await fetch(`${WW3}?${encodeURI(box)}`, { headers: NWS_HEADERS, cf: { cacheTtl: 21600 } });
+    if (!near.ok) return null;
+    const cells = (await near.json()).table.rows.filter(r => r[4] != null);
+    if (!cells.length) return null;
+    const cosLat = Math.cos(lat * Math.PI / 180);
+    const [, , cLat, cLon] = cells.reduce((best, r) =>
+      Math.hypot(r[2] - lat, (r[3] - lon360) * cosLat) < Math.hypot(best[2] - lat, (best[3] - lon360) * cosLat) ? r : best);
+    const at = `[(${t}):1:(last)][(0.0)][(${cLat})][(${cLon})]`;
+    const res = await fetch(`${WW3}?${encodeURI(`Thgt${at},Tper${at},Tdir${at}`)}`, { headers: NWS_HEADERS, cf: { cacheTtl: 3600 } });
+    if (!res.ok) return null;
+    const { columnNames: c, rows } = (await res.json()).table;
+    const [iT, iH, iP, iD] = ["time", "Thgt", "Tper", "Tdir"].map(n => c.indexOf(n));
+    const points = rows.filter(r => r[iH] != null)
+      .map(r => ({ time: r[iT], height: round(r[iH], 2), period: round(r[iP], 1), dir: round(r[iD], 0) }));
+    const cellLon = cLon > 180 ? cLon - 360 : cLon;
+    return points.length ? { source: "NOAA", km: round(distanceKm(lat, lon, cLat, cellLon), 0), points } : null;
+  }
 }
 
 // ---- NOAA's National Data Buoy Center: buoys and coastal/harbour stations ------------------

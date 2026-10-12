@@ -14,6 +14,9 @@ Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
   - from the directions that work at that spot
   - for 2+ hours in a row, between sunrise and sunset
   - Drøbaksundet: on mostly sunny days 4 (8), or a steady 5+, is enough
+- **Good surf** highlighted (🏄): total wave height at least X m, wind at most Y m/s from chosen
+  (e.g. offshore) directions, for 2+ hours in daylight. Waves come from MET's Oceanforecast in
+  Scandinavian waters and NOAA's global WaveWatch III elsewhere (via the relay's `/waves`).
 - **Powder** in Hemsedal highlighted (blue): >10 mm in a day, below +2°, wind under 8 m/s
 
 ## How it works

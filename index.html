@@ -169,6 +169,8 @@
 // wind:   good when (mean >= min AND gust >= gust) OR mean >= steady, from one of `dirs`,
 //         for `hours` in a row (between sunrise and sunset if `daylight`).
 //         sunny: an optional lower {min, gust, steady} for days that are mostly sunny (sea breeze).
+// surf:   good when waves are at least minWave m and the wind is at most maxWind, from one of `dirs`,
+//         for `hours` in a row (between sunrise and sunset if `daylight`). Waves are total wave height.
 // powder: good when a day has > mm precipitation, stays below maxTemp °C, with wind under maxWind.
 // All wind values are stored in m/s; knots are only used for display and editing.
 const COMPASS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
@@ -176,6 +178,11 @@ const SOUTH   = ["SE", "SSE", "S", "SSW", "SW"];
 const WEST    = ["SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
 
 // The standard wing rule every new spot starts with: 5 (9) or a steady 6+, 2 hours, daylight, any direction.
+// The standard surf rule: waves of at least 0.8 m, wind at most 6 m/s, 2 hours, daylight, any wind direction
+// (pick the offshore directions on the compass).
+const standardSurf = (extra = {}) =>
+  ({ minWave: 0.8, maxWind: 6, hours: 2, daylight: true, dirs: [...COMPASS], ...extra });
+
 const standardWind = (extra = {}) =>
   ({ min: 5, gust: 9, steady: 6, hours: 2, daylight: true, dirs: [...COMPASS], sunny: null, ...extra });
 
@@ -240,6 +247,14 @@ function getForecast(p) {
     cache[key].catch(() => delete cache[key]); // allow retry after an error
   }
   return cache[key];
+}
+
+// Wave forecasts (surf spots only) come through our relay: MET in Scandinavia, NOAA elsewhere.
+const waveCache = {};
+function getWaves(p) {
+  if (!p.surf) return Promise.resolve(null);
+  const key = `${p.lat},${p.lon}`;
+  return waveCache[key] ??= relay(`/waves?lat=${p.lat}&lon=${p.lon}`).catch(e => { delete waveCache[key]; return null; });
 }
 
 // ---- 4. Turn MET's data into simple rows, then judge them ------------------
@@ -327,15 +342,36 @@ function judgeWind(rows, rule) {
   const sunny = rule.sunny ? sunnyDays(rows) : {};
   const ok = rows.map(r => (!rule.daylight || r.daylight) && rule.dirs.includes(r.dir) &&
     (strong(r, rule) || (sunny[r.day] && strong(r, rule.sunny))));
-  // Hourly rows count when there are `hours` ok rows in a row.
-  // A 6-hour row already covers several hours, so it counts on its own.
+  markRuns(rows, ok, rule.hours);
+}
+
+function judgeSurf(rows, rule) {
+  const ok = rows.map(r => (!rule.daylight || r.daylight) && rule.dirs.includes(r.dir) &&
+    r.wave != null && r.wave >= rule.minWave && w(r.wind) <= w(rule.maxWind));
+  markRuns(rows, ok, rule.hours);
+}
+
+// Hourly rows count as good when there are `hours` ok rows in a row.
+// A 6-hour row already covers several hours, so it counts on its own.
+function markRuns(rows, ok, hours) {
   for (let i = 0; i < rows.length; ) {
     if (!ok[i]) { i++; continue; }
-    if (rows[i].hours === 6) { if (rule.hours <= 6) rows[i].good = true; i++; continue; }
+    if (rows[i].hours === 6) { if (hours <= 6) rows[i].good = true; i++; continue; }
     let j = i;
     while (j < rows.length && ok[j] && rows[j].hours === 1) j++;
-    if (j - i >= rule.hours) for (let k = i; k < j; k++) rows[k].good = true;
+    if (j - i >= hours) for (let k = i; k < j; k++) rows[k].good = true;
     i = j;
+  }
+}
+
+// Put the wave forecast's height onto each row (the forecast point at, or nearest to, the row's time).
+function addWaves(rows, waves) {
+  const pts = (waves?.points ?? []).map(pt => ({ t: Date.parse(pt.time), h: pt.height }));
+  for (const r of rows) {
+    const t = r.time.getTime() + (r.hours === 6 ? 3 * 3600e3 : 0); // middle of a 6-hour block
+    let best = null;
+    for (const pt of pts) if (!best || Math.abs(pt.t - t) < Math.abs(best.t - t)) best = pt;
+    if (best && Math.abs(best.t - t) <= 3 * 3600e3) r.wave = best.h;
   }
 }
 
@@ -356,9 +392,10 @@ function judgePowder(rows, rule) {
   }
 }
 
-function analyse(p, data) {
+function analyse(p, data, waves) {
   const rows = toRows(data);
   markDaylight(rows, p);
+  if (p.surf) { addWaves(rows, waves); judgeSurf(rows, p.surf); }
   if (p.wind) judgeWind(rows, p.wind);
   if (p.powder) judgePowder(rows, p.powder);
   return rows;
@@ -379,6 +416,8 @@ const arrow = deg => `<svg class="arrow" viewBox="0 0 20 20" style="transform:ro
 
 // The wing foiler icon takes the colour of the text around it.
 const WING = `<svg class="ico" viewBox="71 -4 466 696" aria-label="Bra vind"><use href="#wing"/></svg>`;
+const SURF = "🏄";
+const sportIcon = p => p.surf ? SURF : WING;
 
 const endOf = r => new Date(r.time.getTime() + r.hours * 3600e3);
 
@@ -407,6 +446,12 @@ function ruleText(p) {
       `minst ${r.hours} ${r.hours === 1 ? "time" : "timer"} på rad${r.daylight ? " i dagslys" : ""}` +
       (r.sunny ? `. På dager med mest sol holder ${limits(r.sunny)}` : "") + ".";
   }
+  if (p.surf) {
+    const r = p.surf;
+    if (!r.dirs.length) return `${SURF} Velg vindretninger under ⚙︎ for å få varsel om bra surf.`;
+    return `${SURF} Bra surf: bølger minst ${r.minWave.toFixed(1)} m, vind høyst ${w(r.maxWind)} ${unit()} fra ${dirSummary(r.dirs)}, ` +
+      `minst ${r.hours} ${r.hours === 1 ? "time" : "timer"} på rad${r.daylight ? " i dagslys" : ""}.`;
+  }
   if (p.powder) {
     const s = p.powder;
     return `❄️ Pudder: over ${s.mm} mm nedbør på en dag, kaldere enn +${s.maxTemp}° og vind under ${w(s.maxWind)} ${unit()}.`;
@@ -414,10 +459,10 @@ function ruleText(p) {
   return "";
 }
 
-function dayTag(dayRows) {
+function dayTag(dayRows, p) {
   const good = dayRows.filter(r => r.good);
   if (good.length) {
-    return `<span class="tag good">${WING} Bra vind ${hhFmt.format(good[0].time)}–${hhFmt.format(endOf(good.at(-1)))}</span>`;
+    return `<span class="tag good">${sportIcon(p)} Bra ${p.surf ? "surf" : "vind"} ${hhFmt.format(good[0].time)}–${hhFmt.format(endOf(good.at(-1)))}</span>`;
   }
   if (dayRows[0].powderDay) {
     return `<span class="tag snow">❄️ Pudder (${dayRows[0].powderDay.toFixed(0)} mm)</span>`;
@@ -425,8 +470,8 @@ function dayTag(dayRows) {
   return "";
 }
 
-function render(p, data) {
-  const rows = analyse(p, data);
+function render(p, data, waves) {
+  const rows = analyse(p, data, waves);
   let html = "";
   let note = false;
 
@@ -436,7 +481,7 @@ function render(p, data) {
     const name = dayFmt.format(dayRows[0].time);
     const s = dayRows[0].sun;
     const sunText = s ? `<span class="suntimes">☀︎ ${hourFmt.format(s.rise)}–${hourFmt.format(s.set)}</span>` : "";
-    html += `<tr class="day"><td colspan="6">${name[0].toUpperCase() + name.slice(1)}${dayTag(dayRows)}${sunText}</td></tr>`;
+    html += `<tr class="day"><td colspan="6">${name[0].toUpperCase() + name.slice(1)}${dayTag(dayRows, p)}${sunText}</td></tr>`;
     for (const r of dayRows) {
       if (r.hours === 6 && !note) {
         html += `<tr class="note"><td colspan="6">Videre: 6-timers varsel</td></tr>`;
@@ -449,7 +494,7 @@ function render(p, data) {
         <td>${label}</td>
         <td><img src="${icon(r.symbol)}" alt="${r.symbol}"></td>
         <td class="${temp <= 0 ? "cold" : ""}">${temp}°</td>
-        <td class="rain">${r.rain > 0 ? r.rain.toFixed(1) : ""}</td>
+        <td class="rain">${p.surf ? (r.wave != null ? r.wave.toFixed(1) : "–") : r.rain > 0 ? r.rain.toFixed(1) : ""}</td>
         <td>${w(r.wind)} <span class="gust">(${r.gust === null ? "–" : w(r.gust)})</span></td>
         <td class="dir">${arrow(r.deg)}<span>${r.dir}</span></td>
       </tr>`;
@@ -457,33 +502,35 @@ function render(p, data) {
   }
 
   $("list").innerHTML = `<table>
-    <thead><tr><th>Tid</th><th></th><th>Temp</th><th>mm</th><th>Vind ${unit()}</th><th>Fra</th></tr></thead>
+    <thead><tr><th>Tid</th><th></th><th>Temp</th><th>${p.surf ? "Bølger m" : "mm"}</th><th>Vind ${unit()}</th><th>Fra</th></tr></thead>
     <tbody>${html}</tbody></table>`;
 
   const updated = hourFmt.format(new Date(data.properties.meta.updated_at));
   $("sub").innerHTML = `${p.alt > 50 ? p.alt + " moh · " : ""}Oppdatert ${updated}` +
     (p.yr ? ` · <a href="https://www.yr.no/nb/v%C3%A6rvarsel/timetabell/${p.yr}/" target="_blank">Åpne på yr</a>` : "");
-  $("rule").innerHTML = ruleText(p);
+  $("rule").innerHTML = ruleText(p) +
+    (p.surf && waves?.source === "NOAA" ? ` <small>Bølger fra NOAA (globalt, grovt rutenett: ${waves.km} km ut).</small>` : "") +
+    (p.surf && !waves?.points?.length ? ` <small>Fant ikke bølgevarsel for denne spotten.</small>` : "");
 }
 
 // ---- 6. Spot buttons, with a badge when something good is coming ------------
 const visibleSpots = () => settings.spots.filter(s => !s.hidden);
 
-function badge(p, data) {
+function badge(p, data, waves) {
   const btn = $("places").querySelector(`[data-id="${p.id}"]`);
   if (!btn) return;
-  const first = analyse(p, data).find(r => r.good || r.powderDay);
+  const first = analyse(p, data, waves).find(r => r.good || r.powderDay);
   btn.classList.toggle("good", !!first?.good);
   btn.classList.toggle("snow", !!first && !first.good);
   const when = first && (first.day === dayKey(new Date()) ? "i dag" : wdFmt.format(first.time).replace(".", ""));
-  btn.querySelector(".badge").innerHTML = first ? `${first.good ? WING : "❄️"} ${when}` : "";
+  btn.querySelector(".badge").innerHTML = first ? `${first.good ? sportIcon(p) : "❄️"} ${when}` : "";
 }
 
 function buildNav() {
   const spots = visibleSpots();
   $("places").innerHTML = spots.map(p =>
     `<button aria-pressed="false" data-id="${p.id}">${esc(p.name)}<span class="badge"></span></button>`).join("");
-  spots.forEach(p => getForecast(p).then(data => badge(p, data)).catch(() => {}));
+  spots.forEach(p => Promise.all([getForecast(p), getWaves(p)]).then(([data, waves]) => badge(p, data, waves)).catch(() => {}));
 }
 $("places").onclick = e => { const b = e.target.closest("button"); if (b) show(b.dataset.id); };
 
@@ -507,8 +554,8 @@ async function show(id) {
   $("list").innerHTML = `<p class="sub">Laster…</p>`;
   showLive(p);
   try {
-    const data = await getForecast(p);
-    if (current === p.id) render(p, data); // ignore if the user already tapped another place
+    const [data, waves] = await Promise.all([getForecast(p), getWaves(p)]);
+    if (current === p.id) render(p, data, waves); // ignore if the user already tapped another place
   } catch (err) {
     $("list").innerHTML = `<p class="error">Kunne ikke hente varselet: ${err.message}</p>`;
   }
@@ -601,6 +648,7 @@ function renderSettings() {
 
 function summary(p) {
   if (p.powder) return `Pudder · over ${p.powder.mm} mm, under +${p.powder.maxTemp}°`;
+  if (p.surf) return `Surf · ${p.surf.minWave.toFixed(1)} m+ · vind ≤ ${w(p.surf.maxWind)} ${unit()} fra ${dirSummary(p.surf.dirs)}`;
   return `${dirSummary(p.wind.dirs)} · ${limits(p.wind)} ${unit()}`;
 }
 
@@ -628,10 +676,11 @@ function listView() {
     <button class="wide danger" data-act="reset">Tilbakestill til standardspotter</button>`;
 }
 
-// A row with − / + buttons. kind "wind" shows and steps in the chosen unit; "num" is a plain number.
+// A row with − / + buttons. kind "wind" shows and steps in the chosen unit; "wave" steps by 0.1 m;
+// "num" is a plain number.
 function stepper(label, p, path, kind = "num") {
   const v = path.split(".").reduce((o, k) => o[k], p);
-  const shown = kind === "wind" ? w(v) : v;
+  const shown = kind === "wind" ? w(v) : kind === "wave" ? v.toFixed(1) : v;
   return `<div class="stepper"><span>${label}</span><span class="num">
     <button data-act="step" data-path="${path}" data-kind="${kind}" data-d="-1" aria-label="Mindre">−</button>
     <b>${shown}</b>
@@ -704,6 +753,17 @@ function editView(p) {
         ${stepper("… med kast minst", p, "wind.sunny.gust", "wind")}
         ${stepper("… eller jevn vind minst", p, "wind.sunny.steady", "wind")}` : ""}`;
   }
+  if (p.surf) {
+    rules = `
+      <div class="lbl">Vindretninger som funker (f.eks. fralandsvind) · trykk for å velge</div>
+      ${compassPicker(p.surf.dirs)}
+      <div class="sub center">${dirSummary(p.surf.dirs)}</div>
+      <div class="lbl">Bra surf</div>
+      ${stepper("Bølgehøyde minst (m)", p, "surf.minWave", "wave")}
+      ${stepper(`Vind høyst (${unit()})`, p, "surf.maxWind", "wind")}
+      ${stepper("Timer på rad", p, "surf.hours")}
+      ${toggle("Bare i dagslys", "daylight", p.surf.daylight)}`;
+  }
   if (p.powder) {
     rules = `
       <div class="lbl">Pudder</div>
@@ -737,7 +797,8 @@ function addView() {
       <input class="txt" id="newname" maxlength="40" placeholder="F.eks. Min hjemmespot">
       <div class="sub" id="pickpos"></div>
       <div class="error" id="pickerr"></div>
-      <button class="wide primary" data-act="create">Legg til med standard wing-regler</button>
+      <button class="wide primary" data-act="create" data-sport="wind">Legg til som wing-spot</button>
+      <button class="wide primary" data-act="create" data-sport="surf">Legg til som surf-spot</button>
     </div>`;
 }
 
@@ -820,15 +881,17 @@ sheet.addEventListener("click", e => {
     save();
   }
   if (act === "dir") {
-    const dirs = p.wind.dirs, d = el.dataset.d;
-    p.wind.dirs = dirs.includes(d) ? dirs.filter(x => x !== d) : COMPASS.filter(x => x === d || dirs.includes(x));
+    const rule = p.wind ?? p.surf, dirs = rule.dirs, d = el.dataset.d;
+    rule.dirs = dirs.includes(d) ? dirs.filter(x => x !== d) : COMPASS.filter(x => x === d || dirs.includes(x));
     save();
   }
   if (act === "step") {
     const keys = el.dataset.path.split("."), last = keys.pop();
     const obj = keys.reduce((o, k) => o[k], p);
     const d = Number(el.dataset.d);
-    let v = el.dataset.kind === "wind" ? fromUnit(w(obj[last]) + d) : obj[last] + d;
+    let v = el.dataset.kind === "wind" ? fromUnit(w(obj[last]) + d)
+          : el.dataset.kind === "wave" ? Math.round((obj[last] + d / 10) * 10) / 10
+          : obj[last] + d;
     if (last === "hours") v = Math.min(6, Math.max(1, v));
     else if (last !== "maxTemp") v = Math.max(0, v);
     obj[last] = v;
@@ -867,7 +930,8 @@ sheet.addEventListener("click", e => {
     const name = $("newname").value.trim();
     if (!pick) { $("pickerr").textContent = "Velg et sted først."; return; }
     if (!name) { $("pickerr").textContent = "Gi spotten et navn."; return; }
-    spots.push({ id: "s" + Date.now(), name, lat: pick.lat, lon: pick.lon, wind: standardWind() });
+    const rule = el.dataset.sport === "surf" ? { surf: standardSurf() } : { wind: standardWind() };
+    spots.push({ id: "s" + Date.now(), name, lat: pick.lat, lon: pick.lon, ...rule });
     save();
     view = { name: "edit", i: spots.length - 1 }; // go straight on to picking directions
   }
@@ -879,7 +943,7 @@ sheet.addEventListener("change", e => {
   const el = e.target, act = el.dataset.act;
   if (act === "visible") { settings.spots[Number(el.dataset.i)].hidden = !el.checked; save(); }
   const p = settings.spots[view.i];
-  if (act === "daylight") { p.wind.daylight = el.checked; save(); }
+  if (act === "daylight") { (p.wind ?? p.surf).daylight = el.checked; save(); }
   if (act === "sunny") {
     // Start the sunny-day limits one step below the normal ones (like Drøbak's 4 (8) / 5+).
     const r = p.wind;
