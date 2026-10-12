@@ -2,11 +2,12 @@
 // The browser can't call Frost directly (no CORS, and the client ID must stay secret),
 // so the page asks this Worker, which asks Frost right away and passes the answer back.
 //
-//   GET /near?lat=59.43&lon=10.58  -> the nearest stations that measure wind, with their latest reading
+//   GET /near?lat=59.43&lon=10.58  -> stations within 50 km that measure wind, with their latest reading
 //   GET /obs?ids=SN17280,SN17000   -> the latest reading for the given stations
 
 const FROST = "https://frost.met.no";
 const ALLOWED_ORIGINS = ["https://sternell.com", "http://localhost:8000", "http://192.168.1.21:8000"];
+const MAX_KM = 50; // further away than this, a station says little about the wind at the spot
 const WIND = ["wind_speed", "wind_from_direction", "max(wind_speed_of_gust PT10M)", "max(wind_speed_of_gust PT1H)"];
 
 export default {
@@ -37,7 +38,8 @@ export default {
           nearestmaxcount: "50", fields: "id,name,geometry,distance" });
         const res = await frost(`/sources/v0.jsonld?${query}`);
         if (!res.ok) return reply({ error: `Frost sources: ${res.status}` }, 502);
-        const sources = (await res.json()).data ?? [];        const readings = await latest(frost, sources.map(s => s.id));
+        // Frost is mostly Norwegian: outside Norway the "nearest" stations can be thousands of km away.
+        const sources = ((await res.json()).data ?? []).filter(s => s.distance <= MAX_KM);        const readings = await latest(frost, sources.map(s => s.id));
         const byId = Object.fromEntries(readings.map(r => [r.id, r]));
         const stations = sources
           .filter(s => byId[s.id]) // only stations that actually have a recent wind reading

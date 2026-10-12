@@ -555,7 +555,7 @@ async function showLive(p) {
   try {
     const s = await liveReading(p);
     if (current !== p.id) return;
-    if (!s) { $("live").innerHTML = `<small>Ingen målestasjon med ferske data i nærheten.</small>`; return; }
+    if (!s) { $("live").innerHTML = `<small>Ingen MET-målestasjon innen 50 km. Har spotten en Holfuy-stasjon? Legg den inn under ⚙︎.</small>`; return; }
     $("live").innerHTML = liveText(s);
     // Green when it's blowing right now in a direction and strength that works here.
     const r = p.wind;
@@ -673,7 +673,7 @@ async function stationChoices(p) {
     box.innerHTML = `<button data-act="station" data-id="" aria-pressed="${!stationOf(p)}">Nærmeste automatisk</button>` +
       list.map(s => `<button data-act="station" data-id="${s.id}" aria-pressed="${s.id === chosen}">
         <span>${esc(s.name)}</span><small>${s.km} km · nå ${reading(s)}</small></button>`).join("") +
-      (list.length ? "" : `<p class="sub">Fant ingen stasjoner med ferske vindmålinger i nærheten.</p>`) +
+      (list.length ? "" : `<p class="sub">Ingen MET-stasjoner med ferske vindmålinger innen 50 km. MET dekker mest Norge; utenfor Norge kan du bruke en Holfuy-stasjon.</p>`) +
       holfuyChoice(p);
   } catch {
     box.innerHTML = `<p class="error">Fikk ikke hentet MET-stasjoner akkurat nå.</p>` + holfuyChoice(p);
