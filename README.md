@@ -21,7 +21,17 @@ Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
 Everything lives in `index.html`: plain HTML, CSS and JavaScript, no build step.
 The page fetches forecasts straight from MET's
 [Locationforecast API](https://api.met.no/weatherapi/locationforecast/2.0/documentation)
-in the browser. Spots and their rules are in the `PLACES` list at the top of the script.
+in the browser.
+
+## Settings (⚙︎)
+
+- Add spots by searching or tapping the map ([OpenStreetMap](https://www.openstreetmap.org/copyright)
+  / Nominatim), and give them your own name. New spots start with the standard wing rule.
+- Edit each spot's name, working directions (tap the compass), wind limits, hours in a row,
+  daylight only, and an optional lower limit for sunny days.
+- Reorder, hide or delete spots; switch between m/s and knots.
+- Settings are saved in the browser (`localStorage`), so each phone keeps its own.
+  The starting spots are `DEFAULT_SPOTS` at the top of the script.
 
 ## Run locally
 

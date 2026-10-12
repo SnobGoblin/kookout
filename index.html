@@ -12,29 +12,35 @@
       --bg: #ffffff; --text: #1b2330; --muted: #6b7686; --border: #e6e9ee;
       --accent: #1f6fd1; --chip: #f1f3f6; --rain: #2f86e0; --dayrow: #f6f7f9;
       --good: #12a150; --good-bg: #e3f6ea; --snow: #3b82f6; --snow-bg: #e3edfd;
+      --off: #c9d0d9; --danger: #d33;
     }
     @media (prefers-color-scheme: dark) {
       :root { --bg: #11161d; --text: #e6ebf2; --muted: #8b97a8; --border: #232c38;
               --accent: #6aa8ff; --chip: #1c2430; --rain: #5aa5f5; --dayrow: #161d26;
-              --good: #3ccf7a; --good-bg: #13301f; --snow: #7fb0ff; --snow-bg: #172640; }
+              --good: #3ccf7a; --good-bg: #13301f; --snow: #7fb0ff; --snow-bg: #172640;
+              --off: #3a4554; --danger: #ff6b6b; }
     }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--bg); color: var(--text);
            font: 15px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
     main { max-width: 640px; margin: 0 auto; padding: 12px 16px 40px; }
+    button { font: inherit; color: inherit; }
 
-    /* Location picker: a scrollable row of chips */
-    nav { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 10px;
-          position: sticky; top: 0; background: var(--bg); z-index: 2; }
-    nav button { flex: 0 0 auto; font: inherit; font-size: .9rem; padding: 6px 12px; border-radius: 999px;
-                 border: 1px solid var(--border); background: var(--chip); color: var(--text); cursor: pointer; }
+    /* Top bar: a scrollable row of spot buttons, and the settings cog */
+    .top { display: flex; align-items: center; gap: 6px; position: sticky; top: 0;
+           background: var(--bg); z-index: 2; padding: 4px 0 10px; }
+    nav { display: flex; gap: 6px; overflow-x: auto; flex: 1; }
+    nav button { flex: 0 0 auto; font-size: .9rem; padding: 6px 12px; border-radius: 999px;
+                 border: 1px solid var(--border); background: var(--chip); cursor: pointer; }
     nav button.good { border-color: var(--good); box-shadow: inset 0 0 0 1px var(--good); }
     nav button.snow { border-color: var(--snow); box-shadow: inset 0 0 0 1px var(--snow); }
     nav button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
     nav .badge { font-size: .8rem; margin-left: 4px; }
-    .ico { height: 1.6em; width: auto; fill: currentColor; vertical-align: -0.45em; }
     nav button.good .badge { color: var(--good); }
     nav button[aria-pressed="true"] .badge { color: inherit; }
+    #cog { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+           background: var(--chip); cursor: pointer; font-size: 1.15rem; line-height: 1; }
+    .ico { height: 1.6em; width: auto; fill: currentColor; vertical-align: -0.45em; }
 
     h1 { font-size: 1.15rem; margin: 6px 0 2px; }
     .sub { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
@@ -65,9 +71,61 @@
     td.dir span { display: inline-block; min-width: 2.4em; margin-left: 6px; vertical-align: middle; }
     .arrow { display: inline-block; width: 20px; height: 20px; vertical-align: middle; }
     .note td { color: var(--muted); font-size: .8rem; text-align: center; padding: 10px 6px; border-top: 2px solid var(--border); }
-    .error { color: #d33; }
+    .error { color: var(--danger); }
     footer { color: var(--muted); font-size: .8rem; margin-top: 16px; }
     footer a { color: var(--accent); }
+
+    /* Settings: a full-screen sheet over the page */
+    #settings { position: fixed; inset: 0; z-index: 10; background: var(--bg); overflow-y: auto; }
+    #settings[hidden] { display: none; }
+    .sheet { max-width: 640px; margin: 0 auto; padding: 12px 16px 40px; }
+    .sh { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 8px;
+          position: sticky; top: 0; background: var(--bg); padding: 6px 0; z-index: 1; }
+    .sh h2 { font-size: 1.05rem; margin: 0; text-align: center; }
+    .sh > :last-child { justify-self: end; }
+    .link { background: none; border: 0; color: var(--accent); cursor: pointer; padding: 6px 0; }
+    .link.danger, .wide.danger { color: var(--danger); }
+    .lbl { color: var(--muted); font-size: .8rem; margin: 16px 0 6px; }
+    .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .seg button { border: 0; background: none; padding: 7px 16px; cursor: pointer; }
+    .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+    .spots { list-style: none; margin: 0; padding: 0; }
+    .spots li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); }
+    .move { display: flex; flex-direction: column; }
+    .move button { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 4px; font-size: .7rem; line-height: 1.4; }
+    .move button:disabled { opacity: .25; cursor: default; }
+    .spot { flex: 1; min-width: 0; text-align: left; background: none; border: 0; cursor: pointer; padding: 4px 0; }
+    .spot b { font-weight: 500; display: block; }
+    .spot small { color: var(--muted); font-size: .78rem; }
+    .wide { display: block; width: 100%; margin-top: 14px; padding: 10px; border-radius: 10px;
+            border: 1px solid var(--border); background: var(--chip); cursor: pointer; color: var(--accent); }
+    .wide.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .txt { width: 100%; font: inherit; font-size: 16px; padding: 9px 10px; border-radius: 8px;
+           border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+    .search { display: flex; gap: 6px; }
+    .search button { flex: none; padding: 0 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--chip); cursor: pointer; }
+    .results button { display: block; width: 100%; text-align: left; background: none; border: 0;
+                      border-top: 1px solid var(--border); padding: 8px 0; cursor: pointer; }
+    .results small { color: var(--muted); display: block; font-size: .78rem; }
+    #map { height: 260px; border-radius: 10px; border: 1px solid var(--border); margin-top: 4px; }
+    .compass { display: block; width: 210px; height: 210px; margin: 0 auto; }
+    .compass path { cursor: pointer; stroke: var(--bg); stroke-width: 1.5; }
+    .compass text { fill: var(--muted); font-size: 11px; }
+    .center { text-align: center; }
+    .stepper, .switch { display: flex; align-items: center; justify-content: space-between;
+                        padding: 8px 0; border-top: 1px solid var(--border); }
+    .stepper .num { display: inline-flex; align-items: center; gap: 10px; }
+    .stepper .num b { font-weight: 500; min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
+    .stepper button { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
+                      background: var(--chip); cursor: pointer; font-size: 1.1rem; line-height: 1; }
+    /* iOS-style on/off switch made from a checkbox */
+    .tg { position: relative; flex: none; width: 44px; height: 26px; }
+    .tg input { opacity: 0; width: 100%; height: 100%; margin: 0; position: absolute; cursor: pointer; z-index: 1; }
+    .tg span { position: absolute; inset: 0; border-radius: 13px; background: var(--off); transition: background .15s; }
+    .tg span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
+                      border-radius: 50%; background: #fff; transition: transform .15s; }
+    .tg input:checked + span { background: var(--good); }
+    .tg input:checked + span::after { transform: translateX(18px); }
   </style>
 </head>
 <body>
@@ -76,64 +134,99 @@
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="wing" viewBox="71 -4 466 696"><path fill-rule="evenodd" d="M 292 0 L 269 0 L 268 1 L 260 1 L 240 5 L 217 13 L 201 21 L 197 26 L 199 32 L 213 45 L 226 63 L 235 79 L 245 103 L 256 138 L 267 191 L 270 216 L 266 220 L 264 225 L 247 235 L 222 245 L 211 251 L 207 251 L 185 245 L 175 244 L 156 234 L 137 230 L 136 229 L 137 224 L 149 224 L 151 222 L 151 217 L 153 213 L 153 210 L 158 205 L 154 195 L 155 194 L 154 181 L 159 178 L 161 171 L 157 164 L 152 166 L 136 161 L 123 161 L 116 164 L 112 163 L 109 168 L 100 175 L 101 179 L 98 185 L 96 200 L 97 202 L 98 201 L 100 203 L 102 210 L 107 216 L 106 225 L 104 228 L 88 236 L 80 244 L 75 256 L 75 276 L 81 307 L 83 311 L 88 332 L 95 350 L 97 362 L 103 375 L 112 385 L 121 391 L 127 393 L 142 406 L 176 432 L 176 447 L 180 466 L 195 492 L 201 505 L 201 517 L 199 519 L 158 534 L 120 552 L 113 558 L 112 564 L 115 567 L 123 570 L 144 570 L 145 569 L 154 569 L 155 568 L 163 568 L 177 565 L 190 564 L 240 554 L 242 559 L 243 569 L 258 643 L 254 644 L 242 641 L 220 641 L 204 644 L 198 646 L 192 650 L 194 652 L 205 653 L 210 655 L 260 664 L 262 666 L 264 686 L 267 688 L 276 688 L 277 687 L 286 687 L 291 683 L 292 666 L 293 665 L 318 662 L 337 657 L 361 646 L 371 638 L 370 634 L 365 634 L 334 640 L 328 640 L 327 641 L 321 641 L 320 642 L 314 642 L 313 643 L 307 643 L 291 646 L 289 644 L 288 632 L 287 631 L 287 626 L 286 625 L 286 620 L 283 608 L 283 603 L 282 602 L 282 597 L 279 585 L 273 547 L 277 545 L 296 541 L 300 539 L 311 537 L 335 529 L 338 529 L 377 516 L 420 499 L 444 487 L 446 487 L 477 469 L 488 459 L 489 452 L 485 448 L 481 447 L 452 449 L 451 450 L 446 450 L 445 451 L 440 451 L 408 457 L 347 472 L 343 474 L 339 473 L 322 474 L 306 470 L 301 471 L 274 422 L 256 395 L 254 389 L 247 377 L 221 362 L 187 345 L 173 339 L 158 335 L 160 332 L 160 328 L 159 327 L 159 318 L 158 317 L 156 301 L 159 287 L 159 273 L 163 272 L 183 277 L 206 279 L 207 280 L 216 279 L 231 272 L 240 266 L 270 240 L 285 238 L 293 233 L 295 233 L 356 270 L 387 292 L 421 319 L 438 334 L 466 363 L 478 379 L 484 394 L 489 394 L 498 389 L 515 372 L 527 351 L 531 339 L 532 329 L 533 328 L 533 298 L 532 297 L 531 285 L 523 253 L 515 230 L 512 225 L 507 211 L 493 183 L 465 136 L 447 110 L 430 88 L 409 64 L 387 43 L 369 29 L 353 19 L 334 10 L 311 3 L 301 1 L 293 1 Z M 171 389 L 174 388 L 195 396 L 224 404 L 226 406 L 236 427 L 241 434 L 281 476 L 285 490 L 282 492 L 263 497 L 232 508 L 222 502 L 219 498 L 216 486 L 213 467 L 206 439 L 205 423 L 203 417 L 187 399 Z M 446 145 L 447 148 L 446 152 L 442 156 L 440 156 L 410 171 L 395 177 L 302 221 L 300 214 L 296 211 L 289 211 L 284 213 L 281 212 L 287 208 L 318 195 L 331 188 L 357 177 L 435 140 L 442 140 Z"/></symbol>
   </svg>
-  <nav id="places"></nav>
+  <div class="top">
+    <nav id="places"></nav>
+    <button id="cog" aria-label="Innstillinger">⚙︎</button>
+  </div>
   <h1 id="name"></h1>
   <div class="sub" id="sub"></div>
   <div class="rule" id="rule"></div>
   <div id="list"><p class="sub">Laster…</p></div>
-  <footer>Data fra <a href="https://www.yr.no">yr.no</a> / Meteorologisk institutt (CC BY 4.0).</footer>
+  <footer>Data fra <a href="https://www.yr.no">yr.no</a> / Meteorologisk institutt (CC BY 4.0).
+    Stedssøk og kart fra <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</footer>
 </main>
+<div id="settings" hidden><div class="sheet" id="sheet"></div></div>
 
 <script>
-// ---- 1. Locations and what counts as "good" at each -------------------------
-// wind:   good when (wind >= min AND gust >= gust) OR wind >= min + 1, from one of `dirs`, for 2+ hours in a row,
-//         between sunrise and sunset. sunny: {min, gust} is a lower limit that applies on days that are mostly sunny (sea breeze).
-// powder: good when a day has > 10 mm precipitation, stays below +2°, and isn't too windy.
-const SOUTH  = ["SE", "SSE", "S", "SSW", "SW"];
-const WEST   = ["SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
-const PLACES = [
-  { name: "Drøbaksundet",     lat: 59.6732, lon: 10.6161, alt: 0,   yr: "1-2314605",
-    wind: { min: 5, gust: 9, dirs: SOUTH, sunny: { min: 4, gust: 8 } } },
-  { name: "Brattestø",        lat: 59.0561, lon: 10.9193, alt: 0,   yr: "1-34165",
-    wind: { min: 5, gust: 9, dirs: ["S", "SSW", "SW", "WSW", "W"] } },
-  { name: "Larkollen lykt",   lat: 59.3232, lon: 10.6678, alt: 0,   yr: "1-2779456",
-    wind: { min: 5, gust: 9, dirs: ["S", "SSW", "SW", "WSW"] } },
-  { name: "Lysakerfjorden",   lat: 59.9029, lon: 10.6466, alt: 0,   yr: "1-72928" },
-  { name: "Ørekroken",        lat: 59.0304, lon: 11.0105, alt: 0,   yr: "1-34234",
-    wind: { min: 5, gust: 9, dirs: ["SW"] } },
-  { name: "Hemsedal 690 MOH", lat: 60.8598, lon: 8.5189,  alt: 690, yr: "11-63588",
+// ---- 1. Default spots and rules ---------------------------------------------
+// These are only the starting point. Changes made under ⚙︎ are saved in this browser.
+//
+// wind:   good when (mean >= min AND gust >= gust) OR mean >= steady, from one of `dirs`,
+//         for `hours` in a row (between sunrise and sunset if `daylight`).
+//         sunny: an optional lower {min, gust, steady} for days that are mostly sunny (sea breeze).
+// powder: good when a day has > mm precipitation, stays below maxTemp °C, with wind under maxWind.
+// All wind values are stored in m/s; knots are only used for display and editing.
+const COMPASS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+const SOUTH   = ["SE", "SSE", "S", "SSW", "SW"];
+const WEST    = ["SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+
+// The standard wing rule every new spot starts with: 5 (9) or a steady 6+, 2 hours, daylight, any direction.
+const standardWind = (extra = {}) =>
+  ({ min: 5, gust: 9, steady: 6, hours: 2, daylight: true, dirs: [...COMPASS], sunny: null, ...extra });
+
+const DEFAULT_SPOTS = [
+  { id: "drobak",    name: "Drøbaksundet",     lat: 59.6732, lon: 10.6161, alt: 0,   yr: "1-2314605",
+    wind: standardWind({ dirs: SOUTH, sunny: { min: 4, gust: 8, steady: 5 } }) },
+  { id: "brattesto", name: "Brattestø",        lat: 59.0561, lon: 10.9193, alt: 0,   yr: "1-34165",
+    wind: standardWind({ dirs: ["S", "SSW", "SW", "WSW", "W"] }) },
+  { id: "larkollen", name: "Larkollen lykt",   lat: 59.3232, lon: 10.6678, alt: 0,   yr: "1-2779456",
+    wind: standardWind({ dirs: ["S", "SSW", "SW", "WSW"] }) },
+  { id: "lysaker",   name: "Lysakerfjorden",   lat: 59.9029, lon: 10.6466, alt: 0,   yr: "1-72928",
+    wind: standardWind({ dirs: [] }) },
+  { id: "orekroken", name: "Ørekroken",        lat: 59.0304, lon: 11.0105, alt: 0,   yr: "1-34234",
+    wind: standardWind({ dirs: ["SW"] }) },
+  { id: "hemsedal",  name: "Hemsedal 690 MOH", lat: 60.8598, lon: 8.5189,  alt: 690, yr: "11-63588",
     powder: { mm: 10, maxTemp: 2, maxWind: 8 } },
-  { name: "Apelviken",        lat: 57.0832, lon: 12.2668, alt: 6,   yr: "2-2725565",
-    wind: { min: 5, gust: 9, dirs: WEST } },
-  { name: "Borestranda",      lat: 58.7961, lon: 5.5675,  alt: 6,   yr: "10-1027661",
-    wind: { min: 5, gust: 9, dirs: WEST } },
-  { name: "Møvik",            lat: 59.3331, lon: 10.7185, alt: 0,   yr: "1-2289533",
-    wind: { min: 5, gust: 9, dirs: ["SW", "SSW"] } },
-  { name: "Presteskjær",      lat: 59.8091, lon: 10.7035, alt: 1,   yr: "1-73291",
-    wind: { min: 5, gust: 9, dirs: ["N", "NNE", "NE"] } },
+  { id: "apelviken", name: "Apelviken",        lat: 57.0832, lon: 12.2668, alt: 6,   yr: "2-2725565",
+    wind: standardWind({ dirs: WEST }) },
+  { id: "bore",      name: "Borestranda",      lat: 58.7961, lon: 5.5675,  alt: 6,   yr: "10-1027661",
+    wind: standardWind({ dirs: WEST }) },
+  { id: "movik",     name: "Møvik",            lat: 59.3331, lon: 10.7185, alt: 0,   yr: "1-2289533",
+    wind: standardWind({ dirs: ["SW", "SSW"] }) },
+  { id: "presteskjaer", name: "Presteskjær",   lat: 59.8091, lon: 10.7035, alt: 1,   yr: "1-73291",
+    wind: standardWind({ dirs: ["N", "NNE", "NE"] }) },
 ];
 
-// "complete" (instead of "compact") also gives us wind gusts.
+// ---- 2. Saved settings ------------------------------------------------------
+const STORE = "wingfoil-settings";
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE));
+    if (saved && Array.isArray(saved.spots)) return saved;
+  } catch {}
+  return { units: "ms", spots: structuredClone(DEFAULT_SPOTS) };
+}
+let settings = loadSettings();
+function save() { try { localStorage.setItem(STORE, JSON.stringify(settings)); } catch {} }
+
+// Units: everything is stored in m/s and converted for display.
+const KNOTS = 1.94384;
+const unit  = () => settings.units === "kn" ? "kn" : "m/s";
+const toUnit   = ms => settings.units === "kn" ? ms * KNOTS : ms;
+const fromUnit = v  => settings.units === "kn" ? v / KNOTS : v;
+const w = ms => Math.round(toUnit(ms)); // a wind speed as shown on screen
+
+// "API" for the page: MET's forecast. "complete" (instead of "compact") also gives us wind gusts.
 const API = "https://api.met.no/weatherapi/locationforecast/2.0/complete";
 const icon = code => `https://cdn.jsdelivr.net/gh/metno/weathericons@main/weather/svg/${code}.svg`;
 const WEEK = 7 * 24 * 3600 * 1000;
 
-// ---- 2. Fetch (cached in memory, so switching back and forth is instant) ----
+// ---- 3. Fetch (cached in memory, so switching back and forth is instant) ----
 const cache = {};
 function getForecast(p) {
-  if (!cache[p.name]) {
-    const url = `${API}?lat=${p.lat}&lon=${p.lon}&altitude=${p.alt}`;
-    cache[p.name] = fetch(url).then(res => {
+  const key = `${p.lat},${p.lon},${p.alt ?? ""}`;
+  if (!cache[key]) {
+    const url = `${API}?lat=${p.lat}&lon=${p.lon}` + (p.alt != null ? `&altitude=${p.alt}` : "");
+    cache[key] = fetch(url).then(res => {
       if (!res.ok) throw new Error(`MET svarte ${res.status}`);
       return res.json();
     });
-    cache[p.name].catch(() => delete cache[p.name]); // allow retry after an error
+    cache[key].catch(() => delete cache[key]); // allow retry after an error
   }
-  return cache[p.name];
+  return cache[key];
 }
 
-// ---- 3. Turn MET's data into simple rows, then judge them ------------------
-const COMPASS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+// ---- 4. Turn MET's data into simple rows, then judge them ------------------
 const compass = deg => COMPASS[Math.round(deg / 22.5) % 16];
 const dayKey  = d => d.toLocaleDateString("en-CA"); // YYYY-MM-DD in local time
 
@@ -209,21 +302,24 @@ function sunnyDays(rows) {
 
 function judgeWind(rows, rule) {
   const sunny = rule.sunny ? sunnyDays(rows) : {};
-  // Strong enough: e.g. 5 (9), or a mean wind of 6+ where gusts don't matter.
-  // Compare the rounded numbers, so the rule matches exactly what the list shows.
-  const strong = (r, min, gust) => {
-    const w = Math.round(r.wind), g = r.gust === null ? null : Math.round(r.gust);
-    return w >= min + 1 || (w >= min && (g === null || g >= gust));
+  // Strong enough: e.g. 5 (9), or a steady mean wind of 6+ where gusts don't matter.
+  // Compare the rounded numbers in the chosen unit, so the rule matches exactly what the list shows.
+  const strong = (r, lim) => {
+    const mean = w(r.wind), gust = r.gust === null ? null : w(r.gust);
+    return mean >= w(lim.steady) || (mean >= w(lim.min) && (gust === null || gust >= w(lim.gust)));
   };
-  const ok = rows.map(r => r.daylight && rule.dirs.includes(r.dir) &&
-    (strong(r, rule.min, rule.gust) || (sunny[r.day] && strong(r, rule.sunny.min, rule.sunny.gust))));
-  // Hourly rows need a neighbour that's also ok (2+ hours in a row).
+  const ok = rows.map(r => (!rule.daylight || r.daylight) && rule.dirs.includes(r.dir) &&
+    (strong(r, rule) || (sunny[r.day] && strong(r, rule.sunny))));
+  // Hourly rows count when there are `hours` ok rows in a row.
   // A 6-hour row already covers several hours, so it counts on its own.
-  rows.forEach((r, i) => {
-    const prev = ok[i - 1] && rows[i - 1].hours === 1;
-    const next = ok[i + 1] && rows[i + 1].hours === 1;
-    if (ok[i] && (r.hours === 6 || prev || next)) r.good = true;
-  });
+  for (let i = 0; i < rows.length; ) {
+    if (!ok[i]) { i++; continue; }
+    if (rows[i].hours === 6) { if (rule.hours <= 6) rows[i].good = true; i++; continue; }
+    let j = i;
+    while (j < rows.length && ok[j] && rows[j].hours === 1) j++;
+    if (j - i >= rule.hours) for (let k = i; k < j; k++) rows[k].good = true;
+    i = j;
+  }
 }
 
 function judgePowder(rows, rule) {
@@ -251,8 +347,9 @@ function analyse(p, data) {
   return rows;
 }
 
-// ---- 4. Render ---------------------------------------------------------------
+// ---- 5. Render the forecast -----------------------------------------------------
 const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const dayFmt  = new Intl.DateTimeFormat("nb-NO", { weekday: "long", day: "numeric", month: "long" });
 const hourFmt = new Intl.DateTimeFormat("nb-NO", { hour: "2-digit", minute: "2-digit" });
 const hhFmt   = new Intl.DateTimeFormat("nb-NO", { hour: "2-digit" });
@@ -268,6 +365,38 @@ const WING = `<svg class="ico" viewBox="71 -4 466 696" aria-label="Bra vind"><us
 
 const endOf = r => new Date(r.time.getTime() + r.hours * 3600e3);
 
+// Directions as short ranges on the compass, e.g. ["S","SSW","SW"] -> "S–SW".
+function dirSummary(dirs) {
+  if (dirs.length === 16) return "alle retninger";
+  if (!dirs.length) return "ingen retninger";
+  const on = COMPASS.map(d => dirs.includes(d));
+  const runs = [];
+  for (let i = 0; i < 16; i++) {
+    if (!on[i] || on[(i + 15) % 16]) continue; // start of a run
+    let j = i;
+    while (on[(j + 1) % 16]) j++;
+    runs.push(j === i ? COMPASS[i] : `${COMPASS[i]}–${COMPASS[j % 16]}`);
+  }
+  return runs.join(", ");
+}
+
+const limits = l => `${w(l.min)} (${w(l.gust)}) eller ${w(l.steady)}+`;
+
+function ruleText(p) {
+  if (p.wind) {
+    const r = p.wind;
+    if (!r.dirs.length) return `${WING} Velg retninger under ⚙︎ for å få varsel om bra vind.`;
+    return `${WING} Bra vind: ${limits(r)} ${unit()} fra ${dirSummary(r.dirs)}, ` +
+      `minst ${r.hours} ${r.hours === 1 ? "time" : "timer"} på rad${r.daylight ? " i dagslys" : ""}` +
+      (r.sunny ? `. På dager med mest sol holder ${limits(r.sunny)}` : "") + ".";
+  }
+  if (p.powder) {
+    const s = p.powder;
+    return `❄️ Pudder: over ${s.mm} mm nedbør på en dag, kaldere enn +${s.maxTemp}° og vind under ${w(s.maxWind)} ${unit()}.`;
+  }
+  return "";
+}
+
 function dayTag(dayRows) {
   const good = dayRows.filter(r => r.good);
   if (good.length) {
@@ -275,20 +404,6 @@ function dayTag(dayRows) {
   }
   if (dayRows[0].powderDay) {
     return `<span class="tag snow">❄️ Pudder (${dayRows[0].powderDay.toFixed(0)} mm)</span>`;
-  }
-  return "";
-}
-
-function ruleText(p) {
-  if (p.wind) {
-    const w = p.wind;
-    return `${WING} Bra vind: ${w.min} (${w.gust}) eller ${w.min + 1}+ m/s uansett kast, fra ${w.dirs.join(", ")}, ` +
-      `minst 2 timer på rad i dagslys` +
-      (w.sunny ? `. På dager med mest sol holder ${w.sunny.min} (${w.sunny.gust}) eller ${w.sunny.min + 1}+` : "") + ".";
-  }
-  if (p.powder) {
-    const s = p.powder;
-    return `❄️ Pudder: over ${s.mm} mm nedbør på en dag, kaldere enn +${s.maxTemp}° og vind under ${s.maxWind} m/s.`;
   }
   return "";
 }
@@ -318,64 +433,360 @@ function render(p, data) {
         <td><img src="${icon(r.symbol)}" alt="${r.symbol}"></td>
         <td class="${temp <= 0 ? "cold" : ""}">${temp}°</td>
         <td class="rain">${r.rain > 0 ? r.rain.toFixed(1) : ""}</td>
-        <td>${Math.round(r.wind)} <span class="gust">(${r.gust === null ? "–" : Math.round(r.gust)})</span></td>
+        <td>${w(r.wind)} <span class="gust">(${r.gust === null ? "–" : w(r.gust)})</span></td>
         <td class="dir">${arrow(r.deg)}<span>${r.dir}</span></td>
       </tr>`;
     }
   }
 
   $("list").innerHTML = `<table>
-    <thead><tr><th>Tid</th><th></th><th>Temp</th><th>mm</th><th>Vind m/s</th><th>Fra</th></tr></thead>
+    <thead><tr><th>Tid</th><th></th><th>Temp</th><th>mm</th><th>Vind ${unit()}</th><th>Fra</th></tr></thead>
     <tbody>${html}</tbody></table>`;
 
   const updated = hourFmt.format(new Date(data.properties.meta.updated_at));
-  $("sub").innerHTML = `${p.alt > 50 ? p.alt + " moh · " : ""}Oppdatert ${updated} ·
-    <a href="https://www.yr.no/nb/v%C3%A6rvarsel/timetabell/${p.yr}/" target="_blank">Åpne på yr</a>`;
+  $("sub").innerHTML = `${p.alt > 50 ? p.alt + " moh · " : ""}Oppdatert ${updated}` +
+    (p.yr ? ` · <a href="https://www.yr.no/nb/v%C3%A6rvarsel/timetabell/${p.yr}/" target="_blank">Åpne på yr</a>` : "");
   $("rule").innerHTML = ruleText(p);
 }
 
-// Mark a location button when something good is coming, e.g. "[wing] ons".
-function badge(i, data) {
-  const p = PLACES[i];
-  const rows = analyse(p, data);
-  const first = rows.find(r => r.good || r.powderDay);
-  const btn = $("places").children[i];
+// ---- 6. Spot buttons, with a badge when something good is coming ------------
+const visibleSpots = () => settings.spots.filter(s => !s.hidden);
+
+function badge(p, data) {
+  const btn = $("places").querySelector(`[data-id="${p.id}"]`);
+  if (!btn) return;
+  const first = analyse(p, data).find(r => r.good || r.powderDay);
   btn.classList.toggle("good", !!first?.good);
   btn.classList.toggle("snow", !!first && !first.good);
-  if (!first) return;
-  const when = first.day === dayKey(new Date()) ? "i dag" : wdFmt.format(first.time).replace(".", "");
-  btn.querySelector(".badge").innerHTML = `${first.good ? WING : "❄️"} ${when}`;
+  const when = first && (first.day === dayKey(new Date()) ? "i dag" : wdFmt.format(first.time).replace(".", ""));
+  btn.querySelector(".badge").innerHTML = first ? `${first.good ? WING : "❄️"} ${when}` : "";
 }
 
+function buildNav() {
+  const spots = visibleSpots();
+  $("places").innerHTML = spots.map(p =>
+    `<button aria-pressed="false" data-id="${p.id}">${esc(p.name)}<span class="badge"></span></button>`).join("");
+  spots.forEach(p => getForecast(p).then(data => badge(p, data)).catch(() => {}));
+}
+$("places").onclick = e => { const b = e.target.closest("button"); if (b) show(b.dataset.id); };
+
 let current = null;
-async function show(i) {
-  const p = PLACES[i];
-  current = i;
-  try { localStorage.setItem("place", i); } catch {}
-  document.querySelectorAll("nav button").forEach((b, j) => b.setAttribute("aria-pressed", i === j));
+async function show(id) {
+  const spots = visibleSpots();
+  const p = spots.find(s => s.id === id) ?? spots[0];
+  if (!p) {
+    $("name").textContent = "Ingen spotter";
+    $("sub").textContent = $("rule").textContent = "";
+    $("list").innerHTML = `<p class="sub">Legg til en spot under ⚙︎.</p>`;
+    return;
+  }
+  current = p.id;
+  try { localStorage.setItem("place", p.id); } catch {}
+  document.querySelectorAll("nav button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === p.id));
   $("name").textContent = p.name;
   $("sub").textContent = "";
   $("rule").textContent = "";
   $("list").innerHTML = `<p class="sub">Laster…</p>`;
   try {
     const data = await getForecast(p);
-    if (current === i) render(p, data); // ignore if the user already tapped another place
+    if (current === p.id) render(p, data); // ignore if the user already tapped another place
   } catch (err) {
     $("list").innerHTML = `<p class="error">Kunne ikke hente varselet: ${err.message}</p>`;
   }
 }
 
-// ---- 5. Build the buttons, show the last-used place, and check all spots ---
-$("places").innerHTML = PLACES.map((p, i) =>
-  `<button aria-pressed="false" onclick="show(${i})">${p.name}<span class="badge"></span></button>`).join("");
+// ---- 7. Settings ---------------------------------------------------------------
+// One full-screen sheet with three views: the spot list, editing a spot, and adding a spot.
+// Every change is saved straight away; "Ferdig" just closes the sheet.
+let view = { name: "list" };
+const sheet = $("sheet");
 
-let start = 0;
-try { start = Number(localStorage.getItem("place")) || 0; } catch {}
-show(start < PLACES.length ? start : 0);
+function openSettings() { view = { name: "list" }; renderSettings(); $("settings").hidden = false; }
+function closeSettings() {
+  $("settings").hidden = true;
+  buildNav();
+  show(current);
+}
+$("cog").onclick = openSettings;
 
-PLACES.forEach((p, i) => {
-  if (p.wind || p.powder) getForecast(p).then(data => badge(i, data)).catch(() => {});
+function renderSettings() {
+  if (view.name === "list") sheet.innerHTML = listView();
+  if (view.name === "edit") sheet.innerHTML = editView(settings.spots[view.i]);
+  if (view.name === "add")  { sheet.innerHTML = addView(); initMap(); }
+}
+
+function summary(p) {
+  if (p.powder) return `Pudder · over ${p.powder.mm} mm, under +${p.powder.maxTemp}°`;
+  return `${dirSummary(p.wind.dirs)} · ${limits(p.wind)} ${unit()}`;
+}
+
+function listView() {
+  const n = settings.spots.length;
+  return `
+    <div class="sh"><span></span><h2>Innstillinger</h2><button class="link" data-act="close">Ferdig</button></div>
+    <div class="lbl">Vindenhet</div>
+    <div class="seg">
+      <button data-act="units" data-v="ms" aria-pressed="${settings.units !== "kn"}">m/s</button>
+      <button data-act="units" data-v="kn" aria-pressed="${settings.units === "kn"}">knop</button>
+    </div>
+    <div class="lbl">Mine spotter · trykk for å endre, bryteren skjuler/viser</div>
+    <ul class="spots">${settings.spots.map((p, i) => `
+      <li>
+        <div class="move">
+          <button data-act="up" data-i="${i}" aria-label="Flytt opp" ${i === 0 ? "disabled" : ""}>▲</button>
+          <button data-act="down" data-i="${i}" aria-label="Flytt ned" ${i === n - 1 ? "disabled" : ""}>▼</button>
+        </div>
+        <button class="spot" data-act="edit" data-i="${i}"><b>${esc(p.name)}</b><small>${summary(p)}</small></button>
+        <label class="tg" aria-label="Vis ${esc(p.name)}"><input type="checkbox" data-act="visible" data-i="${i}" ${p.hidden ? "" : "checked"}><span></span></label>
+      </li>`).join("")}
+    </ul>
+    <button class="wide" data-act="add">+ Legg til spot</button>
+    <button class="wide danger" data-act="reset">Tilbakestill til standardspotter</button>`;
+}
+
+// A row with − / + buttons. kind "wind" shows and steps in the chosen unit; "num" is a plain number.
+function stepper(label, p, path, kind = "num") {
+  const v = path.split(".").reduce((o, k) => o[k], p);
+  const shown = kind === "wind" ? w(v) : v;
+  return `<div class="stepper"><span>${label}</span><span class="num">
+    <button data-act="step" data-path="${path}" data-kind="${kind}" data-d="-1" aria-label="Mindre">−</button>
+    <b>${shown}</b>
+    <button data-act="step" data-path="${path}" data-kind="${kind}" data-d="1" aria-label="Mer">+</button>
+  </span></div>`;
+}
+
+function toggle(label, act, on) {
+  return `<label class="switch"><span>${label}</span>
+    <span class="tg"><input type="checkbox" data-act="${act}" ${on ? "checked" : ""}><span></span></span></label>`;
+}
+
+// The direction picker: 16 wedges you tap to switch on (green) or off.
+function compassPicker(dirs) {
+  const cx = 105, cy = 105, R = 82, r = 34;
+  const pt = (a, rad) => `${(cx + rad * Math.sin(a)).toFixed(1)} ${(cy - rad * Math.cos(a)).toFixed(1)}`;
+  let svg = "";
+  COMPASS.forEach((d, i) => {
+    const a0 = (i - 0.5) * Math.PI / 8, a1 = (i + 0.5) * Math.PI / 8;
+    const fill = dirs.includes(d) ? "var(--good)" : "var(--off)";
+    svg += `<path data-act="dir" data-d="${d}" fill="${fill}"
+      d="M${pt(a0, R)} A${R} ${R} 0 0 1 ${pt(a1, R)} L${pt(a1, r)} A${r} ${r} 0 0 0 ${pt(a0, r)} Z"><title>${d}</title></path>`;
+    if (i % 4 === 0) {
+      const [x, y] = pt(i * Math.PI / 8, R + 12).split(" ");
+      svg += `<text x="${x}" y="${+y + 4}" text-anchor="middle">${d}</text>`;
+    }
+  });
+  svg += `<text x="${cx}" y="${cy + 4}" text-anchor="middle">fra</text>`;
+  return `<svg class="compass" viewBox="0 0 210 210" role="group" aria-label="Retninger">${svg}</svg>`;
+}
+
+function editView(p) {
+  let rules = "";
+  if (p.wind) {
+    rules = `
+      <div class="lbl">Retninger som funker · trykk for å velge</div>
+      ${compassPicker(p.wind.dirs)}
+      <div class="sub center">${dirSummary(p.wind.dirs)}</div>
+      <div class="lbl">Bra vind (${unit()})</div>
+      ${stepper("Middelvind minst", p, "wind.min", "wind")}
+      ${stepper("… med kast minst", p, "wind.gust", "wind")}
+      ${stepper("… eller jevn vind minst", p, "wind.steady", "wind")}
+      ${stepper("Timer på rad", p, "wind.hours")}
+      ${toggle("Bare i dagslys", "daylight", p.wind.daylight)}
+      ${toggle("Egen grense på soldager", "sunny", !!p.wind.sunny)}
+      ${p.wind.sunny ? `
+        ${stepper("Soldager: middelvind minst", p, "wind.sunny.min", "wind")}
+        ${stepper("… med kast minst", p, "wind.sunny.gust", "wind")}
+        ${stepper("… eller jevn vind minst", p, "wind.sunny.steady", "wind")}` : ""}`;
+  }
+  if (p.powder) {
+    rules = `
+      <div class="lbl">Pudder</div>
+      ${stepper("Nedbør på en dag over (mm)", p, "powder.mm")}
+      ${stepper("Kaldere enn (°C)", p, "powder.maxTemp")}
+      ${stepper(`Vind under (${unit()})`, p, "powder.maxWind", "wind")}`;
+  }
+  return `
+    <div class="sh"><button class="link" data-act="back">‹ Spotter</button><h2 id="edit-title">${esc(p.name)}</h2><span></span></div>
+    <div class="lbl">Navn</div>
+    <input class="txt" data-act="name" value="${esc(p.name)}" maxlength="40">
+    ${rules}
+    <button class="wide danger" data-act="delete">Slett spot</button>`;
+}
+
+function addView() {
+  return `
+    <div class="sh"><button class="link" data-act="back">‹ Spotter</button><h2>Legg til spot</h2><span></span></div>
+    <form class="search" data-act="search">
+      <input class="txt" name="q" placeholder="Søk etter sted" autocomplete="off">
+      <button>Søk</button>
+    </form>
+    <div class="results" id="results"></div>
+    <div class="lbl">… eller trykk på kartet der du vil ha spotten</div>
+    <div id="map"></div>
+    <button class="link" data-act="locate">Bruk min posisjon</button>
+    <div id="pick" hidden>
+      <div class="lbl">Navn på spotten</div>
+      <input class="txt" id="newname" maxlength="40" placeholder="F.eks. Min hjemmespot">
+      <div class="sub" id="pickpos"></div>
+      <div class="error" id="pickerr"></div>
+      <button class="wide primary" data-act="create">Legg til med standard wing-regler</button>
+    </div>`;
+}
+
+// The map comes from Leaflet, loaded only the first time someone opens "Legg til spot".
+let leaflet, map, marker, pick = null;
+function loadLeaflet() {
+  return leaflet ??= new Promise((resolve, reject) => {
+    const css = Object.assign(document.createElement("link"), { rel: "stylesheet",
+      href: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" });
+    const js = Object.assign(document.createElement("script"), {
+      src: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js",
+      onload: () => resolve(window.L), onerror: reject });
+    document.head.append(css, js);
+  });
+}
+
+async function initMap() {
+  pick = null;
+  const L = await loadLeaflet().catch(() => null);
+  if (!L || !$("map")) return;
+  const here = settings.spots.find(s => s.id === current) ?? { lat: 59.5, lon: 10.7 };
+  map = L.map("map").setView([here.lat, here.lon], 9);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    { maxZoom: 18, attribution: "© OpenStreetMap" }).addTo(map);
+  marker = null;
+  map.on("click", e => setPick(e.latlng.lat, e.latlng.lng, ""));
+}
+
+function setPick(lat, lon, name) {
+  pick = { lat: +lat.toFixed(4), lon: +lon.toFixed(4) };
+  if (map) {
+    const L = window.L;
+    marker ? marker.setLatLng([lat, lon]) : (marker = L.marker([lat, lon]).addTo(map));
+    map.setView([lat, lon], Math.max(map.getZoom(), 12));
+  }
+  $("pick").hidden = false;
+  $("pickpos").textContent = `Posisjon ${pick.lat}, ${pick.lon}`;
+  $("pickerr").textContent = "";
+  if (name) $("newname").value = name;
+  $("newname").focus();
+}
+
+async function search(q) {
+  const out = $("results");
+  out.innerHTML = `<p class="sub">Søker…</p>`;
+  try {
+    // OpenStreetMap's free place search. Their rules: at most one search per second, so we only search on "Søk".
+    const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&accept-language=nb&q=" + encodeURIComponent(q);
+    const places = await (await fetch(url)).json();
+    view.results = places;
+    out.innerHTML = places.length ? places.map((r, i) =>
+      `<button data-act="result" data-i="${i}">${esc(r.name || r.display_name.split(",")[0])}
+        <small>${esc(r.display_name)}</small></button>`).join("")
+      : `<p class="sub">Fant ingenting. Prøv et annet navn, eller trykk på kartet.</p>`;
+  } catch {
+    out.innerHTML = `<p class="error">Søket feilet. Prøv igjen, eller trykk på kartet.</p>`;
+  }
+}
+
+// All buttons in the settings sheet are handled here, by their data-act.
+sheet.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]");
+  if (!el || el.tagName === "INPUT" || el.tagName === "FORM") return;
+  const act = el.dataset.act, i = Number(el.dataset.i);
+  const spots = settings.spots;
+  const p = view.name === "edit" ? spots[view.i] : null;
+
+  if (act === "close") return closeSettings();
+  if (act === "back") view = { name: "list" };
+  if (act === "units") { settings.units = el.dataset.v; save(); }
+  if (act === "up" || act === "down") {
+    const j = act === "up" ? i - 1 : i + 1;
+    [spots[i], spots[j]] = [spots[j], spots[i]];
+    save();
+  }
+  if (act === "edit") view = { name: "edit", i };
+  if (act === "add") view = { name: "add" };
+  if (act === "reset" && confirm("Erstatte alle spottene dine med standardspottene?")) {
+    settings.spots = structuredClone(DEFAULT_SPOTS);
+    save();
+  }
+  if (act === "dir") {
+    const dirs = p.wind.dirs, d = el.dataset.d;
+    p.wind.dirs = dirs.includes(d) ? dirs.filter(x => x !== d) : COMPASS.filter(x => x === d || dirs.includes(x));
+    save();
+  }
+  if (act === "step") {
+    const keys = el.dataset.path.split("."), last = keys.pop();
+    const obj = keys.reduce((o, k) => o[k], p);
+    const d = Number(el.dataset.d);
+    let v = el.dataset.kind === "wind" ? fromUnit(w(obj[last]) + d) : obj[last] + d;
+    if (last === "hours") v = Math.min(6, Math.max(1, v));
+    else if (last !== "maxTemp") v = Math.max(0, v);
+    obj[last] = v;
+    save();
+  }
+  if (act === "delete" && confirm(`Slette ${p.name}?`)) {
+    spots.splice(view.i, 1);
+    save();
+    view = { name: "list" };
+  }
+  if (act === "locate") {
+    navigator.geolocation.getCurrentPosition(
+      pos => setPick(pos.coords.latitude, pos.coords.longitude, ""),
+      err => { $("pick").hidden = false; $("pickerr").textContent = "Fikk ikke tak i posisjonen: " + err.message; });
+    return;
+  }
+  if (act === "result") {
+    const r = view.results[i];
+    setPick(+r.lat, +r.lon, r.name || r.display_name.split(",")[0]);
+    return;
+  }
+  if (act === "create") {
+    const name = $("newname").value.trim();
+    if (!pick) { $("pickerr").textContent = "Velg et sted først."; return; }
+    if (!name) { $("pickerr").textContent = "Gi spotten et navn."; return; }
+    spots.push({ id: "s" + Date.now(), name, lat: pick.lat, lon: pick.lon, wind: standardWind() });
+    save();
+    view = { name: "edit", i: spots.length - 1 }; // go straight on to picking directions
+  }
+  if (act === "search" || act === "result") return;
+  renderSettings();
 });
+
+sheet.addEventListener("change", e => {
+  const el = e.target, act = el.dataset.act;
+  if (act === "visible") { settings.spots[Number(el.dataset.i)].hidden = !el.checked; save(); }
+  const p = settings.spots[view.i];
+  if (act === "daylight") { p.wind.daylight = el.checked; save(); }
+  if (act === "sunny") {
+    // Start the sunny-day limits one step below the normal ones (like Drøbak's 4 (8) / 5+).
+    const r = p.wind;
+    r.sunny = el.checked ? { min: Math.max(0, r.min - 1), gust: Math.max(0, r.gust - 1), steady: Math.max(0, r.steady - 1) } : null;
+    save();
+    renderSettings();
+  }
+});
+
+sheet.addEventListener("input", e => {
+  if (e.target.dataset.act !== "name") return;
+  const p = settings.spots[view.i];
+  p.name = e.target.value.trim() || p.name;
+  $("edit-title").textContent = p.name;
+  save();
+});
+
+sheet.addEventListener("submit", e => {
+  e.preventDefault();
+  const q = e.target.q.value.trim();
+  if (q) search(q);
+});
+
+// ---- 8. Start: build the buttons and show the last-used spot ----------------
+let start = null;
+try { start = localStorage.getItem("place"); } catch {}
+buildNav();
+show(start);
 </script>
 </body>
 </html>
