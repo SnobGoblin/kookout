@@ -3,10 +3,11 @@
 // so the page asks this Worker, which asks the services right away and passes the answer back.
 //
 //   GET /near?lat=59.43&lon=10.58  -> official stations within 50 km that measure wind, with their latest
-//                                     reading (MET's Frost; NOAA's buoys and coastal stations (NDBC);
+//                                     reading (MET's Frost; Kystverket's coastal stations (Kystvær);
+//                                     NOAA's buoys and coastal stations (NDBC);
 //                                     in the US also NOAA's National Weather Service),
 //                                     plus Holfuy stations within 50 km (number, name, distance)
-//   GET /obs?ids=SN17280,NWS:KDLS,NDBC:FTPC1  -> the latest reading for the given stations
+//   GET /obs?ids=SN17280,KV:8925059,NWS:KDLS,NDBC:FTPC1  -> the latest reading for the given stations
 //
 // All wind speeds are returned in m/s.
 
@@ -37,11 +38,14 @@ export default {
         const frostIds = ids.filter(id => /^SN\d+$/.test(id));
         const nwsIds = ids.filter(id => /^NWS:[A-Z0-9]{3,6}$/.test(id));
         const ndbcIds = ids.filter(id => /^NDBC:[A-Z0-9]{4,7}$/.test(id)).map(id => id.slice(5));
-        if (!frostIds.length && !nwsIds.length && !ndbcIds.length) return reply({ error: "ids=SN…, NWS:… or NDBC:… required" }, 400);
-        const [a, b, c] = await Promise.all([latest(frost, frostIds),
+        const kvIds = ids.filter(id => /^KV:\d+$/.test(id));
+        if (!frostIds.length && !nwsIds.length && !ndbcIds.length && !kvIds.length)
+          return reply({ error: "ids=SN…, KV:…, NWS:… or NDBC:… required" }, 400);
+        const [a, b, c, d] = await Promise.all([latest(frost, frostIds),
           Promise.all(nwsIds.map(id => nwsLatest(id.slice(4)))),
-          ndbcIds.length ? ndbcReadings().then(all => all.filter(r => ndbcIds.includes(r.code))) : []]);
-        return reply({ stations: [...a, ...b.filter(Boolean), ...c.map(({ code, ...r }) => r)] });
+          ndbcIds.length ? ndbcReadings().then(all => all.filter(r => ndbcIds.includes(r.code))) : [],
+          kvIds.length ? kvReadings().then(all => all.filter(r => kvIds.includes(r.id))) : []]);
+        return reply({ stations: [...a, ...b.filter(Boolean), ...c.map(({ code, ...r }) => r), ...d] });
       }
 
       if (url.pathname === "/near") {
@@ -59,10 +63,12 @@ export default {
           .filter(s => byId[s.id]) // only stations that actually have a recent wind reading
           .map(s => ({ ...byId[s.id], name: tidy(s.name), km: round(s.distance, 1),
                        lat: s.geometry?.coordinates?.[1], lon: s.geometry?.coordinates?.[0] }));
-        const [us, buoys, holfuy] = await Promise.all([nwsNear(lat, lon), ndbcNear(lat, lon), holfuyNear(lat, lon)]);
+        const [us, buoys, coastal, holfuy] = await Promise.all(
+          [nwsNear(lat, lon), ndbcNear(lat, lon), kvNear(lat, lon), holfuyNear(lat, lon)]);
         // NWS also lists some of NOAA's coastal stations; keep the NDBC copy, which has gusts.
         const buoyCodes = new Set(buoys.map(b => b.id.slice(5)));
-        const all = [...stations, ...us.filter(u => !buoyCodes.has(u.id.slice(4))), ...buoys].sort((a, b) => a.km - b.km);
+        const all = [...stations, ...coastal, ...us.filter(u => !buoyCodes.has(u.id.slice(4))), ...buoys]
+          .sort((a, b) => a.km - b.km);
         return reply({ stations: all, holfuy });
       }
 
@@ -118,6 +124,42 @@ async function nwsLatest(code) {
   } catch {
     return null;
   }
+}
+
+// ---- Kystverket (Norwegian Coastal Administration): Kystvær coastal stations --------------
+// Open API (NLOD licence), no key needed. Readings arrive every few minutes, in m/s.
+// We only take Kystverket's own stations; the "external" ones are MET's, which we already get from Frost.
+const KV = "https://api.coastal-weather.kystverket.cloud/v1";
+const nearNorway = (lat, lon) => lat > 55 && lat < 82 && lon > -10 && lon < 35;
+
+async function kvReadings() {
+  try {
+    const [stations, data] = await Promise.all([
+      fetch(KV + "/stations", { cf: { cacheTtl: 86400 } }).then(r => r.json()),
+      fetch(KV + "/stations/measurements/nca", { cf: { cacheTtl: 60 } }).then(r => r.json()),
+    ]);
+    const info = Object.fromEntries(stations.map(s => [s.id, s]));
+    const out = [];
+    for (const { stationId, measurements } of data.stationMeasurements ?? []) {
+      const st = info[stationId];
+      const m = Object.fromEntries((measurements ?? []).map(x => [x.type, x]));
+      if (!st || m["wind-speed"]?.value == null) continue;
+      const time = m["wind-speed"].timestamp;
+      if (Date.now() - Date.parse(time) > 3 * 3600e3) continue;
+      out.push({ id: "KV:" + stationId, name: st.name + " (Kystverket)", time, lat: st.latitude, lon: st.longitude,
+                 wind: m["wind-speed"].value, gust: m["gust-speed"]?.value, dir: m["wind-direction"]?.value });
+    }
+    return out;
+  } catch {
+    return []; // Kystverket being unavailable shouldn't break the other sources
+  }
+}
+
+async function kvNear(lat, lon) {
+  if (!nearNorway(lat, lon)) return [];
+  return (await kvReadings())
+    .map(r => ({ ...r, km: round(distanceKm(lat, lon, r.lat, r.lon), 1) }))
+    .filter(r => r.km <= MAX_KM);
 }
 
 // ---- NOAA's National Data Buoy Center: buoys and coastal/harbour stations ------------------

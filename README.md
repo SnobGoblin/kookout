@@ -28,7 +28,8 @@ in the browser.
 Each spot shows the latest reading from a nearby weather station (MET's
 [Frost API](https://frost.met.no)), green when it's blowing right now in a way that works there.
 Browsers can't call Frost directly, so the page asks a small relay on Cloudflare Workers
-([`relay/`](relay/src/index.js)), which asks Frost immediately and passes the answer back.
+([`relay/`](relay/src/index.js)), which asks the sources immediately and passes the answer back:
+MET (Frost), Kystverket (Kystvær), NOAA (NWS and buoys) and Holfuy (station list; shown as their widget).
 
 ```bash
 cd relay
