@@ -1,14 +1,19 @@
-// Wingfoil relay: lets the page read live wind observations from MET's Frost API.
-// The browser can't call Frost directly (no CORS, and the client ID must stay secret),
-// so the page asks this Worker, which asks Frost right away and passes the answer back.
+// Wingfoil relay: lets the page read live wind observations from official weather services.
+// The browser can't call MET's Frost API directly (no CORS, and the client ID must stay secret),
+// so the page asks this Worker, which asks the services right away and passes the answer back.
 //
-//   GET /near?lat=59.43&lon=10.58  -> MET stations within 50 km that measure wind, with their latest reading,
+//   GET /near?lat=59.43&lon=10.58  -> official stations within 50 km that measure wind, with their latest
+//                                     reading (MET's Frost; in the US also NOAA's National Weather Service),
 //                                     plus Holfuy stations within 50 km (number, name, distance)
-//   GET /obs?ids=SN17280,SN17000   -> the latest reading for the given stations
+//   GET /obs?ids=SN17280,NWS:KDLS  -> the latest reading for the given stations
+//
+// All wind speeds are returned in m/s.
 
 const FROST = "https://frost.met.no";
 const ALLOWED_ORIGINS = ["https://sternell.com", "http://localhost:8000", "http://192.168.1.21:8000"];
 const MAX_KM = 50; // further away than this, a station says little about the wind at the spot
+// NWS asks every app to identify itself. (Their firewall happens to reject names starting "wingfoil-alert (".)
+const NWS_HEADERS = { "User-Agent": "WingfoilRelay/1.0 (github.com/SnobGoblin/wingfoil-alert)", Accept: "application/geo+json" };
 const WIND = ["wind_speed", "wind_from_direction", "max(wind_speed_of_gust PT10M)", "max(wind_speed_of_gust PT1H)"];
 
 export default {
@@ -27,9 +32,12 @@ export default {
 
     try {
       if (url.pathname === "/obs") {
-        const ids = (url.searchParams.get("ids") || "").split(",").filter(id => /^SN\d+$/.test(id)).slice(0, 20);
-        if (!ids.length) return reply({ error: "ids=SN… required" }, 400);
-        return reply({ stations: await latest(frost, ids) });
+        const ids = (url.searchParams.get("ids") || "").split(",").slice(0, 20);
+        const frostIds = ids.filter(id => /^SN\d+$/.test(id));
+        const nwsIds = ids.filter(id => /^NWS:[A-Z0-9]{3,6}$/.test(id));
+        if (!frostIds.length && !nwsIds.length) return reply({ error: "ids=SN… or NWS:… required" }, 400);
+        const [a, b] = await Promise.all([latest(frost, frostIds), Promise.all(nwsIds.map(id => nwsLatest(id.slice(4))))]);
+        return reply({ stations: [...a, ...b.filter(Boolean)] });
       }
 
       if (url.pathname === "/near") {
@@ -40,13 +48,16 @@ export default {
         const res = await frost(`/sources/v0.jsonld?${query}`);
         if (!res.ok) return reply({ error: `Frost sources: ${res.status}` }, 502);
         // Frost is mostly Norwegian: outside Norway the "nearest" stations can be thousands of km away.
-        const sources = ((await res.json()).data ?? []).filter(s => s.distance <= MAX_KM);        const readings = await latest(frost, sources.map(s => s.id));
+        const sources = ((await res.json()).data ?? []).filter(s => s.distance <= MAX_KM);
+        const readings = await latest(frost, sources.map(s => s.id));
         const byId = Object.fromEntries(readings.map(r => [r.id, r]));
         const stations = sources
           .filter(s => byId[s.id]) // only stations that actually have a recent wind reading
           .map(s => ({ ...byId[s.id], name: tidy(s.name), km: round(s.distance, 1),
                        lat: s.geometry?.coordinates?.[1], lon: s.geometry?.coordinates?.[0] }));
-        return reply({ stations, holfuy: await holfuyNear(lat, lon) });
+        const [us, holfuy] = await Promise.all([nwsNear(lat, lon), holfuyNear(lat, lon)]);
+        const all = [...stations, ...us].sort((a, b) => a.km - b.km);
+        return reply({ stations: all, holfuy });
       }
 
       return reply({ error: "Not found. Use /near?lat=&lon= or /obs?ids=" }, 404);
@@ -55,6 +66,53 @@ export default {
     }
   },
 };
+
+// ---- NOAA's National Weather Service (US only) -------------------------------------------
+// Rough boxes around the US (mainland, Alaska, Hawaii, Puerto Rico), so we don't ask NWS about Norway.
+const inUS = (lat, lon) =>
+  (lat > 24 && lat < 50 && lon > -125 && lon < -66) || (lat > 51 && lat < 72 && lon > -180 && lon < -129) ||
+  (lat > 18 && lat < 23 && lon > -161 && lon < -154) || (lat > 17.5 && lat < 18.6 && lon > -67.5 && lon < -65);
+
+const nws = path => fetch("https://api.weather.gov" + path, { headers: NWS_HEADERS, cf: { cacheTtl: 60 } });
+
+async function nwsNear(lat, lon) {
+  if (!inUS(lat, lon)) return [];
+  try {
+    const point = await nws(`/points/${lat.toFixed(4)},${lon.toFixed(4)}`);
+    if (!point.ok) return [];
+    const stationsUrl = (await point.json()).properties?.observationStations;
+    if (!stationsUrl) return [];
+    const res = await fetch(stationsUrl + "?limit=12", { headers: NWS_HEADERS, cf: { cacheTtl: 3600 } });
+    if (!res.ok) return [];
+    const near = ((await res.json()).features ?? [])
+      .map(f => ({ code: f.properties.stationIdentifier,
+                   name: f.properties.name === f.properties.name.toUpperCase() ? tidy(f.properties.name) : f.properties.name,
+                   lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }))
+      .map(s => ({ ...s, km: round(distanceKm(lat, lon, s.lat, s.lon), 1) }))
+      .filter(s => s.km <= MAX_KM);
+    const readings = await Promise.all(near.map(s => nwsLatest(s.code)));
+    return near.map((s, i) => readings[i] && { ...readings[i], name: s.name, km: s.km, lat: s.lat, lon: s.lon })
+      .filter(Boolean);
+  } catch {
+    return []; // NWS being unavailable shouldn't break the other sources
+  }
+}
+
+// The latest reading from one NWS station, if it's from the last 3 hours and has wind. NWS reports km/h.
+async function nwsLatest(code) {
+  try {
+    const res = await nws(`/stations/${code}/observations/latest`);
+    if (!res.ok) return null;
+    const p = (await res.json()).properties;
+    if (!p?.timestamp || Date.now() - Date.parse(p.timestamp) > 3 * 3600e3) return null;
+    const ms = v => v?.value == null ? undefined : round(v.unitCode?.endsWith("km_h-1") ? v.value / 3.6 : v.value, 1);
+    const r = { id: "NWS:" + code, time: p.timestamp, wind: ms(p.windSpeed), gust: ms(p.windGust),
+                dir: p.windDirection?.value ?? undefined };
+    return r.wind == null ? null : r;
+  } catch {
+    return null;
+  }
+}
 
 // Holfuy's public station directory. It changes rarely, so Cloudflare keeps a copy for a day.
 async function holfuyNear(lat, lon) {
