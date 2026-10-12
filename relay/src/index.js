@@ -3,9 +3,10 @@
 // so the page asks this Worker, which asks the services right away and passes the answer back.
 //
 //   GET /near?lat=59.43&lon=10.58  -> official stations within 50 km that measure wind, with their latest
-//                                     reading (MET's Frost; in the US also NOAA's National Weather Service),
+//                                     reading (MET's Frost; NOAA's buoys and coastal stations (NDBC);
+//                                     in the US also NOAA's National Weather Service),
 //                                     plus Holfuy stations within 50 km (number, name, distance)
-//   GET /obs?ids=SN17280,NWS:KDLS  -> the latest reading for the given stations
+//   GET /obs?ids=SN17280,NWS:KDLS,NDBC:FTPC1  -> the latest reading for the given stations
 //
 // All wind speeds are returned in m/s.
 
@@ -35,9 +36,12 @@ export default {
         const ids = (url.searchParams.get("ids") || "").split(",").slice(0, 20);
         const frostIds = ids.filter(id => /^SN\d+$/.test(id));
         const nwsIds = ids.filter(id => /^NWS:[A-Z0-9]{3,6}$/.test(id));
-        if (!frostIds.length && !nwsIds.length) return reply({ error: "ids=SN… or NWS:… required" }, 400);
-        const [a, b] = await Promise.all([latest(frost, frostIds), Promise.all(nwsIds.map(id => nwsLatest(id.slice(4))))]);
-        return reply({ stations: [...a, ...b.filter(Boolean)] });
+        const ndbcIds = ids.filter(id => /^NDBC:[A-Z0-9]{4,7}$/.test(id)).map(id => id.slice(5));
+        if (!frostIds.length && !nwsIds.length && !ndbcIds.length) return reply({ error: "ids=SN…, NWS:… or NDBC:… required" }, 400);
+        const [a, b, c] = await Promise.all([latest(frost, frostIds),
+          Promise.all(nwsIds.map(id => nwsLatest(id.slice(4)))),
+          ndbcIds.length ? ndbcReadings().then(all => all.filter(r => ndbcIds.includes(r.code))) : []]);
+        return reply({ stations: [...a, ...b.filter(Boolean), ...c.map(({ code, ...r }) => r)] });
       }
 
       if (url.pathname === "/near") {
@@ -55,8 +59,10 @@ export default {
           .filter(s => byId[s.id]) // only stations that actually have a recent wind reading
           .map(s => ({ ...byId[s.id], name: tidy(s.name), km: round(s.distance, 1),
                        lat: s.geometry?.coordinates?.[1], lon: s.geometry?.coordinates?.[0] }));
-        const [us, holfuy] = await Promise.all([nwsNear(lat, lon), holfuyNear(lat, lon)]);
-        const all = [...stations, ...us].sort((a, b) => a.km - b.km);
+        const [us, buoys, holfuy] = await Promise.all([nwsNear(lat, lon), ndbcNear(lat, lon), holfuyNear(lat, lon)]);
+        // NWS also lists some of NOAA's coastal stations; keep the NDBC copy, which has gusts.
+        const buoyCodes = new Set(buoys.map(b => b.id.slice(5)));
+        const all = [...stations, ...us.filter(u => !buoyCodes.has(u.id.slice(4))), ...buoys].sort((a, b) => a.km - b.km);
         return reply({ stations: all, holfuy });
       }
 
@@ -111,6 +117,53 @@ async function nwsLatest(code) {
     return r.wind == null ? null : r;
   } catch {
     return null;
+  }
+}
+
+// ---- NOAA's National Data Buoy Center: buoys and coastal/harbour stations ------------------
+// One small text file holds the latest reading from every station, already in m/s.
+async function ndbcReadings() {
+  const res = await fetch("https://www.ndbc.noaa.gov/data/latest_obs/latest_obs.txt",
+    { headers: NWS_HEADERS, cf: { cacheTtl: 60 } });
+  if (!res.ok) return [];
+  const out = [];
+  for (const line of (await res.text()).split("\n")) {
+    if (!line || line.startsWith("#")) continue;
+    // STN LAT LON YYYY MM DD hh mm WDIR WSPD GST ...   ("MM" means missing)
+    const [code, lat, lon, y, mo, d, h, mi, wdir, wspd, gst] = line.trim().split(/\s+/);
+    if (wspd === "MM" || wspd == null) continue;
+    const time = new Date(Date.UTC(+y, +mo - 1, +d, +h, +mi));
+    if (Date.now() - time > 3 * 3600e3) continue;
+    out.push({ code, id: "NDBC:" + code, time: time.toISOString(), lat: +lat, lon: +lon,
+               wind: +wspd, gust: gst === "MM" ? undefined : +gst, dir: wdir === "MM" ? undefined : +wdir });
+  }
+  return out;
+}
+
+// Station names, from NOAA's station list (changes rarely, so cached for a day).
+async function ndbcNames() {
+  try {
+    const res = await fetch("https://www.ndbc.noaa.gov/activestations.xml", { headers: NWS_HEADERS, cf: { cacheTtl: 86400 } });
+    const names = {};
+    for (const m of (await res.text()).matchAll(/<station id="([^"]+)"[^>]*\bname="([^"]*)"/g)) {
+      names[m[1].toUpperCase()] = m[2].replace(/^\d+ - /, "").replace(/&amp;/g, "&");
+    }
+    return names;
+  } catch {
+    return {};
+  }
+}
+
+async function ndbcNear(lat, lon) {
+  try {
+    const near = (await ndbcReadings())
+      .map(r => ({ ...r, km: round(distanceKm(lat, lon, r.lat, r.lon), 1) }))
+      .filter(r => r.km <= MAX_KM);
+    if (!near.length) return [];
+    const names = await ndbcNames();
+    return near.map(({ code, ...r }) => ({ ...r, name: (names[code] ?? code) + " (NOAA)" }));
+  } catch {
+    return [];
   }
 }
 
