@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Trust Domeneshop's server
         # Domeneshop's public host key (fingerprint SHA256:M2gRi/UErYL3/ZW8oumpdZ08qx/5Do9eH5iVHwCM7KA),
