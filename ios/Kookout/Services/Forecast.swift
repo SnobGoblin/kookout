@@ -1,100 +1,87 @@
 import Foundation
 
-/// One step of the forecast: an hour (or, further ahead, six hours).
-struct ForecastHour: Identifiable, Hashable {
+/// One step of the forecast for a spot: an hour (or, further ahead, six hours), with "good" already worked
+/// out by the relay using the spot's rules.
+struct ForecastHour: Identifiable, Hashable, Decodable {
     var id: Date { time }
     let time: Date
     let hours: Int
     let symbol: String?
-    let temperature: Double
-    let precipitation: Double
+    let temp: Double
+    let rain: Double
     let wind: Double          // m/s
     let gust: Double?         // m/s, only given in the hourly part
-    let windFrom: Double      // degrees, where the wind comes from
+    let dir: String           // compass direction the wind comes from, e.g. "SSW"
+    let deg: Double           // degrees, where the wind comes from
+    let wave: Double?         // m, surf spots only
+    let period: Double?       // s, surf spots only
+    let daylight: Bool
+    let good: Bool
+    let snow: Bool
 
-    var compass: String { Compass.name(for: windFrom) }
+    var end: Date { time.addingTimeInterval(Double(hours) * 3600) }
+}
+
+/// The relay's answer for one spot.
+struct SpotForecast: Decodable {
+    let tz: String
+    let good: [Period]
+    let powderDays: [String]
+    let rows: [ForecastHour]
+
+    struct Period: Decodable, Hashable {
+        let start: Date
+        let end: Date
+    }
 }
 
 enum Compass {
     static let points = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
                          "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
-    static func name(for degrees: Double) -> String {
-        points[Int((degrees / 22.5).rounded()) % 16]
-    }
 }
 
-/// Fetches MET Norway's Locationforecast (the same data as yr.no), about a week ahead.
-enum ForecastService {
-    // MET asks every app to identify itself with a way to contact the developer.
-    private static let userAgent = "Kookout/0.1 (kookout.no, hi@kookout.no)"
+/// Asks Kookout's relay to work out a spot: it fetches MET's forecast (and waves for surf spots)
+/// and applies the same rules as the web page (rules.js).
+enum KookoutAPI {
+    static let relay = URL(string: "https://wingfoil-relay.wingfoil-relay.workers.dev")!
 
-    static func forecast(for spot: Spot) async throws -> [ForecastHour] {
-        var url = URLComponents(string: "https://api.met.no/weatherapi/locationforecast/2.0/complete")!
-        url.queryItems = [
-            URLQueryItem(name: "lat", value: String(format: "%.4f", spot.latitude)),
-            URLQueryItem(name: "lon", value: String(format: "%.4f", spot.longitude)),
-        ]
-        var request = URLRequest(url: url.url!)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+    static func analyse(_ spot: Spot) async throws -> SpotForecast {
+        var request = URLRequest(url: relay.appending(path: "analyse"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(AnalyseRequest(spot: .init(spot)))
+        request.timeoutInterval = 40 // the first wave forecast for a new place can be slow
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
-        let decoded = try JSONDecoder.met.decode(METResponse.self, from: data)
-
-        // Hourly steps first (about 2½ days), then the 6-hour steps up to a week ahead, like the web page.
-        let series = decoded.properties.timeseries
-        let hourly = series.filter { $0.data.next_1_hours != nil }
-        let lastHourly = hourly.last?.time ?? .distantPast
-        let weekAhead = Date().addingTimeInterval(7 * 24 * 3600)
-        let sixHourly = series.filter { $0.time > lastHourly && $0.data.next_6_hours != nil && $0.time < weekAhead }
-
-        return hourly.map { $0.hour(step: 1) } + sixHourly.map { $0.hour(step: 6) }
+        return try decoder.decode(SpotForecast.self, from: data)
     }
-}
 
-// MARK: - MET's JSON format (only the parts we use)
-
-private struct METResponse: Decodable {
-    let properties: Properties
-    struct Properties: Decodable { let timeseries: [Step] }
-}
-
-private struct Step: Decodable {
-    let time: Date
-    let data: StepData
-
-    struct StepData: Decodable {
-        let instant: Instant
-        let next_1_hours: Period?
-        let next_6_hours: Period?
+    // The relay always gets m/s and metres, and the app converts for display.
+    private struct AnalyseRequest: Encodable {
+        let spot: RelaySpot
+        let units = "ms"
+        let waveUnit = "m"
     }
-    struct Instant: Decodable { let details: Details }
-    struct Details: Decodable {
-        let air_temperature: Double
-        let wind_speed: Double
-        let wind_from_direction: Double
-        let wind_speed_of_gust: Double?
-    }
-    struct Period: Decodable {
-        let summary: Summary
-        let details: PeriodDetails
-    }
-    struct Summary: Decodable { let symbol_code: String }
-    struct PeriodDetails: Decodable { let precipitation_amount: Double? }
 
-    func hour(step: Int) -> ForecastHour {
-        let period = step == 1 ? data.next_1_hours : data.next_6_hours
-        let d = data.instant.details
-        return ForecastHour(time: time, hours: step, symbol: period?.summary.symbol_code,
-                            temperature: d.air_temperature, precipitation: period?.details.precipitation_amount ?? 0,
-                            wind: d.wind_speed, gust: d.wind_speed_of_gust, windFrom: d.wind_from_direction)
+    private struct RelaySpot: Encodable {
+        let lat: Double, lon: Double, alt: Double?, tz: String
+        let wind: WindRule?, surf: SurfRule?, powder: PowderRule?
+        init(_ s: Spot) {
+            lat = s.latitude; lon = s.longitude; alt = s.altitude; tz = s.timeZoneID
+            wind = s.wind; surf = s.surf; powder = s.powder
+        }
     }
-}
 
-private extension JSONDecoder {
-    static let met: JSONDecoder = {
+    private static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let text = try decoder.singleValueContainer().decode(String.self)
+            // The relay sends times like "2026-10-13T10:00:00.000Z" (with or without the fraction).
+            if let date = try? Date(text, strategy: Date.ISO8601FormatStyle(includingFractionalSeconds: true)) { return date }
+            if let date = try? Date(text, strategy: .iso8601) { return date }
+            throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Bad date \(text)"))
+        }
         return decoder
     }()
 }
