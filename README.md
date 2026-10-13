@@ -72,6 +72,13 @@ wind directions that usually work. A new install starts with a welcome screen: "
 of them within 200 km to pick from; the add-spot screen lists the five nearest you don't have yet. "Start over" in Settings removes all
 spots and settings and goes back to the welcome screen.
 
+### Shared spots
+
+Spots people add are shared with other Kookout users unless switched off for the spot (Edit), with the name
+from Settings → Sharing as "Added by …" (optional). The add-spot map shows them as pins next to the built-in
+ones; the relay keeps them in D1 (`shared_spots`, see `relay/src/shared.js`), with no link to the phone's
+notifications: each phone has a separate random key, and only that phone can change or remove what it shared.
+
 ### Notifications
 
 Each spot has notifications on unless switched off (Edit), and Settings has how far ahead to look (default

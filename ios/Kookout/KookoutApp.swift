@@ -10,7 +10,10 @@ struct KookoutApp: App {
         WindowGroup {
             SpotListView()
                 .environment(store)
-                .task { await Notifications.shared.start(spots: store.spots) }
+                .task {
+                    SharedSpots.sync(old: [], new: store.spots) // re-share at launch, in case a share failed (offline)
+                    await Notifications.shared.start(spots: store.spots)
+                }
                 .onChange(of: scenePhase) { if scenePhase == .active { Task { await Notifications.shared.refreshStatus() } } }
         }
     }

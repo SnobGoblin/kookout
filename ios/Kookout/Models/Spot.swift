@@ -55,6 +55,11 @@ struct Spot: Identifiable, Codable, Hashable {
     var powder: PowderRule?
     /// Notifications for this spot; on unless switched off (nil for spots saved before notifications existed).
     var notify: Bool?
+    /// Shared with other Kookout users: true or false for spots the user made themselves (on unless switched off),
+    /// nil for spots that came from the catalogue or from someone else.
+    var shared: Bool?
+    /// Who shared it, for spots added from someone else's ("Christian"; nil if they didn't give a name).
+    var addedBy: String?
 
     var notifies: Bool { notify ?? true }
     var timeZone: TimeZone { TimeZone(identifier: timeZoneID) ?? .current }

@@ -7,7 +7,7 @@ import CoreLocation
 /// A new install starts empty, with a welcome screen that offers the popular spots nearby (Catalogue).
 @MainActor @Observable
 final class SpotStore {
-    var spots: [Spot] { didSet { save() } }
+    var spots: [Spot] { didSet { save(); SharedSpots.sync(old: oldValue, new: spots) } }
     private(set) var forecasts: [Spot.ID: SpotForecast] = [:]
     private(set) var failed: Set<Spot.ID> = []
 
@@ -90,6 +90,13 @@ final class Settings {
     var waveUnit: WaveUnit { didSet { save(waveUnit.rawValue, "waveUnit") } }
     var tempUnit: TempUnit { didSet { UserDefaults.standard.set(tempUnit.rawValue, forKey: "tempUnit") } }
     var clock: Clock { didSet { save(clock.rawValue, "clock") } }
+    /// The name shown as "added by" on spots the user shares (empty: no name).
+    var sharingName: String {
+        didSet {
+            UserDefaults.standard.set(sharingName, forKey: "sharingName")
+            SharedSpots.nameChanged()
+        }
+    }
     /// How far ahead notifications look, in hours.
     var notifyHours: Int { didSet { save(notifyHours, "notifyHours") } }
     static let notifyChoices = [12, 24, 48, 72, 120, 168]
@@ -106,11 +113,13 @@ final class Settings {
         tempUnit = defaults.string(forKey: "tempUnit").flatMap(TempUnit.init) ?? .automatic
         clock = defaults.string(forKey: "clock").flatMap(Clock.init) ?? .automatic
         notifyHours = defaults.object(forKey: "notifyHours") as? Int ?? 48
+        sharingName = defaults.string(forKey: "sharingName") ?? ""
     }
 
     /// Back to how a new install starts.
     func reset() {
         windUnit = .automatic; waveUnit = .automatic; tempUnit = .automatic; clock = .automatic; notifyHours = 48
+        sharingName = ""
     }
 
     /// What "automatic" means on this phone. Wind riders in the Nordic countries use m/s, most of

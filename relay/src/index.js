@@ -12,6 +12,7 @@
 //                                     rules as the web page (rules.js). For the app and notifications.
 //   GET /tz?lat=21.28&lon=-157.83   -> the place's time zone, e.g. {"tz":"Pacific/Honolulu"} (worked out locally)
 //   PUT/DELETE /devices/<id>, POST /devices/<id>/test  -> notifications for a phone (see notify.js)
+//   GET /shared?lat&lon, PUT/DELETE /shared/<id>       -> spots people share on the map (see shared.js)
 //   GET /waves?lat=58.80&lon=5.55   -> wave forecast (total height in m, period, direction) about a week ahead:
 //                                     MET's Oceanforecast in Scandinavian waters, NOAA WaveWatch III elsewhere
 //
@@ -20,6 +21,7 @@
 import tzlookup from "@photostructure/tz-lookup";
 import { analyse } from "../../rules.js"; // the same rules as the web page
 import { handleDevices, notifyAll } from "./notify.js";
+import { handleShared } from "./shared.js";
 
 const FROST = "https://frost.met.no";
 const ALLOWED_ORIGINS = ["https://kookout.no", "https://www.kookout.no", "https://sternell.com",
@@ -91,6 +93,7 @@ export default {
       }
 
       if (url.pathname.startsWith("/devices/")) return handleDevices(request, env, url, reply);
+      if (url.pathname === "/shared" || url.pathname.startsWith("/shared/")) return handleShared(request, env, url, reply);
 
       if (url.pathname === "/analyse" && request.method === "POST") {
         const body = await request.json().catch(() => null);

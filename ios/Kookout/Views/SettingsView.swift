@@ -81,6 +81,16 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    TextField("Your name (optional)", text: $settings.sharingName)
+                        .textContentType(.nickname)
+                        .autocorrectionDisabled()
+                } header: {
+                    Text("Sharing")
+                } footer: {
+                    Text("Shown as “Added by …” on the spots you share. Leave it empty to share without a name.")
+                }
+
+                Section {
                     Button("Start over", role: .destructive) { confirmReset = true }
                 }
 

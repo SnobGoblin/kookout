@@ -2,8 +2,9 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-/// Add a spot: pick one of the popular spots nearby, search for a place or tap the map, give it a name,
-/// choose the sport. It starts with the standard rules for that sport; the directions can be picked right after.
+/// Add a spot: pick a spot on the map or in the list (popular spots built into the app, and spots other people
+/// shared), or search for a place or tap the map, give it a name and choose the sport. A new spot starts with
+/// the standard rules for its sport (the directions can be picked right after) and is shared with others.
 struct AddSpotView: View {
     @Environment(SpotStore.self) private var store
     @Environment(\.dismiss) private var dismiss
@@ -21,15 +22,23 @@ struct AddSpotView: View {
     @FocusState private var searching: Bool
     /// The middle of the map, for the popular spots nearby (nil while the map shows a whole country or more).
     @State private var center: CLLocation?
+    /// Spots other people shared near the map.
+    @State private var shared: [SharedSpots.Shared] = []
+    /// A spot picked on the map.
+    @State private var selectedID: String?
+
+    /// A spot that can be added from the map or the list: built in, or shared by someone.
+    struct Nearby {
+        let spot: Spot
+        let detail: String   // "Varberg" (built in) or "Added by Christian"
+        let meters: Double
+    }
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 MapReader { proxy in
-                    Map(position: $position) {
-                        if let pin { Marker(name.isEmpty ? String(localized: "New spot") : name, coordinate: pin) }
-                        UserAnnotation()
-                    }
+                    Map(position: $position, selection: $selectedID) { pins }
                     .mapControls { MapUserLocationButton() }
                     .onMapCameraChange(frequency: .onEnd) { context in
                         let region = context.region
@@ -37,7 +46,17 @@ struct AddSpotView: View {
                             : CLLocation(latitude: region.center.latitude, longitude: region.center.longitude)
                     }
                     .onTapGesture { point in
-                        if let coordinate = proxy.convert(point, from: .local) { choose(coordinate, suggestedName: nil) }
+                        // A tap on a marker selects it (the map handles that); anywhere else drops a new pin.
+                        guard let coordinate = proxy.convert(point, from: .local) else { return }
+                        Task {
+                            try? await Task.sleep(for: .milliseconds(150))
+                            if selectedID == nil { choose(coordinate, suggestedName: nil) }
+                        }
+                    }
+                    .onChange(of: selectedID) { if selectedID != nil { pin = nil } }
+                    .task(id: center.map { "\(Int($0.coordinate.latitude * 2)),\(Int($0.coordinate.longitude * 2))" }) {
+                        // Shared spots near the map, fetched again when it moves about 50 km
+                        if let place = center ?? location.location { shared = await SharedSpots.near(place) }
                     }
                 }
                 .frame(maxHeight: .infinity)
@@ -74,20 +93,21 @@ struct AddSpotView: View {
                             }
                             .foregroundStyle(.primary)
                         }
+                    } else if let selected {
+                        Section {
+                            NearbyRow(item: selected)
+                            Button("Add this spot") { addPopular(selected.spot) }
+                                .bold()
+                        }
                     } else if pin == nil {
                         Text("Or tap the map where the spot is.")
                             .foregroundStyle(.secondary)
                         if !suggestions.isEmpty {
-                            Section("Popular spots nearby") {
-                                ForEach(suggestions, id: \.entry.spot.id) { item in
-                                    Button { addPopular(item.entry.spot) } label: {
+                            Section("Spots nearby") {
+                                ForEach(suggestions, id: \.spot.id) { item in
+                                    Button { addPopular(item.spot) } label: {
                                         HStack {
-                                            Image(systemName: item.entry.spot.sport.symbol).frame(width: 24)
-                                            VStack(alignment: .leading) {
-                                                Text(item.entry.spot.name)
-                                                Text("\(item.entry.area) · \(Measurement.distance(item.meters))")
-                                                    .font(.caption).foregroundStyle(.secondary)
-                                            }
+                                            NearbyRow(item: item)
                                             Spacer()
                                             Image(systemName: "plus.circle")
                                         }
@@ -104,9 +124,11 @@ struct AddSpotView: View {
                             Label("Powder", systemImage: Sport.powder.symbol).tag(Sport.powder)
                         }
                         .pickerStyle(.segmented)
+                        Text("New spots are shared with other Kookout users. You can switch this off under Edit.")
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
                 }
-                .frame(height: !results.isEmpty ? 330 : pin == nil ? (suggestions.isEmpty ? 150 : 400) : 210)
+                .frame(height: !results.isEmpty ? 330 : selected != nil ? 230 : pin == nil ? (suggestions.isEmpty ? 150 : 400) : 260)
             }
             .task(id: query) { await search() }
             .navigationTitle("Add spot")
@@ -118,8 +140,28 @@ struct AddSpotView: View {
                         .disabled(pin == nil || name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
-            .onAppear { location.requestWhenInUseAuthorization() }
+            .onAppear {
+                location.requestWhenInUseAuthorization()
+                // Start about 80 km across around the phone, so the spots nearby show as pins.
+                if let here = location.location {
+                    position = .region(MKCoordinateRegion(center: here.coordinate, latitudinalMeters: 80_000, longitudinalMeters: 80_000))
+                }
+            }
         }
+    }
+
+    /// The user's own spots in grey; the ones they can add in the accent colour (tap to pick); the new pin in green.
+    @MapContentBuilder private var pins: some MapContent {
+        ForEach(store.spots) { spot in
+            Marker(spot.name, systemImage: spot.sport.symbol, coordinate: spot.coordinate).tint(.gray)
+        }
+        ForEach(onMap, id: \.spot.id) { item in
+            Marker(item.spot.name, systemImage: item.spot.sport.symbol, coordinate: item.spot.coordinate)
+                .tint(Color.accentColor)
+                .tag(item.spot.id)
+        }
+        if let pin { Marker(name.isEmpty ? String(localized: "New spot") : name, coordinate: pin).tint(.green) }
+        UserAnnotation()
     }
 
     private func choose(_ coordinate: CLLocationCoordinate2D, suggestedName: String?) {
@@ -144,11 +186,26 @@ struct AddSpotView: View {
         results = (try? await MKLocalSearch(request: request).start().mapItems.prefix(8).map { $0 }) ?? []
     }
 
-    /// The catalogue spots nearest the middle of the map (or the phone, when the map is zoomed far out),
-    /// that the user doesn't have yet.
-    private var suggestions: [(entry: Catalogue.Entry, meters: Double)] {
+    /// Built-in and shared spots within 200 km of the middle of the map (or the phone, when the map is zoomed
+    /// far out) that the user doesn't have yet, nearest first.
+    private var nearby: [Nearby] {
         guard let place = center ?? location.location else { return [] }
-        return Catalogue.nearest(to: place, excluding: Set(store.spots.map(\.id)), count: 5) // within 200 km
+        let mine = Set(store.spots.map(\.id))
+        let builtIn = Catalogue.nearest(to: place, excluding: mine)
+            .map { Nearby(spot: $0.entry.spot, detail: $0.entry.area, meters: $0.meters) }
+        let others = shared.filter { !mine.contains($0.id) }
+            .map { Nearby(spot: $0.spot, detail: Self.addedBy($0.by), meters: $0.location.distance(from: place)) }
+            .filter { $0.meters <= Catalogue.nearbyMeters }
+        return (builtIn + others).sorted { $0.meters < $1.meters }
+    }
+
+    private var suggestions: [Nearby] { Array(nearby.prefix(5)) }
+    private var onMap: [Nearby] { Array(nearby.prefix(80)) }
+    private var selected: Nearby? { selectedID.flatMap { id in nearby.first { $0.spot.id == id } } }
+
+    static func addedBy(_ name: String?) -> String {
+        if let name, !name.isEmpty { return String(localized: "Added by \(name)") }
+        return String(localized: "Added by a Kookout user")
     }
 
     private func addPopular(_ spot: Spot) {
@@ -164,6 +221,7 @@ struct AddSpotView: View {
         var spot = Spot(id: UUID().uuidString, name: name.trimmingCharacters(in: .whitespaces),
                         latitude: rounded(pin.latitude), longitude: rounded(pin.longitude),
                         timeZoneID: (timeZone ?? .current).identifier)
+        spot.shared = true // the user's own new spot: shared unless they switch it off
         switch sport {
         case .wing: spot.wind = WindRule()
         case .surf: spot.surf = SurfRule()
@@ -173,5 +231,24 @@ struct AddSpotView: View {
         Task { await store.refresh(spot) }
         dismiss()
         onAdd(spot)
+    }
+}
+
+extension Spot {
+    var coordinate: CLLocationCoordinate2D { .init(latitude: latitude, longitude: longitude) }
+}
+
+/// "Saltstein", with "Nevlunghavn · 90 km" or "Added by Christian · 12 km" under it.
+struct NearbyRow: View {
+    let item: AddSpotView.Nearby
+
+    var body: some View {
+        HStack {
+            Image(systemName: item.spot.sport.symbol).frame(width: 24)
+            VStack(alignment: .leading) {
+                Text(item.spot.name)
+                Text("\(item.detail) · \(Measurement.distance(item.meters))").font(.caption).foregroundStyle(.secondary)
+            }
+        }
     }
 }

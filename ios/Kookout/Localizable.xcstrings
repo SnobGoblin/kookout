@@ -207,6 +207,46 @@
         }
       }
     },
+    "Add this spot": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legg til denne spoten"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lägg till den här spoten"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilføj dette spot"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diesen Spot hinzufügen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter ce spot"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir este spot"
+          }
+        }
+      }
+    },
     "Add your own spot on the map instead.": {
       "localizations": {
         "nb": {
@@ -243,6 +283,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "Añade tu propio spot en el mapa."
+          }
+        }
+      }
+    },
+    "Added by %@": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lagt til av %@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tillagd av %@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilføjet af %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinzugefügt von %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouté par %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadido por %@"
+          }
+        }
+      }
+    },
+    "Added by a Kookout user": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lagt til av en Kookout-bruker"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tillagd av en Kookout-användare"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilføjet af en Kookout-bruger"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinzugefügt von einer Kookout-Person"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouté par un utilisateur de Kookout"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadido por un usuario de Kookout"
           }
         }
       }
@@ -1450,6 +1570,46 @@
         }
       }
     },
+    "New spots are shared with other Kookout users. You can switch this off under Edit.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nye spoter deles med andre Kookout-brukere. Du kan slå det av under Rediger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nya spots delas med andra Kookout-användare. Du kan stänga av det under Redigera."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nye spots deles med andre Kookout-brugere. Du kan slå det fra under Rediger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Spots werden mit anderen Kookout-Nutzern geteilt. Du kannst das unter Bearbeiten ausschalten."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les nouveaux spots sont partagés avec les autres utilisateurs de Kookout. Vous pouvez désactiver cela sous Modifier."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los spots nuevos se comparten con otros usuarios de Kookout. Puedes desactivarlo en Editar."
+          }
+        }
+      }
+    },
     "No popular spots within 200 km": {
       "localizations": {
         "nb": {
@@ -1650,6 +1810,46 @@
         }
       }
     },
+    "Other Kookout users can find this spot on the map: its name, place and rules, and your name from Settings if you've set one.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Andre Kookout-brukere kan finne denne spoten på kartet: navn, sted og regler, og navnet ditt fra Innstillinger hvis du har skrevet det inn."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Andra Kookout-användare kan hitta den här spoten på kartan: namn, plats och regler, och ditt namn från Inställningar om du har angett det."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Andre Kookout-brugere kan finde dette spot på kortet: navn, sted og regler, og dit navn fra Indstillinger, hvis du har skrevet det."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Andere Kookout-Nutzer finden diesen Spot auf der Karte: Name, Ort und Regeln, und deinen Namen aus den Einstellungen, falls angegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les autres utilisateurs de Kookout peuvent trouver ce spot sur la carte : son nom, son lieu et ses règles, et votre nom des Réglages si vous l'avez indiqué."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otros usuarios de Kookout pueden encontrar este spot en el mapa: su nombre, lugar y reglas, y tu nombre de Ajustes si lo has puesto."
+          }
+        }
+      }
+    },
     "Own limit on sunny days": {
       "localizations": {
         "da": {
@@ -1726,46 +1926,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Period minst"
-          }
-        }
-      }
-    },
-    "Popular spots nearby": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Populære spoter i nærheten"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Populära spots i närheten"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Populære spots i nærheden"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beliebte Spots in der Nähe"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spots populaires à proximité"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spots populares cerca"
           }
         }
       }
@@ -2170,6 +2330,126 @@
         }
       }
     },
+    "Share with others": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Del med andre"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dela med andra"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Del med andre"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit anderen teilen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partager avec les autres"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compartir con otros"
+          }
+        }
+      }
+    },
+    "Sharing": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deling"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delning"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deling"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teilen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partage"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compartir"
+          }
+        }
+      }
+    },
+    "Shown as “Added by …” on the spots you share. Leave it empty to share without a name.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vises som «Lagt til av …» på spotene du deler. La feltet stå tomt for å dele uten navn."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visas som ”Tillagd av …” på spots du delar. Lämna tomt för att dela utan namn."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vises som »Tilføjet af …« på de spots, du deler. Lad feltet være tomt for at dele uden navn."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird als „Hinzugefügt von …“ bei deinen geteilten Spots angezeigt. Leer lassen, um ohne Namen zu teilen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affiché comme « Ajouté par … » sur les spots que vous partagez. Laissez vide pour partager sans nom."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se muestra como «Añadido por …» en los spots que compartes. Déjalo vacío para compartir sin nombre."
+          }
+        }
+      }
+    },
     "Sport": {
       "localizations": {
         "da": {
@@ -2326,6 +2606,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Spots cerca de ti"
+          }
+        }
+      }
+    },
+    "Spots nearby": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spoter i nærheten"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots i närheten"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots i nærheden"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots in der Nähe"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots à proximité"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots cercanos"
           }
         }
       }
@@ -3006,6 +3326,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Wing"
+          }
+        }
+      }
+    },
+    "Your name (optional)": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navnet ditt (valgfritt)"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ditt namn (valfritt)"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dit navn (valgfrit)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Name (optional)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Votre nom (facultatif)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu nombre (opcional)"
           }
         }
       }

@@ -20,6 +20,16 @@ struct SpotEditView: View {
             if spot.surf != nil { surfSection }
             if spot.powder != nil { powderSection }
 
+            if spot.shared != nil {
+                Section {
+                    Toggle("Share with others", isOn: Binding(get: { spot.shared == true }, set: { spot.shared = $0 }))
+                } footer: {
+                    Text("Other Kookout users can find this spot on the map: its name, place and rules, and your name from Settings if you've set one.")
+                }
+            } else if let by = spot.addedBy {
+                Section { Text(AddSpotView.addedBy(by)).foregroundStyle(.secondary) }
+            }
+
             Section {
                 Toggle("Notifications", isOn: Binding(get: { spot.notifies }, set: { spot.notify = $0 }))
             } footer: {
