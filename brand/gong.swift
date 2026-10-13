@@ -1,5 +1,5 @@
-// An alternative notification sound: a big Chinese tam-tam, the kung-fu-movie gong. About 5 seconds.
-// Run from the repo root:  swift -O brand/gong.swift   → brand/gong.caf (the app uses the swoosh, brand/swoosh.swift)
+// The bad-news notification sound (good conditions are gone): a big Chinese tam-tam, the kung-fu-movie gong, 3 s.
+// Run from the repo root:  swift -O brand/gong.swift   → brand/gong.caf and ios/Kookout/gong.caf
 //
 // Unlike a bell (a few clear partials, so it has a note), a tam-tam is a dense wash of hundreds of clashing
 // partials with no clear pitch. It "blooms" after the hit (the high partials swell in over half a second,
@@ -8,7 +8,7 @@
 import AVFoundation
 
 let rate = 44_100.0
-let length = 5.0
+let length = 3.0
 let format = AVAudioFormat(standardFormatWithSampleRate: rate, channels: 1)!
 let frames = Int(rate * length)
 let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frames))!
@@ -58,7 +58,7 @@ for i in 0..<frames {
 }
 
 // Normalise just under full scale and fade the tail out.
-let fade = Int(0.8 * rate)
+let fade = Int(1.0 * rate) // a longer fade, so the shortened gong still dies away rather than stops
 for i in 0..<frames {
     out[i] *= 0.89 / peak
     if i >= frames - fade { out[i] *= Float(Double(frames - i) / Double(fade)) }
@@ -66,7 +66,7 @@ for i in 0..<frames {
 
 let settings: [String: Any] = [AVFormatIDKey: kAudioFormatLinearPCM, AVSampleRateKey: rate, AVNumberOfChannelsKey: 1,
                                AVLinearPCMBitDepthKey: 16, AVLinearPCMIsFloatKey: false, AVLinearPCMIsBigEndianKey: false]
-for path in ["brand/gong.caf"] {
+for path in ["brand/gong.caf", "ios/Kookout/gong.caf"] {
     let url = URL(fileURLWithPath: path)
     try? FileManager.default.removeItem(at: url)
     let file = try AVAudioFile(forWriting: url, settings: settings, commonFormat: .pcmFormatFloat32, interleaved: false)

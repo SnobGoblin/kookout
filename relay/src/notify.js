@@ -16,7 +16,8 @@ const HOUR = 3600e3;
 const LANGS = ["en", "nb", "sv", "da", "de", "fr", "es"];
 const MAX_SPOTS = 30;
 const MAX_PUSHES = 5; // per phone per hour, so a big forecast change doesn't flood it
-const SOUND = "kookout.caf"; // a wind swoosh, in the app (brand/swoosh.swift)
+// Sounds in the app: a wind swoosh for good news, a kung-fu gong when good conditions are gone (brand/).
+const SOUND = "kookout.caf", BAD_NEWS_SOUND = "gong.caf";
 
 // The texts, in the app's languages ({when}: e.g. "Thu 15–18", {was}: what it said before).
 const TEXT = {
@@ -158,7 +159,8 @@ async function notifyDevice(device, env, forecast) {
       e.type === "gone" ? (powder ? t.powderGone : t.gone).replace("{when}", when(e.period)) :
       t.changed.replace("{when}", when(e.period)).replace("{was}", when(e.was)));
     const result = await push(env, device, {
-      aps: { alert: { title: spot.name, body: lines.join("\n") }, sound: SOUND, "thread-id": spot.id },
+      aps: { alert: { title: spot.name, body: lines.join("\n") }, "thread-id": spot.id,
+             sound: events.every(e => e.type === "gone") ? BAD_NEWS_SOUND : SOUND }, // any good news: the swoosh
       spot: spot.id,
     });
     if (result === "gone") { // the app was deleted or the token is no longer valid
