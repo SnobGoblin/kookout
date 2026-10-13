@@ -27,6 +27,7 @@ targets:
         SWIFT_VERSION: "6.0"
         TARGETED_DEVICE_FAMILY: "1" # iPhone
         CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 5KZ7KF5NNH # the paid Apple Developer team (not the free Personal Team, which can't do push)
         GENERATE_INFOPLIST_FILE: YES
         SWIFT_EMIT_LOC_STRINGS: YES # let Xcode find the app's texts for translation (Localizable.xcstrings)
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
