@@ -3,3 +3,9 @@ node_modules/
 .wrangler/
 .dev.vars
 php-test.php
+
+# Xcode (the project is generated from ios/project.yml with xcodegen)
+ios/*.xcodeproj/
+ios/build/
+xcuserdata/
+DerivedData/

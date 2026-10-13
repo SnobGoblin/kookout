@@ -50,6 +50,18 @@ npx wrangler secret put FROST_CLIENT_ID # the Frost client ID, stored as a secre
 - Settings are saved in the browser (`localStorage`), so each phone keeps its own.
   The starting spots are `DEFAULT_SPOTS` at the top of the script.
 
+## iOS app (`ios/`)
+
+A native SwiftUI app, in progress. The Xcode project is generated from `ios/project.yml` with
+[XcodeGen](https://github.com/yonaskolb/XcodeGen), so it isn't kept in git:
+
+```bash
+brew install xcodegen
+cd ios && xcodegen && open Kookout.xcodeproj
+```
+
+Bundle ID `com.sternell.kookout`, iOS 17+, English as the base language.
+
 ## Run locally
 
 ```bash

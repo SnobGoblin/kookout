@@ -1,0 +1,27 @@
+# XcodeGen project description. Generate the Xcode project with:  cd ios && xcodegen
+# (Kookout.xcodeproj is generated from this file, so it isn't kept in git.)
+name: Kookout
+options:
+  bundleIdPrefix: com.sternell
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+
+targets:
+  Kookout:
+    type: application
+    platform: iOS
+    sources: [Kookout]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sternell.kookout
+        MARKETING_VERSION: "0.1"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "6.0"
+        TARGETED_DEVICE_FAMILY: "1" # iPhone
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Kookout
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.weather
