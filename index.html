@@ -46,6 +46,15 @@
     .sub { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
     .sub a { color: var(--accent); }
     .rule { color: var(--muted); font-size: .8rem; margin-bottom: 10px; }
+    /* "The app is coming" banner */
+    .appnote { display: flex; align-items: center; gap: 10px; margin: 2px 0 10px; padding: 10px 12px; border-radius: 10px;
+               background: var(--good-bg); font-size: .85rem; }
+    .appnote[hidden] { display: none; }
+    .appnote .ico { height: 2.2em; color: var(--good); flex: none; }
+    .appnote div { flex: 1; }
+    .appnote b { display: block; }
+    .appnote small { color: var(--muted); }
+    .appnote button { flex: none; border: 0; background: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; padding: 4px 6px; }
     .live { font-size: .9rem; margin: -2px 0 10px; padding: 6px 10px; border-radius: 8px; background: var(--dayrow); }
     .live:empty { display: none; }
     .live .arrow { width: 16px; height: 16px; margin: 0 2px; }
@@ -151,6 +160,12 @@
   <div class="top">
     <nav id="places"></nav>
     <button id="cog" aria-label="Innstillinger">⚙︎</button>
+  </div>
+  <div class="appnote" id="appnote" hidden>
+    <svg class="ico" viewBox="71 -4 466 696" aria-hidden="true"><use href="#wing"/></svg>
+    <div><b>Kookout-appen kommer snart til iPhone</b>
+      <small>Med varsler når det blir bra der du vil være. Nettversjonen har færre funksjoner.</small></div>
+    <button id="appnote-close" aria-label="Lukk">×</button>
   </div>
   <h1 id="name"></h1>
   <div class="sub" id="sub"></div>
@@ -895,6 +910,10 @@ sheet.addEventListener("submit", e => {
 // For testing in the browser console: window.kookout.analyse(...), window.kookout.settings, …
 window.kookout = { analyse, getForecast, getWaves, show, openSettings, closeSettings, buildNav, R,
                    get settings() { return settings; }, set settings(v) { settings = v; } };
+
+// The "app is coming" note, until the visitor closes it. (When the app is out: link to the App Store here.)
+try { $("appnote").hidden = localStorage.getItem("appnote-closed") === "1"; } catch { $("appnote").hidden = false; }
+$("appnote-close").onclick = () => { $("appnote").hidden = true; try { localStorage.setItem("appnote-closed", "1"); } catch {} };
 
 // ---- 9. Start: build the buttons and show the last-used spot ----------------
 let start = null;
