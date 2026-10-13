@@ -16,6 +16,7 @@ struct AddSpotView: View {
     @State private var results: [MKMapItem] = []
     @State private var timeZone: TimeZone?
     @State private var location = CLLocationManager()
+    @FocusState private var searching: Bool
 
     var body: some View {
         NavigationStack {
@@ -33,8 +34,39 @@ struct AddSpotView: View {
                 .frame(maxHeight: .infinity)
 
                 Form {
-                    if pin == nil {
-                        Text("Search for a place, or tap the map where the spot is.")
+                    // Our own search field: the system one (.searchable) hides Cancel and Add while you type.
+                    HStack {
+                        Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                        TextField("Search for a place", text: $query)
+                            .focused($searching)
+                            .autocorrectionDisabled()
+                            .submitLabel(.search)
+                        if !query.isEmpty {
+                            Button { query = "" } label: { Image(systemName: "xmark.circle.fill") }
+                                .buttonStyle(.plain)
+                                .foregroundStyle(.secondary)
+                                .accessibilityLabel("Clear")
+                        }
+                    }
+                    if !results.isEmpty {
+                        ForEach(results, id: \.self) { item in
+                            Button {
+                                if let coordinate = item.placemark.location?.coordinate {
+                                    choose(coordinate, suggestedName: item.name)
+                                    position = .region(MKCoordinateRegion(center: coordinate, latitudinalMeters: 4000, longitudinalMeters: 4000))
+                                }
+                                query = ""
+                                searching = false
+                            } label: {
+                                VStack(alignment: .leading) {
+                                    Text(item.name ?? "")
+                                    Text(item.placemark.title ?? "").font(.caption).foregroundStyle(.secondary)
+                                }
+                            }
+                            .foregroundStyle(.primary)
+                        }
+                    } else if pin == nil {
+                        Text("Or tap the map where the spot is.")
                             .foregroundStyle(.secondary)
                     } else {
                         TextField("Name of the spot", text: $name)
@@ -46,24 +78,7 @@ struct AddSpotView: View {
                         .pickerStyle(.segmented)
                     }
                 }
-                .frame(height: pin == nil ? 90 : 160)
-            }
-            .searchable(text: $query, prompt: "Search for a place")
-            .searchSuggestions {
-                ForEach(results, id: \.self) { item in
-                    Button {
-                        if let coordinate = item.placemark.location?.coordinate {
-                            choose(coordinate, suggestedName: item.name)
-                            position = .region(MKCoordinateRegion(center: coordinate, latitudinalMeters: 4000, longitudinalMeters: 4000))
-                        }
-                        query = ""
-                    } label: {
-                        VStack(alignment: .leading) {
-                            Text(item.name ?? "")
-                            Text(item.placemark.title ?? "").font(.caption).foregroundStyle(.secondary)
-                        }
-                    }
-                }
+                .frame(height: !results.isEmpty ? 330 : pin == nil ? 150 : 210)
             }
             .task(id: query) { await search() }
             .navigationTitle("Add spot")

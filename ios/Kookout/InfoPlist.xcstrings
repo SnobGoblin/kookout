@@ -1,55 +1,78 @@
 {
-  "sourceLanguage": "en",
-  "version": "1.0",
-  "strings": {
-    "NSLocationWhenInUseUsageDescription": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout uses your location to show where you are on the map when you add a spot."
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "comment" : "Bundle display name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Kookout"
           }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout bruker posisjonen din for å vise hvor du er på kartet når du legger til en spot."
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout använder din plats för att visa var du är på kartan när du lägger till en spot."
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout bruger din placering til at vise, hvor du er på kortet, når du tilføjer et spot."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout verwendet deinen Standort, um beim Hinzufügen eines Spots zu zeigen, wo du auf der Karte bist."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout utilise votre position pour vous situer sur la carte lorsque vous ajoutez un spot."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout usa tu ubicación para mostrar dónde estás en el mapa al añadir un spot."
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Kookout"
           }
         }
       }
     },
-    "CFBundleDisplayName": {
-      "shouldTranslate": false
+    "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "Privacy - Location When In Use Usage Description",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout bruger din placering til at vise, hvor du er på kortet, når du tilføjer et spot."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout verwendet deinen Standort, um beim Hinzufügen eines Spots zu zeigen, wo du auf der Karte bist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout uses your location to show where you are on the map when you add a spot."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout usa tu ubicación para mostrar dónde estás en el mapa al añadir un spot."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout utilise votre position pour vous situer sur la carte lorsque vous ajoutez un spot."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout bruker posisjonen din for å vise hvor du er på kartet når du legger til en spot."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout använder din plats för att visa var du är på kartan när du lägger till en spot."
+          }
+        }
+      }
     }
-  }
+  },
+  "version" : "1.0"
 }

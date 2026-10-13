@@ -67,7 +67,7 @@ extension Spot {
              wind: WindRule(dirs: south, sunny: .init(min: 4, gust: 8, steady: 5))),
         Spot(id: "brattesto", name: "Brattestø", latitude: 59.0561, longitude: 10.9193, timeZoneID: "Europe/Oslo",
              wind: WindRule(dirs: ["S", "SSW", "SW", "WSW", "W"])),
-        Spot(id: "larkollen", name: "Larkollen lykt", latitude: 59.3232, longitude: 10.6678, timeZoneID: "Europe/Oslo",
+        Spot(id: "larkollen", name: "Larkollen", latitude: 59.3232, longitude: 10.6678, timeZoneID: "Europe/Oslo",
              wind: WindRule(dirs: ["S", "SSW", "SW", "WSW"])),
         Spot(id: "lysaker", name: "Lysakerfjorden", latitude: 59.9029, longitude: 10.6466, timeZoneID: "Europe/Oslo",
              wind: WindRule(dirs: [])),

@@ -18,7 +18,7 @@ struct SpotDetailView: View {
                 Section {
                     ForEach(group.hours) { hour in
                         HourRow(hour: hour, spot: current)
-                            .listRowBackground(hour.good ? Color.green.opacity(0.18) : nil)
+                            .listRowBackground(hour.good ? Color.goodRow : nil)
                     }
                 } header: {
                     DayHeader(title: group.title, good: group.hours.filter(\.good), spot: current)
@@ -44,6 +44,14 @@ struct SpotDetailView: View {
         style.timeZone = spot.timeZone
         return grouped.keys.sorted().map { day in (day, day.formatted(style), grouped[day]!) }
     }
+}
+
+extension Color {
+    /// The background of a good hour: a light tint in light mode, a stronger one in dark mode,
+    /// where a faint green on black is hard to see.
+    static let goodRow = Color(UIColor { traits in
+        UIColor.systemGreen.withAlphaComponent(traits.userInterfaceStyle == .dark ? 0.4 : 0.18)
+    })
 }
 
 /// "Tuesday 13 October" plus, if there are good hours that day, "Good wind 10–16".
@@ -75,7 +83,7 @@ struct HourRow: View {
         HStack(spacing: 8) {
             Text(timeLabel)
                 .monospacedDigit()
-                .foregroundStyle(.secondary)
+                .foregroundStyle(hour.good ? .primary : .secondary)
                 .fixedSize()
                 .frame(minWidth: 52, alignment: .leading)
             Text(Units.temp(hour.temp))
