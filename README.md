@@ -1,4 +1,4 @@
-# Wingfoil alert
+# Kookout
 
 A one-page hourly wind forecast for my wing foil spots around the Oslofjord and beyond,
 with good sessions highlighted. Live at **https://sternell.com/wind/**.

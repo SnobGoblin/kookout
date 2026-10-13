@@ -5,7 +5,7 @@ name: Deploy to sternell.com
 on:
   push:
     branches: [main]
-    paths: [index.html, apple-touch-icon.png]
+    paths: [index.html, personvern.html, apple-touch-icon.png]
   workflow_dispatch: # adds a "Run workflow" button on GitHub, for deploying by hand
 
 concurrency: deploy # never run two uploads at the same time
@@ -29,7 +29,7 @@ jobs:
           SSHPASS: ${{ secrets.FTP_PASSWORD }}
         run: |
           sudo apt-get install -y -qq sshpass
-          printf 'put index.html www/wind/index.html\nput apple-touch-icon.png www/wind/apple-touch-icon.png\n' > upload.txt
+          printf 'put index.html www/wind/index.html\nput personvern.html www/wind/personvern.html\nput apple-touch-icon.png www/wind/apple-touch-icon.png\n' > upload.txt
           sshpass -e sftp -o BatchMode=no -b upload.txt sternell@ftp.domeneshop.no
 
       - name: Check the live site

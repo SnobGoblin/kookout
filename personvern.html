@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kookout · Personvern og hjelp</title>
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <style>
+    :root { --bg: #ffffff; --text: #1b2330; --muted: #6b7686; --border: #e6e9ee; --accent: #1f6fd1; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #11161d; --text: #e6ebf2; --muted: #8b97a8; --border: #232c38; --accent: #6aa8ff; }
+    }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 680px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { font-size: 1.5rem; margin: 0 0 4px; }
+    h2 { font-size: 1.1rem; margin: 28px 0 6px; }
+    p, li { color: var(--text); }
+    .muted { color: var(--muted); font-size: .9rem; }
+    a { color: var(--accent); }
+    hr { border: 0; border-top: 1px solid var(--border); margin: 32px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <p><a href="./">‹ Tilbake til Kookout</a></p>
+  <h1>Personvern og hjelp</h1>
+  <p class="muted">Sist oppdatert 13. oktober 2026</p>
+
+  <h2>Hjelp og kontakt</h2>
+  <p>Spørsmål, feil eller forslag? Skriv til <a href="mailto:hi@kookout.no">hi@kookout.no</a>.</p>
+
+  <h2>Kort fortalt</h2>
+  <ul>
+    <li>Du trenger ingen konto, og vi samler ikke inn navn, e-post eller andre personopplysninger.</li>
+    <li>Spottene og innstillingene dine lagres <b>bare i nettleseren din</b>, på din enhet.</li>
+    <li>For å vise værvarsel og målinger sendes <b>posisjonen til spottene dine</b> (ikke din egen posisjon)
+        til værtjenestene listet nedenfor.</li>
+  </ul>
+
+  <h2>Hva som lagres</h2>
+  <p>Spottene dine (navn, posisjon og regler), valgt vindenhet og sist viste spot lagres i nettleserens lokale
+     lagring («localStorage») på din enhet. Dette sendes ikke til oss. Du kan slette det ved å tømme nettstedsdata
+     for kookout.no i nettleseren, eller med «Tilbakestill til standardspotter» under ⚙︎.</p>
+
+  <h2>Din posisjon</h2>
+  <p>Kookout spør om posisjonen din bare hvis du trykker «Bruk min posisjon» når du legger til en spot. Den brukes til
+     å plassere spotten på kartet, og lagres bare som posisjonen til spotten i nettleseren din.</p>
+
+  <h2>Tjenester Kookout henter data fra</h2>
+  <p>For å vise innholdet kontakter nettleseren din (eller vår mellomtjeneste) disse tjenestene. Som ved all bruk
+     av internett ser de da IP-adressen som forespørselen kommer fra, i tillegg til spottens posisjon eller søket ditt.</p>
+  <ul>
+    <li><b>Meteorologisk institutt</b> (api.met.no, frost.met.no): værvarsel, bølgevarsel og vindmålinger.</li>
+    <li><b>Kookouts mellomtjeneste</b> på Cloudflare: henter vindmålinger og bølgevarsel på vegne av siden.
+        Den lagrer ingen personopplysninger; bølgevarsel mellomlagres per havområde, ikke per bruker.
+        Cloudflare behandler teknisk trafikkinformasjon etter sin egen personvernerklæring.</li>
+    <li><b>Kystverket</b> (Kystvær), <b>NOAA</b> (National Weather Service og bøyer): vindmålinger og bølgevarsel.</li>
+    <li><b>Holfuy</b>: hvis du åpner «Se vind nå» for en Holfuy-stasjon, lastes Holfuys widget fra holfuy.com.</li>
+    <li><b>OpenStreetMap</b> (Nominatim og kartfliser): når du søker etter et sted eller bruker kartet.</li>
+    <li><b>jsDelivr</b> og <b>cdnjs</b>: værsymboler og kartbiblioteket lastes fra disse.</li>
+  </ul>
+
+  <h2>Informasjonskapsler og sporing</h2>
+  <p>Kookout bruker ikke informasjonskapsler («cookies»), annonser eller analyseverktøy.</p>
+
+  <h2>Ansvarlig</h2>
+  <p>Christian Sternell, <a href="mailto:hi@kookout.no">hi@kookout.no</a>. Du kan når som helst spørre hva vi vet om deg;
+     svaret er normalt «ingenting», siden vi ikke lagrer personopplysninger.</p>
+
+  <hr>
+
+  <h1>Privacy and support</h1>
+  <p class="muted">Last updated 13 October 2026</p>
+  <h2>Support</h2>
+  <p>Questions, bugs or ideas? Write to <a href="mailto:hi@kookout.no">hi@kookout.no</a>.</p>
+  <h2>In short</h2>
+  <ul>
+    <li>No account is needed, and we don't collect names, email addresses or other personal data.</li>
+    <li>Your spots and settings are stored <b>only in your browser</b>, on your device.</li>
+    <li>To show forecasts and live wind, <b>the location of your spots</b> (not your own location) is sent to the
+        weather services listed above: MET Norway, Kookout's relay on Cloudflare, the Norwegian Coastal Administration,
+        NOAA, Holfuy (only if you open its widget), OpenStreetMap (search and map), and jsDelivr/cdnjs (icons and map code).
+        Like any internet request, these services see the IP address the request comes from.</li>
+    <li>Your own location is only used if you tap "Bruk min posisjon" when adding a spot, to place it on the map.</li>
+    <li>No cookies, ads or analytics.</li>
+  </ul>
+  <p>Responsible: Christian Sternell, <a href="mailto:hi@kookout.no">hi@kookout.no</a>.</p>
+</main>
+</body>
+</html>

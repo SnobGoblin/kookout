@@ -1,7 +1,7 @@
 {
   "name": "wingfoil-relay",
   "private": true,
-  "description": "Live relay from the Wingfoil alert page to MET's Frost API (wind observations).",
+  "description": "Kookout relay: live wind observations and wave forecasts for the Kookout page and app.",
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev"

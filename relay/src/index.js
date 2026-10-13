@@ -1,4 +1,4 @@
-// Wingfoil relay: lets the page read live wind observations from official weather services.
+// Kookout relay: lets the page read live wind observations from official weather services.
 // The browser can't call MET's Frost API directly (no CORS, and the client ID must stay secret),
 // so the page asks this Worker, which asks the services right away and passes the answer back.
 //
@@ -14,10 +14,11 @@
 // All wind speeds are returned in m/s.
 
 const FROST = "https://frost.met.no";
-const ALLOWED_ORIGINS = ["https://sternell.com", "http://localhost:8000", "http://192.168.1.21:8000"];
+const ALLOWED_ORIGINS = ["https://kookout.no", "https://www.kookout.no", "https://sternell.com",
+                         "http://localhost:8000", "http://192.168.1.21:8000"];
 const MAX_KM = 50; // further away than this, a station says little about the wind at the spot
-// NWS asks every app to identify itself. (Their firewall happens to reject names starting "wingfoil-alert (".)
-const NWS_HEADERS = { "User-Agent": "WingfoilRelay/1.0 (github.com/SnobGoblin/wingfoil-alert)", Accept: "application/geo+json" };
+// NWS and MET ask every app to identify itself with a way to contact us.
+const NWS_HEADERS = { "User-Agent": "KookoutRelay/1.0 (kookout.no, hi@kookout.no)", Accept: "application/geo+json" };
 const WIND = ["wind_speed", "wind_from_direction", "max(wind_speed_of_gust PT10M)", "max(wind_speed_of_gust PT1H)"];
 
 export default {
