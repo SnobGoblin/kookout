@@ -30,6 +30,7 @@ targets:
         DEVELOPMENT_TEAM: 5KZ7KF5NNH # the paid Apple Developer team (not the free Personal Team, which can't do push)
         GENERATE_INFOPLIST_FILE: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon # Assets.xcassets, drawn by brand/render.swift
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor # sea blue #1C6EA4, buoy orange #FF6B2C in dark mode
         SWIFT_EMIT_LOC_STRINGS: YES # let Xcode find the app's texts for translation (Localizable.xcstrings)
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
         INFOPLIST_KEY_CFBundleDisplayName: Kookout
