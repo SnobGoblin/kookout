@@ -205,7 +205,7 @@ const DEFAULT_SPOTS = [
     wind: standardWind({ dirs: ["SW"] }), station: { id: "KV:8925059", name: "Vikertangen (Kystverket)" } },
   { id: "hemsedal",  name: "Hemsedal 690 MOH", lat: 60.8598, lon: 8.5189,  alt: 690, yr: "11-63588",
     powder: { mm: 10, maxTemp: 2, maxWind: 8 } },
-  { id: "apelviken", name: "Apelviken",        lat: 57.0832, lon: 12.2668, alt: 6,   yr: "2-2725565",
+  { id: "apelviken", name: "Apelviken",        lat: 57.0832, lon: 12.2668, alt: 6,   yr: "2-2725565", tz: "Europe/Stockholm",
     wind: standardWind({ dirs: WEST }) },
   { id: "bore",      name: "Borestranda",      lat: 58.7961, lon: 5.5675,  alt: 6,   yr: "10-1027661",
     wind: standardWind({ dirs: WEST }) },
@@ -277,7 +277,14 @@ function getWaves(p) {
 
 // ---- 4. Turn MET's data into simple rows, then judge them ------------------
 const compass = deg => COMPASS[Math.round(deg / 22.5) % 16];
-const dayKey  = d => d.toLocaleDateString("en-CA"); // YYYY-MM-DD in local time
+// All times are shown in the spot's own time zone (e.g. Waikiki in Hawaiian time), not the viewer's.
+// `zone` is set to the spot's zone before a spot is worked out and drawn; undefined = the viewer's own zone.
+let zone;
+const fmtCache = {};
+const timeFmt = (locale, opts) => fmtCache[zone + locale + JSON.stringify(opts)] ??=
+  new Intl.DateTimeFormat(locale, { ...opts, timeZone: zone });
+const dayKey  = d => timeFmt("en-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(d); // YYYY-MM-DD
+const hourOf  = d => Number(timeFmt("en-GB", { hour: "numeric", hourCycle: "h23" }).format(d));       // 0–23
 
 function toRows(data) {
   // Hourly steps first (roughly the next 2½ days), then MET's 6-hour steps up to a week ahead.
@@ -310,7 +317,8 @@ function toRows(data) {
 // accurate to a minute or two, which is plenty here). Returns Dates, or null in polar night/midnight sun.
 function sunTimes(date, lat, lon) {
   const rad = Math.PI / 180;
-  const noon = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12);
+  const [y, m, d] = dayKey(date).split("-").map(Number); // the spot's local date
+  const noon = Date.UTC(y, m - 1, d, 12);
   const n = Math.round(noon / 864e5 + 2440587.5 - 2451545);           // days since year 2000
   const Jstar = n - lon / 360;
   const M = (357.5291 + 0.98560028 * Jstar) % 360;                     // sun's mean anomaly
@@ -340,7 +348,7 @@ function markDaylight(rows, p) {
 function sunnyDays(rows) {
   const days = {};
   for (const r of rows) {
-    const h = r.time.getHours();
+    const h = hourOf(r.time);
     if (h < 8 || h >= 18) continue;
     const d = days[r.day] ??= { sun: 0, all: 0 };
     d.all += r.hours;
@@ -412,6 +420,7 @@ function judgePowder(rows, rule) {
 }
 
 function analyse(p, data, waves) {
+  zone = p.tz;
   const rows = toRows(data);
   markDaylight(rows, p);
   if (p.surf) { addWaves(rows, waves); judgeSurf(rows, p.surf); }
@@ -423,10 +432,10 @@ function analyse(p, data, waves) {
 // ---- 5. Render the forecast -----------------------------------------------------
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-const dayFmt  = new Intl.DateTimeFormat("nb-NO", { weekday: "long", day: "numeric", month: "long" });
-const hourFmt = new Intl.DateTimeFormat("nb-NO", { hour: "2-digit", minute: "2-digit" });
-const hhFmt   = new Intl.DateTimeFormat("nb-NO", { hour: "2-digit" });
-const wdFmt   = new Intl.DateTimeFormat("nb-NO", { weekday: "short" });
+const dayFmt  = { format: d => timeFmt("nb-NO", { weekday: "long", day: "numeric", month: "long" }).format(d) };
+const hourFmt = { format: d => timeFmt("nb-NO", { hour: "2-digit", minute: "2-digit" }).format(d) };
+const hhFmt   = { format: d => timeFmt("nb-NO", { hour: "2-digit" }).format(d) };
+const wdFmt   = { format: d => timeFmt("nb-NO", { weekday: "short" }).format(d) };
 
 // Wind direction is where the wind comes FROM, so the arrow points the opposite way
 // (same convention as yr: an arrow pointing down means wind from the north).
@@ -527,7 +536,11 @@ function render(p, data, waves) {
     <tbody>${html}</tbody></table>`;
 
   const updated = hourFmt.format(new Date(data.properties.meta.updated_at));
-  $("sub").innerHTML = `${p.alt > 50 ? p.alt + " moh · " : ""}Oppdatert ${updated}` +
+  const myZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const localNote = p.tz && p.tz !== myZone && timeFmt("nb-NO", { hour: "2-digit" }).format(new Date()) !==
+    new Intl.DateTimeFormat("nb-NO", { hour: "2-digit" }).format(new Date())
+    ? `Lokal tid (${p.tz.split("/").pop().replace(/_/g, " ")}, ${timeFmt("en-GB", { timeZoneName: "short" }).format(new Date()).split(" ").pop()}) · ` : "";
+  $("sub").innerHTML = `${localNote}${p.alt > 50 ? p.alt + " moh · " : ""}Oppdatert ${updated}` +
     (p.yr ? ` · <a href="https://www.yr.no/nb/v%C3%A6rvarsel/timetabell/${p.yr}/" target="_blank">Åpne på yr</a>` : "");
   $("rule").innerHTML = ruleText(p) +
     (p.surf && waves?.source === "NOAA" ? ` <small>Bølger fra NOAA (globalt, grovt rutenett: ${waves.km} km ut).</small>` : "") +
@@ -548,11 +561,20 @@ function badge(p, data, waves) {
   btn.querySelector(".badge").innerHTML = first ? `${first.good ? sportIcon(p) : "❄️"} ${when}` : "";
 }
 
+// A spot's time zone is looked up once (through the relay) and saved with the spot.
+const tzWaiting = {};
+function ensureTz(p) {
+  if (p.tz) return Promise.resolve(p.tz);
+  return tzWaiting[p.id] ??= relay(`/tz?lat=${p.lat}&lon=${p.lon}`)
+    .then(d => { p.tz = d.tz; save(); return d.tz; })
+    .catch(() => { delete tzWaiting[p.id]; return undefined; });
+}
+
 function buildNav() {
   const spots = visibleSpots();
   $("places").innerHTML = spots.map(p =>
     `<button aria-pressed="false" data-id="${p.id}">${esc(p.name)}<span class="badge"></span></button>`).join("");
-  spots.forEach(p => Promise.all([getForecast(p), getWaves(p)]).then(([data, waves]) => badge(p, data, waves)).catch(() => {}));
+  spots.forEach(p => Promise.all([getForecast(p), getWaves(p), ensureTz(p)]).then(([data, waves]) => badge(p, data, waves)).catch(() => {}));
   // (Surf badges appear once the waves have arrived.)
 }
 $("places").onclick = e => { const b = e.target.closest("button"); if (b) show(b.dataset.id); };
@@ -577,7 +599,7 @@ async function show(id) {
   $("list").innerHTML = `<p class="sub">Laster…</p>`;
   showLive(p);
   try {
-    const data = await getForecast(p);
+    const [data] = await Promise.all([getForecast(p), ensureTz(p)]);
     if (current !== p.id) return; // the user already tapped another place
     render(p, data, p.surf ? undefined : null); // undefined = waves still loading
     // Waves can take a few seconds (NOAA's server is slow), so they're filled in when they arrive.

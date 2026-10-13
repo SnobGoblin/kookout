@@ -8,10 +8,13 @@
 //                                     in the US also NOAA's National Weather Service),
 //                                     plus Holfuy stations within 50 km (number, name, distance)
 //   GET /obs?ids=SN17280,KV:8925059,NWS:KDLS,NDBC:FTPC1  -> the latest reading for the given stations
+//   GET /tz?lat=21.28&lon=-157.83   -> the place's time zone, e.g. {"tz":"Pacific/Honolulu"} (worked out locally)
 //   GET /waves?lat=58.80&lon=5.55   -> wave forecast (total height in m, period, direction) about a week ahead:
 //                                     MET's Oceanforecast in Scandinavian waters, NOAA WaveWatch III elsewhere
 //
 // All wind speeds are returned in m/s.
+
+import tzlookup from "@photostructure/tz-lookup";
 
 const FROST = "https://frost.met.no";
 const ALLOWED_ORIGINS = ["https://kookout.no", "https://www.kookout.no", "https://sternell.com",
@@ -78,6 +81,12 @@ export default {
         const all = [...stations, ...coastal, ...us.filter(u => !buoyCodes.has(u.id.slice(4))), ...buoys]
           .sort((a, b) => a.km - b.km);
         return reply({ stations: all, holfuy });
+      }
+
+      if (url.pathname === "/tz") {
+        const lat = parseFloat(url.searchParams.get("lat")), lon = parseFloat(url.searchParams.get("lon"));
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return reply({ error: "lat and lon required" }, 400);
+        return reply({ tz: tzlookup(lat, lon) });
       }
 
       if (url.pathname === "/waves") {
