@@ -7,6 +7,7 @@ struct SettingsView: View {
     @Bindable private var settings = Settings.shared
     @State private var confirmReset = false
     @State private var testState = TestState.ready
+    @State private var testProblem: String?
     private let notifications = Notifications.shared
 
     private enum TestState {
@@ -69,10 +70,14 @@ struct SettingsView: View {
                         Button(testState.label) {
                             Task {
                                 testState = .sending
-                                testState = await notifications.sendTest() ? .sent : .failed
+                                testProblem = await notifications.sendTest()
+                                testState = testProblem == nil ? .sent : .failed
                             }
                         }
-                        .disabled(testState == .sending || notifications.token == nil)
+                        .disabled(testState == .sending)
+                        if let testProblem {
+                            Text(testProblem).font(.footnote).foregroundStyle(.secondary)
+                        }
                     }
                 } header: {
                     Text("Notifications")
@@ -82,7 +87,7 @@ struct SettingsView: View {
 
                 Section {
                     TextField("Your name (optional)", text: $settings.sharingName)
-                        .textContentType(.nickname)
+                        .textContentType(.givenName) // the keyboard suggests the name on the phone's own contact card
                         .autocorrectionDisabled()
                 } header: {
                     Text("Sharing")
@@ -95,7 +100,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Link("Privacy and support", destination: URL(string: "https://kookout.no/personvern.html")!)
+                    Link("Privacy and support", destination: URL(string: "https://kookout.no/privacy.html")!)
                     Link("hi@kookout.no", destination: URL(string: "mailto:hi@kookout.no")!)
                 } footer: {
                     Text("Forecasts from MET Norway (yr.no), Kystverket, NOAA and Holfuy.")

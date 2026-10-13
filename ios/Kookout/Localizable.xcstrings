@@ -647,6 +647,46 @@
         }
       }
     },
+    "Couldn't reach Kookout. Check the internet connection.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fikk ikke kontakt med Kookout. Sjekk internettforbindelsen."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunde inte nå Kookout. Kontrollera internetanslutningen."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke få kontakt med Kookout. Tjek internetforbindelsen."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout ist nicht erreichbar. Prüfe die Internetverbindung."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de joindre Kookout. Vérifiez la connexion Internet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo conectar con Kookout. Comprueba la conexión a internet."
+          }
+        }
+      }
+    },
     "Couldn't send the test": {
       "localizations": {
         "nb": {
@@ -2810,6 +2850,46 @@
         }
       }
     },
+    "Switch on notifications for at least one spot first.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slå på varsler for minst én spot først."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slå på notiser för minst en spot först."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slå notifikationer til for mindst ét spot først."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schalte zuerst Mitteilungen für mindestens einen Spot ein."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activez d'abord les notifications pour au moins un spot."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activa primero las notificaciones de al menos un spot."
+          }
+        }
+      }
+    },
     "Tap to choose. The wind comes from these directions.": {
       "localizations": {
         "da": {
@@ -2926,6 +3006,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Prueba enviada"
+          }
+        }
+      }
+    },
+    "This iPhone hasn't given Kookout a notification address yet. Check that notifications are allowed, then open Kookout again.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denne iPhonen har ikke gitt Kookout en varslingsadresse ennå. Sjekk at varsler er tillatt, og åpne Kookout på nytt."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Den här iPhonen har inte gett Kookout någon notisadress än. Kontrollera att notiser är tillåtna och öppna Kookout igen."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denne iPhone har ikke givet Kookout en notifikationsadresse endnu. Tjek, at notifikationer er tilladt, og åbn Kookout igen."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses iPhone hat Kookout noch keine Mitteilungsadresse gegeben. Prüfe, ob Mitteilungen erlaubt sind, und öffne Kookout erneut."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cet iPhone n'a pas encore donné d'adresse de notification à Kookout. Vérifiez que les notifications sont autorisées, puis rouvrez Kookout."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este iPhone aún no ha dado a Kookout una dirección de notificaciones. Comprueba que estén permitidas y vuelve a abrir Kookout."
           }
         }
       }

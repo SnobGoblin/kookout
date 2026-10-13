@@ -7,7 +7,7 @@ name: Deploy Kookout
 on:
   push:
     branches: [main]
-    paths: [index.html, rules.js, personvern.html, apple-touch-icon.png]
+    paths: [index.html, rules.js, privacy.html, personvern.html, apple-touch-icon.png]
   workflow_dispatch: # adds a "Run workflow" button on GitHub, for deploying by hand
 
 concurrency: deploy # never run two uploads at the same time
@@ -35,14 +35,14 @@ jobs:
         env:
           SSHPASS: ${{ secrets.KOOKOUT_FTP_PASSWORD }}
         run: |
-          printf 'put rules.js www/rules.js\nput index.html www/index.html\nput personvern.html www/personvern.html\nput apple-touch-icon.png www/apple-touch-icon.png\n' > upload.txt
+          printf 'put rules.js www/rules.js\nput index.html www/index.html\nput privacy.html www/privacy.html\nput personvern.html www/personvern.html\nput apple-touch-icon.png www/apple-touch-icon.png\n' > upload.txt
           sshpass -e sftp -o BatchMode=no -b upload.txt kookout@ftp.domeneshop.no
 
       - name: Upload to sternell.com/wind
         env:
           SSHPASS: ${{ secrets.FTP_PASSWORD }}
         run: |
-          printf 'put rules.js www/wind/rules.js\nput index.html www/wind/index.html\nput personvern.html www/wind/personvern.html\nput apple-touch-icon.png www/wind/apple-touch-icon.png\n' > upload.txt
+          printf 'put rules.js www/wind/rules.js\nput index.html www/wind/index.html\nput privacy.html www/wind/privacy.html\nput personvern.html www/wind/personvern.html\nput apple-touch-icon.png www/wind/apple-touch-icon.png\n' > upload.txt
           sshpass -e sftp -o BatchMode=no -b upload.txt sternell@ftp.domeneshop.no
 
       - name: Check the live sites

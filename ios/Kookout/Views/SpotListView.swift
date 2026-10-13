@@ -25,8 +25,16 @@ struct SpotListView: View {
                 if store.spots.isEmpty { welcome }
             }
             .navigationTitle("Kookout")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if !store.spots.isEmpty { ToolbarItem(placement: .topBarLeading) { EditButton() } }
+                ToolbarItem(placement: .principal) {
+                    Image("Wordmark") // KOOKOUT with the O's looking out (brand/)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 17)
+                        .accessibilityLabel("Kookout")
+                }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
                         .accessibilityLabel("Add spot")

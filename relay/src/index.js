@@ -22,6 +22,7 @@ import tzlookup from "@photostructure/tz-lookup";
 import { analyse } from "../../rules.js"; // the same rules as the web page
 import { handleDevices, notifyAll } from "./notify.js";
 import { handleShared } from "./shared.js";
+import catalogue from "../../ios/Kookout/Catalogue.json"; // the app's built-in spots
 
 const FROST = "https://frost.met.no";
 const ALLOWED_ORIGINS = ["https://kookout.no", "https://www.kookout.no", "https://sternell.com",
@@ -237,7 +238,17 @@ async function analyseSpot(spot, units = "ms", waveUnit = "m", env, ctx) {
 
 // The same waves as /waves: MET in Scandinavia (with NOAA's period), NOAA elsewhere.
 async function surfWaves(lat, lon, env, ctx) {
-  const [met, noaa] = await Promise.all([metWaves(lat, lon), storedNoaaWaves(lat, lon, env, ctx)]);
+  const noaaFetch = storedNoaaWaves(lat, lon, env, ctx).catch(() => null);
+  const met = await metWaves(lat, lon);
+  // Where MET has the heights, NOAA only adds the period: don't keep the user waiting for NOAA's slow first
+  // fetch of a new place (it finishes in the background and is used from the next request on).
+  let noaa;
+  if (met) {
+    ctx.waitUntil(noaaFetch);
+    noaa = await Promise.race([noaaFetch, new Promise(resolve => setTimeout(() => resolve(null), 2500))]);
+  } else {
+    noaa = await noaaFetch;
+  }
   if (met && noaa) {
     const periods = noaa.points.map(pt => ({ t: Date.parse(pt.time), period: pt.period }));
     for (const pt of met.points) {
@@ -273,6 +284,7 @@ async function storedNoaaWaves(lat, lon, env, ctx) {
   const key = cellKey(lat, lon);
   const stored = await env.WAVES.get(key, "json");
   const upcoming = d => ({ ...d, points: d.points.filter(pt => Date.parse(pt.time) > Date.now() - 3600e3) });
+  if (stored && !stored.data) return null; // NOAA failed for this cell within the last hour: don't wait again
   if (stored && Date.now() - stored.fetched < FRESH_MS) return upcoming(stored.data);
   if (stored) { ctx.waitUntil(fetchAndStore(lat, lon, env)); return upcoming(stored.data); }
   return await fetchAndStore(lat, lon, env); // first time for this cell: we have to wait
@@ -282,14 +294,20 @@ async function fetchAndStore(lat, lon, env) {
   const data = await noaaWaves(lat, lon);
   if (data) await env.WAVES.put(cellKey(lat, lon), JSON.stringify({ fetched: Date.now(), lat, lon, data }),
                                 { expirationTtl: 7 * 86400 }); // cells nobody asks about disappear after a week
+  else if (!(await env.WAVES.get(cellKey(lat, lon)))) // remember a failure for an hour (NOAA's server is sometimes down)
+    await env.WAVES.put(cellKey(lat, lon), JSON.stringify({ fetched: Date.now(), lat, lon, data: null }), { expirationTtl: 3600 });
   return data;
 }
 
 async function refreshStoredWaves(env) {
   const { keys } = await env.WAVES.list({ prefix: "noaa:" });
+  // The app's built-in surf spots are fetched ahead of time, so they are quick the first time too.
+  const stored = new Set(keys.map(k => k.name));
+  const missing = catalogue.filter(s => s.sport === "surf" && !stored.has(cellKey(s.lat, s.lon)));
+  for (const s of missing.slice(0, 4)) await fetchAndStore(s.lat, s.lon, env).catch(() => null);
   for (const { name } of keys.slice(0, 10)) { // a few per run keeps us inside Cloudflare's free limits
     const stored = await env.WAVES.get(name, "json");
-    if (stored && Date.now() - stored.fetched > FRESH_MS - 600e3) await fetchAndStore(stored.lat, stored.lon, env);
+    if (stored?.data && Date.now() - stored.fetched > FRESH_MS - 600e3) await fetchAndStore(stored.lat, stored.lon, env);
   }
 }
 

@@ -65,13 +65,22 @@ final class Notifications {
         }
     }
 
-    /// Sends a test notification through the relay, to check that everything works.
-    func sendTest() async -> Bool {
+    /// Sends a test notification through the relay, to check that everything works. Nil when it was sent,
+    /// otherwise what went wrong.
+    func sendTest() async -> String? {
+        guard token != nil else {
+            return String(localized: "This iPhone hasn't given Kookout a notification address yet. Check that notifications are allowed, then open Kookout again.")
+        }
+        guard spots.contains(where: \.notifies) else { return String(localized: "Switch on notifications for at least one spot first.") }
         await sync()
         var request = URLRequest(url: devicesURL.appending(path: "test"))
         request.httpMethod = "POST"
-        let response = try? await URLSession.shared.data(for: request).1 as? HTTPURLResponse
-        return response?.statusCode == 200
+        guard let (data, response) = try? await URLSession.shared.data(for: request) else {
+            return String(localized: "Couldn't reach Kookout. Check the internet connection.")
+        }
+        if (response as? HTTPURLResponse)?.statusCode == 200 { return nil }
+        let answer = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+        return (answer?["error"] as? String) ?? (answer?["result"] as? String) ?? "HTTP \((response as? HTTPURLResponse)?.statusCode ?? 0)"
     }
 
     private var devicesURL: URL { KookoutAPI.relay.appending(path: "devices").appending(path: deviceID) }

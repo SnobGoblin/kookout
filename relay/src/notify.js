@@ -15,7 +15,8 @@ import { dayKey, hourOf } from "../../rules.js";
 const HOUR = 3600e3;
 const LANGS = ["en", "nb", "sv", "da", "de", "fr", "es"];
 const MAX_SPOTS = 30;
-const MAX_PUSHES = 5; // per phone per hour, so a big forecast change doesn't flood it
+const MAX_PUSHES = 5;
+const SOUND = "kookout.caf"; // two strikes of a buoy bell, in the app (brand/sound.swift) // per phone per hour, so a big forecast change doesn't flood it
 
 // The texts, in the app's languages ({when}: e.g. "Thu 15–18", {was}: what it said before).
 const TEXT = {
@@ -57,7 +58,7 @@ export async function handleDevices(request, env, url, reply) {
     const device = await env.DB.prepare("SELECT * FROM devices WHERE id = ?").bind(id).first();
     if (!device) return reply({ error: "unknown device" }, 404);
     if (!env.APNS_KEY) return reply({ error: "push isn't set up on the relay yet (APNS_KEY)" }, 503);
-    const result = await push(env, device, { aps: { alert: { title: "Kookout", body: TEXT[device.lang].test }, sound: "default" } });
+    const result = await push(env, device, { aps: { alert: { title: "Kookout", body: TEXT[device.lang].test }, sound: SOUND } });
     return reply({ result }, result === "sent" ? 200 : 502);
   }
 
@@ -157,7 +158,7 @@ async function notifyDevice(device, env, forecast) {
       e.type === "gone" ? (powder ? t.powderGone : t.gone).replace("{when}", when(e.period)) :
       t.changed.replace("{when}", when(e.period)).replace("{was}", when(e.was)));
     const result = await push(env, device, {
-      aps: { alert: { title: spot.name, body: lines.join("\n") }, sound: "default", "thread-id": spot.id },
+      aps: { alert: { title: spot.name, body: lines.join("\n") }, sound: SOUND, "thread-id": spot.id },
       spot: spot.id,
     });
     if (result === "gone") { // the app was deleted or the token is no longer valid
