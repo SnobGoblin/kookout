@@ -141,7 +141,7 @@ struct SpotEditView: View {
             HStack {
                 Text("Colder than")
                 Spacer()
-                StepButtons(label: "\(Units.temp(spot.powder!.maxTemp))\(Settings.shared.tempUnit == .f ? "F" : "C")",
+                StepButtons(label: "\(Units.temp(spot.powder!.maxTemp))\(Settings.shared.temp == .f ? "F" : "C")",
                             down: { spot.powder!.maxTemp = Units.stepTemp(spot.powder!.maxTemp, by: -1) },
                             up: { spot.powder!.maxTemp = Units.stepTemp(spot.powder!.maxTemp, by: 1) })
             }

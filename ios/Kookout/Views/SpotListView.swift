@@ -74,7 +74,7 @@ struct SpotRow: View {
         let zone = spot.timeZone
         if let first = forecast.good.first {
             let day = Self.dayLabel(first.start, zone: zone)
-            let hours = "\(first.start.hourText(in: zone))–\(first.end.hourText(in: zone))"
+            let hours = Units.hours(first.start, first.end, zone: zone)
             return String(localized: "Good \(day) \(hours)")
         }
         if let firstPowder = forecast.powderDays.first, let date = Self.dayFormatter.date(from: firstPowder) {
@@ -99,17 +99,6 @@ struct SpotRow: View {
         f.timeZone = .gmt
         return f
     }()
-}
-
-extension Date {
-    /// The bare two-digit hour in a time zone, e.g. "14", the same in every language
-    /// (a plain date format would say "14 Uhr" in German). Used for ranges like "10–14".
-    func hourText(in zone: TimeZone) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH"
-        formatter.timeZone = zone
-        return formatter.string(from: self)
-    }
 }
 
 extension Sport {

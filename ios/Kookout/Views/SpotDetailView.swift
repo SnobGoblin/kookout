@@ -58,7 +58,7 @@ private struct DayHeader: View {
             Spacer()
             if let first = good.first, let last = good.last {
                 Label("\(spot.sport == .surf ? String(localized: "Good surf") : String(localized: "Good wind")) " +
-                      "\(first.time.hourText(in: spot.timeZone))–\(last.end.hourText(in: spot.timeZone))",
+                      Units.hours(first.time, last.end, zone: spot.timeZone),
                       systemImage: spot.sport.symbol)
                     .foregroundStyle(.green)
                     .textCase(nil)
@@ -113,10 +113,7 @@ struct HourRow: View {
     }
 
     private var timeLabel: String {
-        var style = Date.FormatStyle.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits)
-        style.timeZone = spot.timeZone
-        guard hour.hours > 1 else { return hour.time.formatted(style) }
-        return "\(hour.time.hourText(in: spot.timeZone))–\(hour.end.hourText(in: spot.timeZone))"
+        hour.hours > 1 ? Units.hours(hour.time, hour.end, zone: spot.timeZone) : Units.time(hour.time, zone: spot.timeZone)
     }
 }
 
