@@ -97,6 +97,14 @@ Apple Push Notifications service). Put the key id and team id in `relay/wrangler
 cd relay && npx wrangler secret put APNS_KEY < AuthKey_XXXXXXXXXX.p8
 ```
 
+## Brand (`brand/`)
+
+KOOKOUT in Archivo (Black, widest), with the two O's as eyes looking out: an orange dot in each, both
+shifted the same way. Navy `#0E2A3B`, buoy orange `#FF6B2C`. `swift brand/render.swift` draws the app
+icons (default, dark, tinted) into `ios/Kookout/Assets.xcassets`, the wordmark and mark SVGs, the web
+favicon and `apple-touch-icon.png` from the real letter outlines in `brand/fonts/` (Archivo, SIL Open Font
+License, see `brand/fonts/OFL.txt`). The app's own screens use the system font (SF Pro).
+
 ## Run locally
 
 ```bash
