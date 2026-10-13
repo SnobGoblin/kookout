@@ -64,6 +64,24 @@ cd ios && xcodegen && open Kookout.xcodeproj
 
 Bundle ID `com.sternell.kookout`, iOS 17+, English as the base language.
 
+### Notifications
+
+Each spot has notifications on unless switched off (Edit), and Settings has how far ahead to look (default
+48 hours). The app sends the relay its push token and the spots with notifications on (`PUT /devices/<id>`,
+see `relay/src/notify.js`); the relay keeps them in a Cloudflare D1 database (`relay/schema.sql`). Every hour
+it works out those spots with the same rules and pushes through Apple's push service (APNs) when good
+conditions come into the window, or change there (moved by 2+ hours, or no longer good). Nothing is sent
+between 22 and 07 on the phone's clock; those changes come in the morning. `node relay/test-notify.mjs`
+checks the change detection.
+
+Push needs an APNs key from the Apple Developer site (Certificates, Identifiers & Profiles → Keys → +, with
+Apple Push Notifications service). Put the key id and team id in `relay/wrangler.toml` (`APNS_KEY_ID`,
+`APNS_TEAM_ID`) and the key itself in a secret:
+
+```bash
+cd relay && npx wrangler secret put APNS_KEY < AuthKey_XXXXXXXXXX.p8
+```
+
 ## Run locally
 
 ```bash

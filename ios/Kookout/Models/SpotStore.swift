@@ -59,6 +59,7 @@ final class SpotStore {
         } catch {
             print("Couldn't save spots: \(error)")
         }
+        Notifications.shared.update(spots: spots)
     }
 }
 
@@ -74,10 +75,19 @@ final class Settings {
     enum TempUnit: String, CaseIterable { case automatic, c, f }
     enum Clock: String, CaseIterable { case automatic, h12, h24 }
 
-    var windUnit: WindUnit { didSet { UserDefaults.standard.set(windUnit.rawValue, forKey: "windUnit") } }
-    var waveUnit: WaveUnit { didSet { UserDefaults.standard.set(waveUnit.rawValue, forKey: "waveUnit") } }
+    // Wind, waves and the clock also shape the notifications, so the relay hears about changes.
+    var windUnit: WindUnit { didSet { save(windUnit.rawValue, "windUnit") } }
+    var waveUnit: WaveUnit { didSet { save(waveUnit.rawValue, "waveUnit") } }
     var tempUnit: TempUnit { didSet { UserDefaults.standard.set(tempUnit.rawValue, forKey: "tempUnit") } }
-    var clock: Clock { didSet { UserDefaults.standard.set(clock.rawValue, forKey: "clock") } }
+    var clock: Clock { didSet { save(clock.rawValue, "clock") } }
+    /// How far ahead notifications look, in hours.
+    var notifyHours: Int { didSet { save(notifyHours, "notifyHours") } }
+    static let notifyChoices = [12, 24, 48, 72, 120, 168]
+
+    private func save(_ value: Any, _ key: String) {
+        UserDefaults.standard.set(value, forKey: key)
+        Notifications.shared.syncSoon()
+    }
 
     private init() {
         let defaults = UserDefaults.standard
@@ -85,6 +95,7 @@ final class Settings {
         waveUnit = defaults.string(forKey: "waveUnit").flatMap(WaveUnit.init) ?? .automatic
         tempUnit = defaults.string(forKey: "tempUnit").flatMap(TempUnit.init) ?? .automatic
         clock = defaults.string(forKey: "clock").flatMap(Clock.init) ?? .automatic
+        notifyHours = defaults.object(forKey: "notifyHours") as? Int ?? 48
     }
 
     /// What "automatic" means on this phone. Wind riders in the Nordic countries use m/s, most of
@@ -103,6 +114,14 @@ final class Settings {
     var wind: WindUnit { windUnit == .automatic ? Self.automaticWind : windUnit }
     var wave: WaveUnit { waveUnit == .automatic ? Self.automaticWave : waveUnit }
     var temp: TempUnit { tempUnit == .automatic ? Self.automaticTemp : tempUnit }
+    /// "48 hours" or "3 days", in the phone's language.
+    static func hoursText(_ hours: Int) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .full
+        formatter.allowedUnits = hours % 24 == 0 && hours > 48 ? [.day] : [.hour]
+        return formatter.string(from: TimeInterval(hours * 3600)) ?? "\(hours) h"
+    }
+
     var uses12Hour: Bool { (clock == .automatic ? Self.automaticClock : clock) == .h12 }
 }
 

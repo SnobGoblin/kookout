@@ -14,6 +14,11 @@ targets:
     type: application
     platform: iOS
     sources: [Kookout]
+    # Push notifications (Apple's sandbox for builds from Xcode; the App Store build switches to production)
+    entitlements:
+      path: Kookout/Kookout.entitlements
+      properties:
+        aps-environment: development
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sternell.kookout

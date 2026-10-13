@@ -6,6 +6,19 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable private var settings = Settings.shared
     @State private var confirmReset = false
+    @State private var testState = TestState.ready
+    private let notifications = Notifications.shared
+
+    private enum TestState {
+        case ready, sending, sent, failed
+        var label: LocalizedStringKey {
+            switch self {
+            case .ready, .sending: "Send a test notification"
+            case .sent: "Test sent"
+            case .failed: "Couldn't send the test"
+            }
+        }
+    }
 
     // What "Automatic" means on this phone, shown next to it.
     private var automaticWind: String { Settings.automaticWind == .ms ? "m/s" : String(localized: "knots") }
@@ -41,6 +54,30 @@ struct SettingsView: View {
                     Text("Units")
                 } footer: {
                     Text("Good hours are judged on the numbers as shown, so changing units can shift a borderline hour.")
+                }
+
+                Section {
+                    if notifications.status == .denied {
+                        Text("Notifications are turned off for Kookout in the iPhone's Settings.")
+                        Button("Open Settings") {
+                            if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+                        }
+                    } else {
+                        Picker("Look ahead", selection: $settings.notifyHours) {
+                            ForEach(Settings.notifyChoices, id: \.self) { Text(Settings.hoursText($0)).tag($0) }
+                        }
+                        Button(testState.label) {
+                            Task {
+                                testState = .sending
+                                testState = await notifications.sendTest() ? .sent : .failed
+                            }
+                        }
+                        .disabled(testState == .sending || notifications.token == nil)
+                    }
+                } header: {
+                    Text("Notifications")
+                } footer: {
+                    Text("Kookout tells you when good conditions come up within this time, and when they change. Nothing is sent between 22 and 07. Switch notifications on or off for each spot under Edit.")
                 }
 
                 Section {

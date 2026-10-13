@@ -11,6 +11,7 @@
 //   POST /analyse  {spot, units?, waveUnit?} -> the spot's forecast with the good hours marked, using the same
 //                                     rules as the web page (rules.js). For the app and notifications.
 //   GET /tz?lat=21.28&lon=-157.83   -> the place's time zone, e.g. {"tz":"Pacific/Honolulu"} (worked out locally)
+//   PUT/DELETE /devices/<id>, POST /devices/<id>/test  -> notifications for a phone (see notify.js)
 //   GET /waves?lat=58.80&lon=5.55   -> wave forecast (total height in m, period, direction) about a week ahead:
 //                                     MET's Oceanforecast in Scandinavian waters, NOAA WaveWatch III elsewhere
 //
@@ -18,6 +19,7 @@
 
 import tzlookup from "@photostructure/tz-lookup";
 import { analyse } from "../../rules.js"; // the same rules as the web page
+import { handleDevices, notifyAll } from "./notify.js";
 
 const FROST = "https://frost.met.no";
 const ALLOWED_ORIGINS = ["https://kookout.no", "https://www.kookout.no", "https://sternell.com",
@@ -28,9 +30,9 @@ const NWS_HEADERS = { "User-Agent": "KookoutRelay/1.0 (kookout.no, hi@kookout.no
 const WIND = ["wind_speed", "wind_from_direction", "max(wind_speed_of_gust PT10M)", "max(wind_speed_of_gust PT1H)"];
 
 export default {
-  // Every 3 hours (see wrangler.toml): refresh the stored NOAA wave forecasts.
+  // Every 3 hours (see wrangler.toml): refresh the stored NOAA wave forecasts. Every hour: notifications.
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(refreshStoredWaves(env));
+    ctx.waitUntil(event.cron === "7 * * * *" ? notifyAll(env, analyseSpot) : refreshStoredWaves(env));
   },
 
   async fetch(request, env, ctx) {
@@ -41,7 +43,7 @@ export default {
       status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...cors } });
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...cors,
-      "Access-Control-Allow-Methods": "GET, POST", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "86400" } });
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "86400" } });
     if (!env.FROST_CLIENT_ID) return reply({ error: "FROST_CLIENT_ID is not set" }, 500);
     const frost = path => fetch(FROST + path, {
       headers: { Authorization: "Basic " + btoa(env.FROST_CLIENT_ID + ":") },
@@ -87,6 +89,8 @@ export default {
           .sort((a, b) => a.km - b.km);
         return reply({ stations: all, holfuy });
       }
+
+      if (url.pathname.startsWith("/devices/")) return handleDevices(request, env, url, reply);
 
       if (url.pathname === "/analyse" && request.method === "POST") {
         const body = await request.json().catch(() => null);

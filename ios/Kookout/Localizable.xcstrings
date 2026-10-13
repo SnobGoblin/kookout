@@ -164,47 +164,6 @@
         }
       }
     },
-    "Automatic": {
-      "extractionState": "stale",
-      "localizations": {
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Automatisk"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Automatisch"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Automático"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Automatique"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Automatisk"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Automatiskt"
-          }
-        }
-      }
-    },
     "Automatic (%@)": {
       "localizations": {
         "da": {
@@ -481,6 +440,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kunde inte hämta prognosen."
+          }
+        }
+      }
+    },
+    "Couldn't send the test": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke sende testen"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunde inte skicka testet"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke sende testen"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test konnte nicht gesendet werden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d'envoyer le test"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo enviar la prueba"
           }
         }
       }
@@ -1088,6 +1087,86 @@
     "Kookout": {
       "shouldTranslate": false
     },
+    "Kookout tells you when good conditions come up within this time, and when they change. Nothing is sent between 22 and 07. Switch notifications on or off for each spot under Edit.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout sier fra når gode forhold dukker opp innenfor denne tiden, og når de endrer seg. Ingenting sendes mellom 22 og 07. Slå varsler av eller på for hver spot under Rediger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout säger till när bra förhållanden dyker upp inom den här tiden, och när de ändras. Inget skickas mellan 22 och 07. Slå på eller av notiser för varje spot under Redigera."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout siger til, når gode forhold dukker op inden for denne tid, og når de ændrer sig. Der sendes intet mellem 22 og 07. Slå notifikationer til eller fra for hvert spot under Rediger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout meldet sich, wenn innerhalb dieser Zeit gute Bedingungen kommen und wenn sie sich ändern. Zwischen 22 und 7 Uhr wird nichts gesendet. Mitteilungen für jeden Spot unter Bearbeiten ein- oder ausschalten."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout vous prévient quand de bonnes conditions arrivent dans ce délai, et quand elles changent. Rien n'est envoyé entre 22 h et 7 h. Activez ou désactivez les notifications de chaque spot sous Modifier."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout te avisa cuando lleguen buenas condiciones dentro de este plazo y cuando cambien. No se envía nada entre las 22 y las 7. Activa o desactiva las notificaciones de cada spot en Editar."
+          }
+        }
+      }
+    },
+    "Look ahead": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se fremover"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se framåt"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se frem"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorausschau"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anticipation"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anticipación"
+          }
+        }
+      }
+    },
     "Mean wind at least": {
       "localizations": {
         "da": {
@@ -1284,6 +1363,126 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inga spotar än"
+          }
+        }
+      }
+    },
+    "Notifications": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varsler"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notiser"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifikationer"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notificaciones"
+          }
+        }
+      }
+    },
+    "Notifications are turned off for Kookout in the iPhone's Settings.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varsler er slått av for Kookout i iPhone-innstillingene."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notiser är avstängda för Kookout i iPhones inställningar."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifikationer er slået fra for Kookout i iPhonens indstillinger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungen sind für Kookout in den iPhone-Einstellungen ausgeschaltet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les notifications de Kookout sont désactivées dans les réglages de l'iPhone."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las notificaciones de Kookout están desactivadas en los ajustes del iPhone."
+          }
+        }
+      }
+    },
+    "Open Settings": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Åpne Innstillinger"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öppna Inställningar"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Åbn Indstillinger"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen öffnen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir les Réglages"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir Ajustes"
           }
         }
       }
@@ -1728,6 +1927,46 @@
         }
       }
     },
+    "Send a test notification": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send et testvarsel"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skicka en testnotis"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send en testnotifikation"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testmitteilung senden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envoyer une notification de test"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviar una notificación de prueba"
+          }
+        }
+      }
+    },
     "Settings": {
       "localizations": {
         "da": {
@@ -2048,6 +2287,46 @@
         }
       }
     },
+    "Test sent": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test sendt"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test skickat"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test sendt"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test gesendet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test envoyé"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prueba enviada"
+          }
+        }
+      }
+    },
     "Units": {
       "localizations": {
         "da": {
@@ -2164,6 +2443,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vågor minst"
+          }
+        }
+      }
+    },
+    "When good conditions come up in the next %@, or change. How far ahead is set in Settings.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når gode forhold dukker opp de neste %@, eller endrer seg. Hvor langt frem velges i Innstillinger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "När bra förhållanden dyker upp de närmaste %@, eller ändras. Hur långt fram väljs i Inställningar."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når gode forhold dukker op inden for de næste %@, eller ændrer sig. Hvor langt frem vælges i Indstillinger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn in den nächsten %@ gute Bedingungen kommen oder sich ändern. Wie weit voraus, legst du in den Einstellungen fest."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quand de bonnes conditions arrivent dans un délai de %@, ou changent. Le délai se règle dans les Réglages."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuando lleguen buenas condiciones en un plazo de %@, o cambien. El plazo se elige en Ajustes."
           }
         }
       }

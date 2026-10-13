@@ -21,6 +21,12 @@ struct SpotEditView: View {
             if spot.powder != nil { powderSection }
 
             Section {
+                Toggle("Notifications", isOn: Binding(get: { spot.notifies }, set: { spot.notify = $0 }))
+            } footer: {
+                Text("When good conditions come up in the next \(Settings.hoursText(Settings.shared.notifyHours)), or change. How far ahead is set in Settings.")
+            }
+
+            Section {
                 Button("Delete spot", role: .destructive) { confirmDelete = true }
             }
         }

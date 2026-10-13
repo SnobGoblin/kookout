@@ -53,7 +53,10 @@ struct Spot: Identifiable, Codable, Hashable {
     var wind: WindRule?
     var surf: SurfRule?
     var powder: PowderRule?
+    /// Notifications for this spot; on unless switched off (nil for spots saved before notifications existed).
+    var notify: Bool?
 
+    var notifies: Bool { notify ?? true }
     var timeZone: TimeZone { TimeZone(identifier: timeZoneID) ?? .current }
     var sport: Sport { surf != nil ? .surf : powder != nil ? .powder : .wing }
 }

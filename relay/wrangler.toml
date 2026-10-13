@@ -11,6 +11,19 @@ preview_urls = false
 binding = "WAVES"
 id = "dab72f0bb79e44ceb8dad18acb85adf9"
 
-# Refresh the stored wave forecasts every 3 hours
+# The phones that want notifications (see schema.sql)
+[[d1_databases]]
+binding = "DB"
+database_name = "kookout"
+database_id = "3e391139-da69-443c-8f07-f0bfee64e9f2"
+
+# Every 3 hours: refresh the stored wave forecasts. Every hour: check the spots and send notifications.
 [triggers]
-crons = ["17 */3 * * *"]
+crons = ["17 */3 * * *", "7 * * * *"]
+
+# Apple's push service (APNs). The signing key is a secret: npx wrangler secret put APNS_KEY
+# (paste the whole .p8 file). The key id and team id aren't secret.
+[vars]
+APNS_KEY_ID = ""
+APNS_TEAM_ID = ""
+APNS_TOPIC = "com.sternell.kookout"
