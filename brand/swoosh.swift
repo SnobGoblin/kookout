@@ -1,8 +1,8 @@
 // Kookout's notification sound: a wind swoosh, a gust that rushes past, about 2.5 seconds.
 // Run from the repo root:  swift -O brand/swoosh.swift   → brand/swoosh.caf and ios/Kookout/kookout.caf
 //
-// Wind is noise through a resonant band-pass filter: sweeping the filter up and back down makes the "whoosh",
-// a second, narrow filter on top gives the faint whistle you hear in rigging.
+// Wind is noise through a band-pass filter: sweeping it up and back down makes the "whoosh". It stays below
+// ~1 kHz with a low-pass on top: iPhone speakers are loudest at 2–4 kHz, where any hiss turns into a saw.
 
 import AVFoundation
 
@@ -32,24 +32,27 @@ struct BandPass {
     }
 }
 
-var rush = BandPass(), body = BandPass(), whistle = BandPass()
+var rush = BandPass(), body = BandPass()
+var smooth1 = 0.0, smooth2 = 0.0 // two one-pole low-passes, cutting the hiss above ~1.2 kHz
+let cut = 1 - exp(-2 * .pi * 1200 / rate)
 var peak: Float = 0
 for i in 0..<frames {
     let t = Double(i) / rate
     let p = t / length // 0…1 through the gust
     // The gust: swells in, peaks at about 40%, and trails away
     let gust = pow(sin(.pi * pow(p, 0.75)), 2.2)
-    // The filter rushes up to ~1.6 kHz and back down: the swoosh going past
-    let sweep = 260 + 1350 * pow(sin(.pi * pow(p, 0.8)), 1.6)
+    // The filter rushes up to ~800 Hz and back down: the swoosh going past
+    let sweep = 300 + 500 * pow(sin(.pi * pow(p, 0.8)), 1.6)
     let n = noise()
-    var v = 1.0 * rush.run(n, freq: sweep, q: 1.4)
-    v += 0.6 * body.run(n, freq: 180 + 160 * gust, q: 0.8)              // low rumble under it
-    v += 0.10 * gust * whistle.run(n, freq: sweep * 2.1, q: 25)          // faint whistle at the peak
-    let sample = Float(v * gust)
+    var v = 1.0 * rush.run(n, freq: sweep, q: 0.9)
+    v += 0.7 * body.run(n, freq: 220 + 120 * gust, q: 0.7)              // low body under it
+    smooth1 += cut * (v - smooth1)
+    smooth2 += cut * (smooth1 - smooth2)
+    let sample = Float(smooth2 * gust)
     out[i] = sample
     peak = max(peak, abs(sample))
 }
-for i in 0..<frames { out[i] *= 0.89 / peak }
+for i in 0..<frames { out[i] *= 0.7 / peak } // a little quieter than full scale
 
 let settings: [String: Any] = [AVFormatIDKey: kAudioFormatLinearPCM, AVSampleRateKey: rate, AVNumberOfChannelsKey: 1,
                                AVLinearPCMBitDepthKey: 16, AVLinearPCMIsFloatKey: false, AVLinearPCMIsBigEndianKey: false]
