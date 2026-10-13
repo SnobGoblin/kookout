@@ -88,7 +88,9 @@ struct HourRow: View {
                 .frame(minWidth: 52, alignment: .leading)
             Text(Units.temp(hour.temp))
                 .monospacedDigit()
-                .frame(width: 36, alignment: .trailing)
+                .lineLimit(1)
+                .fixedSize() // never wrap "10°" (bold or large text)
+                .frame(minWidth: 36, alignment: .trailing)
             if spot.sport == .surf {
                 Text(waveLabel)
                     .monospacedDigit()
