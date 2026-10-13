@@ -5,6 +5,7 @@ struct SpotListView: View {
     @State private var showSettings = false
     @State private var showAdd = false
     @State private var path: [Route] = []
+    @State private var locating = false
 
     var body: some View {
         @Bindable var store = store
@@ -19,14 +20,11 @@ struct SpotListView: View {
                 .onMove { store.spots.move(fromOffsets: $0, toOffset: $1) }
             }
             .overlay {
-                if store.spots.isEmpty {
-                    ContentUnavailableView("No spots yet", systemImage: "mappin.and.ellipse",
-                                           description: Text("Tap + to add your first spot."))
-                }
+                if store.spots.isEmpty { welcome }
             }
             .navigationTitle("Kookout")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) { EditButton() }
+                if !store.spots.isEmpty { ToolbarItem(placement: .topBarLeading) { EditButton() } }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
                         .accessibilityLabel("Add spot")
@@ -51,6 +49,28 @@ struct SpotListView: View {
                 Notifications.shared.openSpotID = nil
             }
             .refreshable { await store.refreshAll() }
+        }
+    }
+}
+
+extension SpotListView {
+    /// A new install (or after "Remove all spots"): start with the popular spots nearby, or add your own.
+    var welcome: some View {
+        ContentUnavailableView {
+            Label("Welcome to Kookout", systemImage: "wind")
+        } description: {
+            Text(locating ? "Finding spots near you…" : "Start with popular spots near you, or add your own.")
+        } actions: {
+            Button("Spots near me") {
+                Task {
+                    locating = true
+                    if let here = await Locator.current() { store.addNearest(to: here) } else { showAdd = true }
+                    locating = false
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(locating)
+            Button("Add a spot on the map") { showAdd = true }
         }
     }
 }

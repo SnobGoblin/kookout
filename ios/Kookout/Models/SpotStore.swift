@@ -1,8 +1,10 @@
 import Foundation
 import Observation
+import CoreLocation
 
 /// The user's spots and their latest forecasts. Spots are saved on the phone (a JSON file) until
 /// accounts and the shared database arrive; all spots are worked out at the same time.
+/// A new install starts empty, with a welcome screen that offers the popular spots nearby (Catalogue).
 @MainActor @Observable
 final class SpotStore {
     var spots: [Spot] { didSet { save() } }
@@ -10,7 +12,7 @@ final class SpotStore {
     private(set) var failed: Set<Spot.ID> = []
 
     init() {
-        spots = (try? JSONDecoder().decode([Spot].self, from: Data(contentsOf: Self.file))) ?? Spot.defaults
+        spots = (try? JSONDecoder().decode([Spot].self, from: Data(contentsOf: Self.file))) ?? []
     }
 
     func refreshAll() async {
@@ -43,9 +45,18 @@ final class SpotStore {
         forecasts[spot.id] = nil // the rules may have changed; worked out again by refresh
     }
 
-    func resetToDefaults() {
-        spots = Spot.defaults
+    /// Adds the catalogue spots nearest to a place (the ones not already in the list).
+    func addNearest(to location: CLLocation, count: Int = 5) {
+        let new = Catalogue.nearest(to: location, excluding: Set(spots.map(\.id)), count: count).map(\.entry.spot)
+        spots += new
+        Task { await withTaskGroup(of: Void.self) { group in for spot in new { group.addTask { await self.refresh(spot) } } } }
+    }
+
+    /// Start over: no spots, back to the welcome screen (Settings.reset() puts the settings back).
+    func removeAll() {
+        spots = []
         forecasts = [:]
+        failed = []
     }
 
     private static var file: URL {
@@ -96,6 +107,11 @@ final class Settings {
         tempUnit = defaults.string(forKey: "tempUnit").flatMap(TempUnit.init) ?? .automatic
         clock = defaults.string(forKey: "clock").flatMap(Clock.init) ?? .automatic
         notifyHours = defaults.object(forKey: "notifyHours") as? Int ?? 48
+    }
+
+    /// Back to how a new install starts.
+    func reset() {
+        windUnit = .automatic; waveUnit = .automatic; tempUnit = .automatic; clock = .automatic; notifyHours = 48
     }
 
     /// What "automatic" means on this phone. Wind riders in the Nordic countries use m/s, most of

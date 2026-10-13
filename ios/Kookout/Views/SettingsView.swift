@@ -81,7 +81,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Button("Reset to the default spots", role: .destructive) { confirmReset = true }
+                    Button("Start over", role: .destructive) { confirmReset = true }
                 }
 
                 Section {
@@ -94,8 +94,8 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
-            .confirmationDialog("Replace your spots with the default spots?", isPresented: $confirmReset, titleVisibility: .visible) {
-                Button("Reset", role: .destructive) { store.resetToDefaults() }
+            .confirmationDialog("Remove all your spots and settings, and start over?", isPresented: $confirmReset, titleVisibility: .visible) {
+                Button("Start over", role: .destructive) { store.removeAll(); settings.reset(); dismiss() }
             }
             // The rules round in the chosen units, so work everything out again when they change.
             .onChange(of: settings.wind) { Task { await store.refreshAll() } }

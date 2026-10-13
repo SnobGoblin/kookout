@@ -126,5 +126,5 @@ struct HourRow: View {
 }
 
 #Preview {
-    NavigationStack { SpotDetailView(spot: Spot.defaults[1]) }.environment(SpotStore())
+    NavigationStack { SpotDetailView(spot: Catalogue.entries[1].spot) }.environment(SpotStore())
 }

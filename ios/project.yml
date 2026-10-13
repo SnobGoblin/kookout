@@ -35,4 +35,4 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.weather
-        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Kookout uses your location to show where you are on the map when you add a spot."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Kookout uses your location to find spots near you and to show where you are on the map."

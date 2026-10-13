@@ -2,15 +2,15 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-/// Add a spot: search for a place or tap the map, give it a name, choose the sport.
-/// It starts with the standard rules for that sport; the directions can be picked right after.
+/// Add a spot: pick one of the popular spots nearby, search for a place or tap the map, give it a name,
+/// choose the sport. It starts with the standard rules for that sport; the directions can be picked right after.
 struct AddSpotView: View {
     @Environment(SpotStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     /// Called with the new spot, so the list can open its settings.
     var onAdd: (Spot) -> Void = { _ in }
 
-    @State private var position: MapCameraPosition = .automatic
+    @State private var position: MapCameraPosition = .userLocation(fallback: .automatic)
     @State private var pin: CLLocationCoordinate2D?
     @State private var name = ""
     @State private var sport: Sport = .wing
@@ -19,6 +19,8 @@ struct AddSpotView: View {
     @State private var timeZone: TimeZone?
     @State private var location = CLLocationManager()
     @FocusState private var searching: Bool
+    /// The middle of the map, for the popular spots nearby (nil while the map shows a whole country or more).
+    @State private var center: CLLocation?
 
     var body: some View {
         NavigationStack {
@@ -29,6 +31,11 @@ struct AddSpotView: View {
                         UserAnnotation()
                     }
                     .mapControls { MapUserLocationButton() }
+                    .onMapCameraChange(frequency: .onEnd) { context in
+                        let region = context.region
+                        center = region.span.latitudeDelta > 4 ? nil
+                            : CLLocation(latitude: region.center.latitude, longitude: region.center.longitude)
+                    }
                     .onTapGesture { point in
                         if let coordinate = proxy.convert(point, from: .local) { choose(coordinate, suggestedName: nil) }
                     }
@@ -70,6 +77,25 @@ struct AddSpotView: View {
                     } else if pin == nil {
                         Text("Or tap the map where the spot is.")
                             .foregroundStyle(.secondary)
+                        if !suggestions.isEmpty {
+                            Section("Popular spots nearby") {
+                                ForEach(suggestions, id: \.entry.spot.id) { item in
+                                    Button { addPopular(item.entry.spot) } label: {
+                                        HStack {
+                                            Image(systemName: item.entry.spot.sport.symbol).frame(width: 24)
+                                            VStack(alignment: .leading) {
+                                                Text(item.entry.spot.name)
+                                                Text("\(item.entry.area) · \(Measurement.distance(item.meters))")
+                                                    .font(.caption).foregroundStyle(.secondary)
+                                            }
+                                            Spacer()
+                                            Image(systemName: "plus.circle")
+                                        }
+                                    }
+                                    .foregroundStyle(.primary)
+                                }
+                            }
+                        }
                     } else {
                         TextField("Name of the spot", text: $name)
                         Picker("Sport", selection: $sport) {
@@ -80,7 +106,7 @@ struct AddSpotView: View {
                         .pickerStyle(.segmented)
                     }
                 }
-                .frame(height: !results.isEmpty ? 330 : pin == nil ? 150 : 210)
+                .frame(height: !results.isEmpty ? 330 : pin == nil ? (suggestions.isEmpty ? 150 : 400) : 210)
             }
             .task(id: query) { await search() }
             .navigationTitle("Add spot")
@@ -116,6 +142,20 @@ struct AddSpotView: View {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = text
         results = (try? await MKLocalSearch(request: request).start().mapItems.prefix(8).map { $0 }) ?? []
+    }
+
+    /// The catalogue spots nearest the middle of the map (or the phone, when the map is zoomed far out),
+    /// that the user doesn't have yet.
+    private var suggestions: [(entry: Catalogue.Entry, meters: Double)] {
+        guard let place = center ?? location.location else { return [] }
+        return Catalogue.nearest(to: place, excluding: Set(store.spots.map(\.id)), count: 5)
+    }
+
+    private func addPopular(_ spot: Spot) {
+        store.add(spot)
+        Task { await store.refresh(spot) }
+        dismiss()
+        onAdd(spot)
     }
 
     private func add() {

@@ -64,6 +64,14 @@ cd ios && xcodegen && open Kookout.xcodeproj
 
 Bundle ID `com.sternell.kookout`, iOS 17+, English as the base language.
 
+### Popular spots
+
+`ios/Kookout/Catalogue.json` holds about 70 well-known spots (Oslofjord, Halland, Øresund, Stockholm,
+Jæren, Hvide Sande, Montpellier, Biarritz, Fuerteventura, San Francisco, Cape Cod, Hatteras), each with the
+wind directions that usually work. A new install starts with a welcome screen: "Spots near me" adds the five
+nearest; the add-spot screen lists the nearest ones you don't have yet. "Start over" in Settings removes all
+spots and settings and goes back to the welcome screen.
+
 ### Notifications
 
 Each spot has notifications on unless switched off (Edit), and Settings has how far ahead to look (default

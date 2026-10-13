@@ -4,6 +4,9 @@
     "%@ (%@)": {
       "shouldTranslate": false
     },
+    "%@ · %@": {
+      "shouldTranslate": false
+    },
     "12-hour": {
       "localizations": {
         "da": {
@@ -120,6 +123,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lägg till"
+          }
+        }
+      }
+    },
+    "Add a spot on the map": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legg til en spot på kartet"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lägg till en spot på kartan"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilføj et spot på kortet"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spot auf der Karte hinzufügen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter un spot sur la carte"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir un spot en el mapa"
           }
         }
       }
@@ -764,6 +807,46 @@
         }
       }
     },
+    "Finding spots near you…": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finner spoter nær deg …"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letar efter spots nära dig …"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finder spots nær dig …"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suche Spots in deiner Nähe …"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche de spots près de vous…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscando spots cerca de ti…"
+          }
+        }
+      }
+    },
     "For example offshore wind. Tap to choose.": {
       "localizations": {
         "da": {
@@ -1327,46 +1410,6 @@
         }
       }
     },
-    "No spots yet": {
-      "localizations": {
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ingen spots endnu"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Noch keine Spots"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aún no hay spots"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pas encore de spots"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ingen spotter ennå"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inga spotar än"
-          }
-        }
-      }
-    },
     "Notifications": {
       "localizations": {
         "nb": {
@@ -1607,6 +1650,46 @@
         }
       }
     },
+    "Popular spots nearby": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Populære spoter i nærheten"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Populära spots i närheten"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Populære spots i nærheden"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beliebte Spots in der Nähe"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots populaires à proximité"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots populares cerca"
+          }
+        }
+      }
+    },
     "Powder": {
       "localizations": {
         "da": {
@@ -1767,122 +1850,42 @@
         }
       }
     },
-    "Replace your spots with the default spots?": {
+    "Remove all your spots and settings, and start over?": {
       "localizations": {
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erstat dine spots med standardspots?"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deine Spots durch die Standard-Spots ersetzen?"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¿Sustituir tus spots por los spots predeterminados?"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remplacer vos spots par les spots par défaut ?"
-          }
-        },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Erstatte spottene dine med standardspottene?"
+            "value": "Fjerne alle spotene og innstillingene dine og begynne på nytt?"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ersätta dina spotar med standardspotarna?"
+            "value": "Ta bort alla dina spots och inställningar och börja om?"
           }
-        }
-      }
-    },
-    "Reset": {
-      "localizations": {
+        },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nulstil"
+            "value": "Fjern alle dine spots og indstillinger, og start forfra?"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zurücksetzen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restablecer"
+            "value": "Alle Spots und Einstellungen entfernen und neu anfangen?"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Réinitialiser"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tilbakestill"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Återställ"
-          }
-        }
-      }
-    },
-    "Reset to the default spots": {
-      "localizations": {
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nulstil til standardspots"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Auf Standard-Spots zurücksetzen"
+            "value": "Supprimer tous vos spots et réglages, et recommencer ?"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Volver a los spots predeterminados"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revenir aux spots par défaut"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tilbakestill til standardspotter"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Återställ till standardspotar"
+            "value": "¿Eliminar todos tus spots y ajustes y empezar de nuevo?"
           }
         }
       }
@@ -2087,6 +2090,126 @@
         }
       }
     },
+    "Spots near me": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spoter nær meg"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots nära mig"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots nær mig"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots in meiner Nähe"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots près de moi"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots cerca de mí"
+          }
+        }
+      }
+    },
+    "Start over": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Begynn på nytt"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Börja om"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start forfra"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neu anfangen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recommencer"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empezar de nuevo"
+          }
+        }
+      }
+    },
+    "Start with popular spots near you, or add your own.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Begynn med populære spoter nær deg, eller legg til dine egne."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Börja med populära spots nära dig, eller lägg till dina egna."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start med populære spots nær dig, eller tilføj dine egne."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starte mit beliebten Spots in deiner Nähe oder füge eigene hinzu."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commencez avec des spots populaires près de vous, ou ajoutez les vôtres."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empieza con spots populares cerca de ti o añade los tuyos."
+          }
+        }
+      }
+    },
     "Sunny days: mean wind at least": {
       "localizations": {
         "da": {
@@ -2163,46 +2286,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Surf"
-          }
-        }
-      }
-    },
-    "Tap + to add your first spot.": {
-      "localizations": {
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tryk + for at tilføje dit første spot."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tippe auf +, um deinen ersten Spot hinzuzufügen."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toca + para añadir tu primer spot."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Touchez + pour ajouter votre premier spot."
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trykk + for å legge til din første spot."
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tryck + för att lägga till din första spot."
           }
         }
       }
@@ -2443,6 +2526,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vågor minst"
+          }
+        }
+      }
+    },
+    "Welcome to Kookout": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velkommen til Kookout"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Välkommen till Kookout"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velkommen til Kookout"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Willkommen bei Kookout"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bienvenue sur Kookout"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bienvenido a Kookout"
           }
         }
       }
