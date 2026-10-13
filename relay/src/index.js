@@ -233,13 +233,17 @@ async function refreshStoredWaves(env) {
 
 // NOAA WaveWatch III: global, 0.5° grid (~50 km). Cells along the coast often count as land,
 // so we use the nearest cell at sea within about 1°.
-const WW3 = "https://coastwatch.pfeg.noaa.gov/erddap/griddap/NWW3_Global_Best.json";
-// NOAA's data server is sometimes slow or answers with an empty page, so ask up to twice,
-// and don't let Cloudflare keep a copy (a bad answer would otherwise stick around).
+// The same NOAA model is published by several data servers. PacIOOS (University of Hawai'i, part of NOAA's
+// coastal observing system) is fast; NOAA's own CoastWatch server is the backup, as it is often slow.
+const WW3_SERVERS = [
+  "https://pae-paha.pacioos.hawaii.edu/erddap/griddap/ww3_global.json",
+  "https://coastwatch.pfeg.noaa.gov/erddap/griddap/NWW3_Global_Best.json",
+];
+// Ask each server in turn (with a time limit), and don't let Cloudflare keep a copy of a bad answer.
 async function erddap(query) {
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (const server of WW3_SERVERS) {
     try {
-      const res = await fetch(`${WW3}?${encodeURI(query)}`, { headers: NWS_HEADERS, signal: AbortSignal.timeout(15000) });
+      const res = await fetch(`${server}?${encodeURI(query)}`, { headers: NWS_HEADERS, signal: AbortSignal.timeout(15000) });
       if (res.ok) return (await res.json()).table;
     } catch {}
   }

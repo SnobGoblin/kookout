@@ -1,6 +1,8 @@
-# Uploads the site to sternell.com/wind every time something is pushed to main.
-# The FTP password lives in the repository secret FTP_PASSWORD, never in this file.
-name: Deploy to sternell.com
+# Uploads the site every time something is pushed to main:
+#   - kookout.no         (FTP user "kookout",  password in the secret KOOKOUT_FTP_PASSWORD)
+#   - sternell.com/wind  (FTP user "sternell", password in the secret FTP_PASSWORD), the old address
+# The passwords live only in GitHub's secrets, never in this file.
+name: Deploy Kookout
 
 on:
   push:
@@ -13,6 +15,8 @@ concurrency: deploy # never run two uploads at the same time
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      HAS_KOOKOUT_PASSWORD: ${{ secrets.KOOKOUT_FTP_PASSWORD != '' }}
     steps:
       - name: Get the code
         uses: actions/checkout@v7
@@ -23,16 +27,30 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "ftp.domeneshop.no ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBKMi4+UHxAA8poPV1eiusD2Yq3CJFxq/zZxIvaDM9OVM3fACBZ+1isJ6cBzd32szU2zdEeyJk3F/C6zR15rYuxA=" >> ~/.ssh/known_hosts
+          sudo apt-get install -y -qq sshpass
 
-      - name: Upload with SFTP
+      - name: Upload to kookout.no
+        if: env.HAS_KOOKOUT_PASSWORD == 'true' # skipped until the secret has been saved
+        env:
+          SSHPASS: ${{ secrets.KOOKOUT_FTP_PASSWORD }}
+        run: |
+          printf 'put index.html www/index.html\nput personvern.html www/personvern.html\nput apple-touch-icon.png www/apple-touch-icon.png\n' > upload.txt
+          sshpass -e sftp -o BatchMode=no -b upload.txt kookout@ftp.domeneshop.no
+
+      - name: Upload to sternell.com/wind
         env:
           SSHPASS: ${{ secrets.FTP_PASSWORD }}
         run: |
-          sudo apt-get install -y -qq sshpass
           printf 'put index.html www/wind/index.html\nput personvern.html www/wind/personvern.html\nput apple-touch-icon.png www/wind/apple-touch-icon.png\n' > upload.txt
           sshpass -e sftp -o BatchMode=no -b upload.txt sternell@ftp.domeneshop.no
 
-      - name: Check the live site
+      - name: Check the live sites
         run: |
           curl -fsS https://sternell.com/wind/ -o live.html
-          cmp live.html index.html && echo "Live site matches this commit."
+          cmp live.html index.html && echo "sternell.com/wind matches this commit."
+          # kookout.no may not be reachable until its DNS is set up, so this check only reports.
+          if curl -fsS -m 20 https://kookout.no/ -o live-kookout.html; then
+            cmp live-kookout.html index.html && echo "kookout.no matches this commit."
+          else
+            echo "kookout.no is not reachable yet (DNS?)."
+          fi
