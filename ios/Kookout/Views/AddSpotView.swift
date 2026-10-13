@@ -26,6 +26,7 @@ struct AddSpotView: View {
     @State private var shared: [SharedSpots.Shared] = []
     /// A spot picked on the map.
     @State private var selectedID: String?
+    @State private var askToShare = false
 
     /// A spot that can be added from the map or the list: built in, or shared by someone.
     struct Nearby {
@@ -124,8 +125,10 @@ struct AddSpotView: View {
                             Label("Powder", systemImage: Sport.powder.symbol).tag(Sport.powder)
                         }
                         .pickerStyle(.segmented)
-                        Text("New spots are shared with other Kookout users. You can switch this off under Edit.")
-                            .font(.footnote).foregroundStyle(.secondary)
+                        if Settings.shared.shareNewSpots == true {
+                            Text("This spot will be shared with other Kookout users. Change it under Edit, or for new spots in Settings.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
                     }
                 }
                 .frame(height: !results.isEmpty ? 330 : selected != nil ? 230 : pin == nil ? (suggestions.isEmpty ? 150 : 400) : 260)
@@ -136,9 +139,20 @@ struct AddSpotView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") { add() }
+                    Button("Add") {
+                        // The first spot they make: ask whether to share it (and their spots from now on).
+                        if Settings.shared.shareNewSpots == nil { askToShare = true } else { add() }
+                    }
                         .disabled(pin == nil || name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
+            }
+            .sheet(isPresented: $askToShare) {
+                ShareQuestion { share in
+                    Settings.shared.shareNewSpots = share
+                    askToShare = false
+                    add()
+                }
+                                .interactiveDismissDisabled()
             }
             .onAppear {
                 location.requestWhenInUseAuthorization()
@@ -221,7 +235,7 @@ struct AddSpotView: View {
         var spot = Spot(id: UUID().uuidString, name: name.trimmingCharacters(in: .whitespaces),
                         latitude: rounded(pin.latitude), longitude: rounded(pin.longitude),
                         timeZoneID: (timeZone ?? .current).identifier)
-        spot.shared = true // the user's own new spot: shared unless they switch it off
+        spot.shared = Settings.shared.shareNewSpots ?? false // as they answered the first time (changeable under Edit)
         switch sport {
         case .wing: spot.wind = WindRule()
         case .surf: spot.surf = SurfRule()
@@ -249,6 +263,46 @@ struct NearbyRow: View {
                 Text(item.spot.name)
                 Text("\(item.detail) · \(Measurement.distance(item.meters))").font(.caption).foregroundStyle(.secondary)
             }
+        }
+    }
+}
+
+/// Asked once, the first time someone makes a spot: share it (and later ones) with other Kookout users? And if so,
+/// under which name.
+struct ShareQuestion: View {
+    let answer: (Bool) -> Void
+    @Bindable private var settings = Settings.shared
+    @State private var share = true
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Text("Share your spots with other Kookout users?").font(.headline)
+                    Text("Others can then find them on the map, with their name, place and rules. Spots you keep private stay on your phone, and you can change this for each spot under Edit.")
+                        .foregroundStyle(.secondary)
+                    Picker("Share", selection: $share) {
+                        Text("Share").tag(true)
+                        Text("Keep private").tag(false)
+                    }
+                    .pickerStyle(.segmented)
+                }
+                if share {
+                    Section {
+                        TextField("Your name (optional)", text: $settings.sharingName)
+                            .textContentType(.givenName) // the keyboard suggests the name on the phone's own contact card
+                            .autocorrectionDisabled()
+                    } footer: {
+                        Text("Shown as “Added by …” on the spots you share. Leave it empty to share without a name.")
+                    }
+                }
+                Section {
+                    Button(share ? "Share and add the spot" : "Add the spot") { answer(share) }
+                        .bold()
+                }
+            }
+            .navigationTitle("Sharing")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

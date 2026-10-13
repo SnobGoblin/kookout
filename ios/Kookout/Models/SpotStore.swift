@@ -90,6 +90,10 @@ final class Settings {
     var waveUnit: WaveUnit { didSet { save(waveUnit.rawValue, "waveUnit") } }
     var tempUnit: TempUnit { didSet { UserDefaults.standard.set(tempUnit.rawValue, forKey: "tempUnit") } }
     var clock: Clock { didSet { save(clock.rawValue, "clock") } }
+    /// Whether spots the user creates are shared with others: asked the first time they add one (nil until then).
+    var shareNewSpots: Bool? {
+        didSet { UserDefaults.standard.set(shareNewSpots.map { $0 ? "yes" : "no" }, forKey: "shareNewSpots") }
+    }
     /// The name shown as "added by" on spots the user shares (empty: no name).
     var sharingName: String {
         didSet {
@@ -114,12 +118,14 @@ final class Settings {
         clock = defaults.string(forKey: "clock").flatMap(Clock.init) ?? .automatic
         notifyHours = defaults.object(forKey: "notifyHours") as? Int ?? 48
         sharingName = defaults.string(forKey: "sharingName") ?? ""
+        shareNewSpots = defaults.string(forKey: "shareNewSpots").map { $0 == "yes" }
     }
 
     /// Back to how a new install starts.
     func reset() {
         windUnit = .automatic; waveUnit = .automatic; tempUnit = .automatic; clock = .automatic; notifyHours = 48
         sharingName = ""
+        shareNewSpots = nil
     }
 
     /// What "automatic" means on this phone. Wind riders in the Nordic countries use m/s, most of

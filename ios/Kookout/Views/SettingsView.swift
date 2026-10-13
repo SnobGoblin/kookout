@@ -86,13 +86,17 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    TextField("Your name (optional)", text: $settings.sharingName)
-                        .textContentType(.givenName) // the keyboard suggests the name on the phone's own contact card
-                        .autocorrectionDisabled()
+                    Toggle("Share new spots", isOn: Binding(get: { settings.shareNewSpots == true },
+                                                            set: { settings.shareNewSpots = $0 }))
+                    if settings.shareNewSpots == true {
+                        TextField("Your name (optional)", text: $settings.sharingName)
+                            .textContentType(.givenName) // the keyboard suggests the name on the phone's own contact card
+                            .autocorrectionDisabled()
+                    }
                 } header: {
                     Text("Sharing")
                 } footer: {
-                    Text("Shown as “Added by …” on the spots you share. Leave it empty to share without a name.")
+                    Text("Spots you make are shared with other Kookout users, so they can find them on the map. Your name is shown as “Added by …”; leave it empty to share without one. Each spot can be changed under Edit.")
                 }
 
                 Section {

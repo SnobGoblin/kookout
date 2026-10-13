@@ -207,6 +207,46 @@
         }
       }
     },
+    "Add the spot": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legg til spoten"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lägg till spoten"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilføj spottet"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spot hinzufügen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter le spot"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir el spot"
+          }
+        }
+      }
+    },
     "Add this spot": {
       "localizations": {
         "nb": {
@@ -1367,6 +1407,46 @@
         }
       }
     },
+    "Keep private": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold privat"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Håll privat"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold privat"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privat lassen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garder privé"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mantener privado"
+          }
+        }
+      }
+    },
     "Kookout": {
       "shouldTranslate": false
     },
@@ -1610,46 +1690,6 @@
         }
       }
     },
-    "New spots are shared with other Kookout users. You can switch this off under Edit.": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nye spoter deles med andre Kookout-brukere. Du kan slå det av under Rediger."
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nya spots delas med andra Kookout-användare. Du kan stänga av det under Redigera."
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nye spots deles med andre Kookout-brugere. Du kan slå det fra under Rediger."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neue Spots werden mit anderen Kookout-Nutzern geteilt. Du kannst das unter Bearbeiten ausschalten."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Les nouveaux spots sont partagés avec les autres utilisateurs de Kookout. Vous pouvez désactiver cela sous Modifier."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los spots nuevos se comparten con otros usuarios de Kookout. Puedes desactivarlo en Editar."
-          }
-        }
-      }
-    },
     "No popular spots within 200 km": {
       "localizations": {
         "nb": {
@@ -1886,6 +1926,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Otros usuarios de Kookout pueden encontrar este spot en el mapa: su nombre, lugar y reglas, y tu nombre de Ajustes si lo has puesto."
+          }
+        }
+      }
+    },
+    "Others can then find them on the map, with their name, place and rules. Spots you keep private stay on your phone, and you can change this for each spot under Edit.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Da kan andre finne dem på kartet, med navn, sted og regler. Spoter du holder private, blir på telefonen din, og du kan endre dette for hver spot under Rediger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Då kan andra hitta dem på kartan, med namn, plats och regler. Spots du håller privata stannar på din telefon, och du kan ändra det för varje spot under Redigera."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Så kan andre finde dem på kortet, med navn, sted og regler. Spots, du holder private, bliver på din telefon, og du kan ændre det for hvert spot under Rediger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dann finden andere sie auf der Karte, mit Name, Ort und Regeln. Private Spots bleiben auf deinem Telefon; du kannst das für jeden Spot unter Bearbeiten ändern."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les autres pourront alors les trouver sur la carte, avec leur nom, leur lieu et leurs règles. Les spots privés restent sur votre téléphone, et vous pouvez changer cela pour chaque spot sous Modifier."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Así otros podrán encontrarlos en el mapa, con su nombre, lugar y reglas. Los spots privados se quedan en tu teléfono, y puedes cambiarlo para cada spot en Editar."
           }
         }
       }
@@ -2370,6 +2450,126 @@
         }
       }
     },
+    "Share": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Del"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dela"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Del"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teilen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partager"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compartir"
+          }
+        }
+      }
+    },
+    "Share and add the spot": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Del og legg til spoten"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dela och lägg till spoten"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Del og tilføj spottet"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teilen und Spot hinzufügen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partager et ajouter le spot"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compartir y añadir el spot"
+          }
+        }
+      }
+    },
+    "Share new spots": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Del nye spoter"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dela nya spots"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Del nye spots"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Spots teilen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partager les nouveaux spots"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compartir spots nuevos"
+          }
+        }
+      }
+    },
     "Share with others": {
       "localizations": {
         "nb": {
@@ -2406,6 +2606,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Compartir con otros"
+          }
+        }
+      }
+    },
+    "Share your spots with other Kookout users?": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dele spotene dine med andre Kookout-brukere?"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dela dina spots med andra Kookout-användare?"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dele dine spots med andre Kookout-brugere?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Spots mit anderen Kookout-Nutzern teilen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partager vos spots avec les autres utilisateurs de Kookout ?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Compartir tus spots con otros usuarios de Kookout?"
           }
         }
       }
@@ -2686,6 +2926,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Spots cercanos"
+          }
+        }
+      }
+    },
+    "Spots you make are shared with other Kookout users, so they can find them on the map. Your name is shown as “Added by …”; leave it empty to share without one. Each spot can be changed under Edit.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spoter du lager, deles med andre Kookout-brukere, så de kan finne dem på kartet. Navnet ditt vises som «Lagt til av …»; la feltet stå tomt for å dele uten navn. Hver spot kan endres under Rediger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots du skapar delas med andra Kookout-användare, så att de kan hitta dem på kartan. Ditt namn visas som ”Tillagd av …”; lämna tomt för att dela utan namn. Varje spot kan ändras under Redigera."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots, du laver, deles med andre Kookout-brugere, så de kan finde dem på kortet. Dit navn vises som »Tilføjet af …«; lad feltet være tomt for at dele uden navn. Hvert spot kan ændres under Rediger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Spots werden mit anderen Kookout-Nutzern geteilt, damit sie sie auf der Karte finden. Dein Name erscheint als „Hinzugefügt von …“; leer lassen, um ohne Namen zu teilen. Jeder Spot lässt sich unter Bearbeiten ändern."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les spots que vous créez sont partagés avec les autres utilisateurs de Kookout, qui peuvent les trouver sur la carte. Votre nom s'affiche comme « Ajouté par … » ; laissez vide pour partager sans nom. Chaque spot peut être modifié sous Modifier."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los spots que creas se comparten con otros usuarios de Kookout para que los encuentren en el mapa. Tu nombre aparece como «Añadido por …»; déjalo vacío para compartir sin nombre. Cada spot se puede cambiar en Editar."
           }
         }
       }
@@ -3046,6 +3326,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Este iPhone aún no ha dado a Kookout una dirección de notificaciones. Comprueba que estén permitidas y vuelve a abrir Kookout."
+          }
+        }
+      }
+    },
+    "This spot will be shared with other Kookout users. Change it under Edit, or for new spots in Settings.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denne spoten deles med andre Kookout-brukere. Endre det under Rediger, eller for nye spoter i Innstillinger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Den här spoten delas med andra Kookout-användare. Ändra det under Redigera, eller för nya spots i Inställningar."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dette spot deles med andre Kookout-brugere. Ændr det under Rediger, eller for nye spots i Indstillinger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Spot wird mit anderen Kookout-Nutzern geteilt. Ändere das unter Bearbeiten oder für neue Spots in den Einstellungen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce spot sera partagé avec les autres utilisateurs de Kookout. Modifiez cela sous Modifier, ou pour les nouveaux spots dans les Réglages."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este spot se compartirá con otros usuarios de Kookout. Cámbialo en Editar, o para spots nuevos en Ajustes."
           }
         }
       }
