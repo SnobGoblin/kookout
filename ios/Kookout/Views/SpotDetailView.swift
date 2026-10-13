@@ -58,7 +58,7 @@ private struct DayHeader: View {
             Spacer()
             if let first = good.first, let last = good.last {
                 Label("\(spot.sport == .surf ? String(localized: "Good surf") : String(localized: "Good wind")) " +
-                      "\(first.time.formatted(.hour(spot.timeZone)))–\(last.end.formatted(.hour(spot.timeZone)))",
+                      "\(first.time.hourText(in: spot.timeZone))–\(last.end.hourText(in: spot.timeZone))",
                       systemImage: spot.sport.symbol)
                     .foregroundStyle(.green)
                     .textCase(nil)
@@ -78,7 +78,7 @@ struct HourRow: View {
                 .foregroundStyle(.secondary)
                 .fixedSize()
                 .frame(minWidth: 52, alignment: .leading)
-            Text("\(Int(hour.temp.rounded()))°")
+            Text(Units.temp(hour.temp))
                 .monospacedDigit()
                 .frame(width: 36, alignment: .trailing)
             if spot.sport == .surf {
@@ -116,7 +116,7 @@ struct HourRow: View {
         var style = Date.FormatStyle.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits)
         style.timeZone = spot.timeZone
         guard hour.hours > 1 else { return hour.time.formatted(style) }
-        return "\(hour.time.formatted(.hour(spot.timeZone)))–\(hour.end.formatted(.hour(spot.timeZone)))"
+        return "\(hour.time.hourText(in: spot.timeZone))–\(hour.end.hourText(in: spot.timeZone))"
     }
 }
 

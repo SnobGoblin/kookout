@@ -138,8 +138,13 @@ struct SpotEditView: View {
         Section("Powder") {
             Stepper("Precipitation in a day over \(Int(spot.powder!.mm)) mm",
                     value: Binding(get: { spot.powder!.mm }, set: { spot.powder!.mm = $0 }), in: 0...100)
-            Stepper("Colder than \(Int(spot.powder!.maxTemp))°",
-                    value: Binding(get: { spot.powder!.maxTemp }, set: { spot.powder!.maxTemp = $0 }), in: -30...10)
+            HStack {
+                Text("Colder than")
+                Spacer()
+                StepButtons(label: "\(Units.temp(spot.powder!.maxTemp))\(Settings.shared.tempUnit == .f ? "F" : "C")",
+                            down: { spot.powder!.maxTemp = Units.stepTemp(spot.powder!.maxTemp, by: -1) },
+                            up: { spot.powder!.maxTemp = Units.stepTemp(spot.powder!.maxTemp, by: 1) })
+            }
             WindStepper(title: "Wind under",
                         value: Binding(get: { spot.powder!.maxWind }, set: { spot.powder!.maxWind = $0 }))
         }

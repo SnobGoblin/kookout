@@ -19,6 +19,10 @@ struct SettingsView: View {
                         Text("metres").tag(Settings.WaveUnit.m)
                         Text("feet").tag(Settings.WaveUnit.ft)
                     }
+                    Picker("Temperature", selection: $settings.tempUnit) {
+                        Text("°C").tag(Settings.TempUnit.c)
+                        Text("°F").tag(Settings.TempUnit.f)
+                    }
                 } header: {
                     Text("Units")
                 } footer: {

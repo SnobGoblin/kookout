@@ -70,15 +70,19 @@ final class Settings {
 
     enum WindUnit: String, CaseIterable { case ms, kn }
     enum WaveUnit: String, CaseIterable { case m, ft }
+    enum TempUnit: String, CaseIterable { case c, f }
 
     var windUnit: WindUnit { didSet { UserDefaults.standard.set(windUnit.rawValue, forKey: "windUnit") } }
     var waveUnit: WaveUnit { didSet { UserDefaults.standard.set(waveUnit.rawValue, forKey: "waveUnit") } }
+    var tempUnit: TempUnit { didSet { UserDefaults.standard.set(tempUnit.rawValue, forKey: "tempUnit") } }
 
     private init() {
         let defaults = UserDefaults.standard
         windUnit = defaults.string(forKey: "windUnit").flatMap(WindUnit.init) ?? .ms
         waveUnit = defaults.string(forKey: "waveUnit").flatMap(WaveUnit.init)
             ?? (Locale.current.measurementSystem == .us ? .ft : .m)
+        tempUnit = defaults.string(forKey: "tempUnit").flatMap(TempUnit.init)
+            ?? (Locale.current.measurementSystem == .us ? .f : .c)
     }
 }
 
@@ -104,6 +108,18 @@ enum Units {
                                          : m.formatted(.number.precision(.fractionLength(1)))
     }
     static var waveUnit: String { Settings.shared.waveUnit == .ft ? "ft" : "m" }
+
+    /// Temperatures are stored in °C and shown in °C or °F, as whole degrees.
+    static func tempShown(_ c: Double) -> Int {
+        Int((Settings.shared.tempUnit == .f ? c * 9 / 5 + 32 : c).rounded())
+    }
+    static func temp(_ c: Double) -> String { "\(tempShown(c))°" }
+    static var tempUnit: String { Settings.shared.tempUnit == .f ? "°F" : "°C" }
+    /// One degree up or down in the shown unit, returned in °C.
+    static func stepTemp(_ c: Double, by step: Int) -> Double {
+        let shown = Double(tempShown(c) + step)
+        return Settings.shared.tempUnit == .f ? (shown - 32) * 5 / 9 : shown
+    }
     /// One step up or down in the shown unit (0.1 m or 1 ft), returned in metres.
     static func stepWave(_ m: Double, by step: Int) -> Double {
         if Settings.shared.waveUnit == .ft { return max(0, ((m * feetPerM).rounded() + Double(step)) / feetPerM) }
