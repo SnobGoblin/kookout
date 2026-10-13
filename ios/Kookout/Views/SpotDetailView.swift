@@ -6,6 +6,8 @@ struct SpotDetailView: View {
     let spot: Spot
 
     private var forecast: SpotForecast? { store.forecasts[spot.id] }
+    /// The latest saved version of the spot (it may have been edited since this screen opened).
+    private var current: Spot { store.spots.first { $0.id == spot.id } ?? spot }
 
     var body: some View {
         List {
@@ -15,15 +17,20 @@ struct SpotDetailView: View {
             ForEach(days, id: \.day) { group in
                 Section {
                     ForEach(group.hours) { hour in
-                        HourRow(hour: hour, spot: spot)
+                        HourRow(hour: hour, spot: current)
                             .listRowBackground(hour.good ? Color.green.opacity(0.18) : nil)
                     }
                 } header: {
-                    DayHeader(title: group.title, good: group.hours.filter(\.good), spot: spot)
+                    DayHeader(title: group.title, good: group.hours.filter(\.good), spot: current)
                 }
             }
         }
-        .navigationTitle(spot.name)
+        .navigationTitle(current.name)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink("Edit") { SpotEditView(spot: current) }
+            }
+        }
         .overlay { if forecast == nil && !store.failed.contains(spot.id) { ProgressView() } }
         .refreshable { await store.refresh(spot) }
     }
@@ -65,12 +72,12 @@ struct HourRow: View {
     let spot: Spot
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 8) {
             Text(timeLabel)
                 .monospacedDigit()
                 .foregroundStyle(.secondary)
                 .fixedSize()
-                .frame(minWidth: 64, alignment: .leading)
+                .frame(minWidth: 52, alignment: .leading)
             Text("\(Int(hour.temp.rounded()))°")
                 .monospacedDigit()
                 .frame(width: 36, alignment: .trailing)
@@ -78,11 +85,14 @@ struct HourRow: View {
                 Text(waveLabel)
                     .monospacedDigit()
                     .foregroundStyle(.blue)
-                    .frame(minWidth: 56, alignment: .trailing)
+                    .lineLimit(1)
+                    .fixedSize()
             }
             Spacer()
             Text("\(Units.wind(hour.wind)) (\(hour.gust.map(Units.wind) ?? "–"))")
                 .monospacedDigit()
+                .lineLimit(1)
+                .fixedSize()
             // The arrow points where the wind blows TO (like yr): wind from the north points down.
             Image(systemName: "arrow.up")
                 .rotationEffect(.degrees(hour.deg + 180))
@@ -97,8 +107,9 @@ struct HourRow: View {
 
     private var waveLabel: String {
         guard let wave = hour.wave else { return "–" }
+        // e.g. "1,5 m · 16s" (the unit once, then the period)
         let height = "\(Units.wave(wave)) \(Units.waveUnit)"
-        return hour.period.map { "\(height) \(Int($0.rounded()))s" } ?? height
+        return hour.period.map { "\(height) · \(Int($0.rounded()))s" } ?? height
     }
 
     private var timeLabel: String {

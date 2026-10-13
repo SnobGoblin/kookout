@@ -2,15 +2,39 @@ import SwiftUI
 
 struct SpotListView: View {
     @Environment(SpotStore.self) private var store
+    @State private var showSettings = false
+    @State private var showAdd = false
 
     var body: some View {
+        @Bindable var store = store
         NavigationStack {
-            List(store.spots) { spot in
-                NavigationLink(value: spot) {
-                    SpotRow(spot: spot, forecast: store.forecasts[spot.id], failed: store.failed.contains(spot.id))
+            List {
+                ForEach(store.spots) { spot in
+                    NavigationLink(value: spot) {
+                        SpotRow(spot: spot, forecast: store.forecasts[spot.id], failed: store.failed.contains(spot.id))
+                    }
+                }
+                .onDelete { store.spots.remove(atOffsets: $0) }
+                .onMove { store.spots.move(fromOffsets: $0, toOffset: $1) }
+            }
+            .overlay {
+                if store.spots.isEmpty {
+                    ContentUnavailableView("No spots yet", systemImage: "mappin.and.ellipse",
+                                           description: Text("Tap + to add your first spot."))
                 }
             }
             .navigationTitle("Kookout")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) { EditButton() }
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                        .accessibilityLabel("Add spot")
+                    Button { showSettings = true } label: { Image(systemName: "gearshape") }
+                        .accessibilityLabel("Settings")
+                }
+            }
+            .sheet(isPresented: $showSettings) { SettingsView() }
+            .sheet(isPresented: $showAdd) { AddSpotView() }
             .navigationDestination(for: Spot.self) { spot in
                 SpotDetailView(spot: spot)
             }

@@ -45,11 +45,12 @@ enum Compass {
 enum KookoutAPI {
     static let relay = URL(string: "https://wingfoil-relay.wingfoil-relay.workers.dev")!
 
-    static func analyse(_ spot: Spot) async throws -> SpotForecast {
+    /// `units` ("ms"/"kn") and `waveUnit` ("m"/"ft") decide how the rules round, like on the web page.
+    static func analyse(_ spot: Spot, units: String, waveUnit: String) async throws -> SpotForecast {
         var request = URLRequest(url: relay.appending(path: "analyse"))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode(AnalyseRequest(spot: .init(spot)))
+        request.httpBody = try JSONEncoder().encode(AnalyseRequest(spot: .init(spot), units: units, waveUnit: waveUnit))
         request.timeoutInterval = 40 // the first wave forecast for a new place can be slow
 
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -57,11 +58,11 @@ enum KookoutAPI {
         return try decoder.decode(SpotForecast.self, from: data)
     }
 
-    // The relay always gets m/s and metres, and the app converts for display.
+    // The spot's values are always m/s and metres; the units only decide rounding (and are shown in the app).
     private struct AnalyseRequest: Encodable {
         let spot: RelaySpot
-        let units = "ms"
-        let waveUnit = "m"
+        let units: String
+        let waveUnit: String
     }
 
     private struct RelaySpot: Encodable {
