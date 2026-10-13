@@ -1,5 +1,5 @@
-// A wind swoosh, as an alternative notification sound: a gust that rushes past, about 2.5 seconds.
-// Run from the repo root:  swift -O brand/swoosh.swift   → brand/swoosh.caf (copy to ios/Kookout/kookout.caf to use it)
+// Kookout's notification sound: a wind swoosh, a gust that rushes past, about 2.5 seconds.
+// Run from the repo root:  swift -O brand/swoosh.swift   → brand/swoosh.caf and ios/Kookout/kookout.caf
 //
 // Wind is noise through a resonant band-pass filter: sweeping the filter up and back down makes the "whoosh",
 // a second, narrow filter on top gives the faint whistle you hear in rigging.
@@ -51,10 +51,12 @@ for i in 0..<frames {
 }
 for i in 0..<frames { out[i] *= 0.89 / peak }
 
-let url = URL(fileURLWithPath: "brand/swoosh.caf")
-try? FileManager.default.removeItem(at: url)
 let settings: [String: Any] = [AVFormatIDKey: kAudioFormatLinearPCM, AVSampleRateKey: rate, AVNumberOfChannelsKey: 1,
                                AVLinearPCMBitDepthKey: 16, AVLinearPCMIsFloatKey: false, AVLinearPCMIsBigEndianKey: false]
-let file = try AVAudioFile(forWriting: url, settings: settings, commonFormat: .pcmFormatFloat32, interleaved: false)
-try file.write(from: buffer)
-print("wrote \(url.path)")
+for path in ["brand/swoosh.caf", "ios/Kookout/kookout.caf"] {
+    let url = URL(fileURLWithPath: path)
+    try? FileManager.default.removeItem(at: url)
+    let file = try AVAudioFile(forWriting: url, settings: settings, commonFormat: .pcmFormatFloat32, interleaved: false)
+    try file.write(from: buffer)
+    print("wrote \(path)")
+}

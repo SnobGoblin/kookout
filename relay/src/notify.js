@@ -16,7 +16,7 @@ const HOUR = 3600e3;
 const LANGS = ["en", "nb", "sv", "da", "de", "fr", "es"];
 const MAX_SPOTS = 30;
 const MAX_PUSHES = 5; // per phone per hour, so a big forecast change doesn't flood it
-const SOUND = "kookout.caf"; // a kung-fu-movie gong, in the app (brand/gong.swift)
+const SOUND = "kookout.caf"; // a wind swoosh, in the app (brand/swoosh.swift)
 
 // The texts, in the app's languages ({when}: e.g. "Thu 15–18", {was}: what it said before).
 const TEXT = {

@@ -1,5 +1,5 @@
-// Kookout's notification sound: a big Chinese tam-tam, the kung-fu-movie gong. About 5 seconds.
-// Run from the repo root:  swift brand/gong.swift   → ios/Kookout/kookout.caf (and brand/gong.caf to listen to)
+// An alternative notification sound: a big Chinese tam-tam, the kung-fu-movie gong. About 5 seconds.
+// Run from the repo root:  swift -O brand/gong.swift   → brand/gong.caf (the app uses the swoosh, brand/swoosh.swift)
 //
 // Unlike a bell (a few clear partials, so it has a note), a tam-tam is a dense wash of hundreds of clashing
 // partials with no clear pitch. It "blooms" after the hit (the high partials swell in over half a second,
@@ -66,7 +66,7 @@ for i in 0..<frames {
 
 let settings: [String: Any] = [AVFormatIDKey: kAudioFormatLinearPCM, AVSampleRateKey: rate, AVNumberOfChannelsKey: 1,
                                AVLinearPCMBitDepthKey: 16, AVLinearPCMIsFloatKey: false, AVLinearPCMIsBigEndianKey: false]
-for path in ["brand/gong.caf", "ios/Kookout/kookout.caf"] {
+for path in ["brand/gong.caf"] {
     let url = URL(fileURLWithPath: path)
     try? FileManager.default.removeItem(at: url)
     let file = try AVAudioFile(forWriting: url, settings: settings, commonFormat: .pcmFormatFloat32, interleaved: false)
