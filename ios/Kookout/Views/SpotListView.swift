@@ -4,13 +4,14 @@ struct SpotListView: View {
     @Environment(SpotStore.self) private var store
     @State private var showSettings = false
     @State private var showAdd = false
+    @State private var path: [Route] = []
 
     var body: some View {
         @Bindable var store = store
-        NavigationStack {
+        NavigationStack(path: $path) {
             List {
                 ForEach(store.spots) { spot in
-                    NavigationLink(value: spot) {
+                    NavigationLink(value: Route.detail(spot)) {
                         SpotRow(spot: spot, forecast: store.forecasts[spot.id], failed: store.failed.contains(spot.id))
                     }
                 }
@@ -34,14 +35,24 @@ struct SpotListView: View {
                 }
             }
             .sheet(isPresented: $showSettings) { SettingsView() }
-            .sheet(isPresented: $showAdd) { AddSpotView() }
-            .navigationDestination(for: Spot.self) { spot in
-                SpotDetailView(spot: spot)
+            // A new spot opens straight in its settings (directions and limits); Back goes to its forecast.
+            .sheet(isPresented: $showAdd) { AddSpotView { spot in path = [.detail(spot), .edit(spot)] } }
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .detail(let spot): SpotDetailView(spot: spot)
+                case .edit(let spot): SpotEditView(spot: spot)
+                }
             }
             .task { await store.refreshAll() }
             .refreshable { await store.refreshAll() }
         }
     }
+}
+
+/// The screens you can go to from the list.
+enum Route: Hashable {
+    case detail(Spot)
+    case edit(Spot)
 }
 
 /// A spot in the list, with the next good session if there is one: "Good Thu 10–14".

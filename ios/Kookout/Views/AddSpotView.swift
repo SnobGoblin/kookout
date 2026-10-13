@@ -7,6 +7,8 @@ import CoreLocation
 struct AddSpotView: View {
     @Environment(SpotStore.self) private var store
     @Environment(\.dismiss) private var dismiss
+    /// Called with the new spot, so the list can open its settings.
+    var onAdd: (Spot) -> Void = { _ in }
 
     @State private var position: MapCameraPosition = .automatic
     @State private var pin: CLLocationCoordinate2D?
@@ -130,5 +132,6 @@ struct AddSpotView: View {
         store.add(spot)
         Task { await store.refresh(spot) }
         dismiss()
+        onAdd(spot)
     }
 }

@@ -28,7 +28,7 @@ struct SpotDetailView: View {
         .navigationTitle(current.name)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink("Edit") { SpotEditView(spot: current) }
+                NavigationLink("Edit", value: Route.edit(current))
             }
         }
         .overlay { if forecast == nil && !store.failed.contains(spot.id) { ProgressView() } }
