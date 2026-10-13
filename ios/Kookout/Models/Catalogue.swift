@@ -3,7 +3,8 @@ import CoreLocation
 
 /// Popular spots built into the app (Catalogue.json), so new users have something to start with before
 /// anyone has added their own. Each comes with the standard rules for its sport and the wind directions
-/// that usually work there.
+/// that usually work there. A surf spot can set its own minWave and maxWind: e.g. Saltstein, where the
+/// Skagerrak waves often still come with some wind.
 enum Catalogue {
     struct Entry {
         let spot: Spot
@@ -18,10 +19,15 @@ enum Catalogue {
         return rows.map(\.entry)
     }()
 
-    /// The catalogue spots nearest to a place, nearest first, leaving out the ones the user already has.
-    static func nearest(to location: CLLocation, excluding ids: Set<String> = [], count: Int = 5) -> [(entry: Entry, meters: Double)] {
+    /// How far away a popular spot still counts as nearby.
+    static let nearbyMeters = 200_000.0
+
+    /// The catalogue spots within `nearbyMeters` of a place, nearest first, leaving out the ones the user
+    /// already has.
+    static func nearest(to location: CLLocation, excluding ids: Set<String> = [], count: Int = .max) -> [(entry: Entry, meters: Double)] {
         entries.filter { !ids.contains($0.spot.id) }
             .map { ($0, $0.location.distance(from: location)) }
+            .filter { $0.1 <= nearbyMeters }
             .sorted { $0.1 < $1.1 }
             .prefix(count)
             .map { (entry: $0.0, meters: $0.1) }
@@ -34,11 +40,17 @@ enum Catalogue {
         let dirs: [String]?
         let sunny: [Double]?
         let altitude: Double?
+        let minWave: Double?
+        let maxWind: Double?
 
         var entry: Entry {
             var spot = Spot(id: id, name: name, latitude: lat, longitude: lon, altitude: altitude, timeZoneID: tz)
             switch sport {
-            case "surf": spot.surf = SurfRule(dirs: dirs ?? Compass.points)
+            case "surf":
+                var rule = SurfRule(dirs: dirs ?? Compass.points)
+                if let minWave { rule.minWave = minWave }
+                if let maxWind { rule.maxWind = maxWind }
+                spot.surf = rule
             case "powder": spot.powder = PowderRule()
             default:
                 let sunnyLimits = sunny.flatMap { $0.count == 3 ? WindRule.Limits(min: $0[0], gust: $0[1], steady: $0[2]) : nil }

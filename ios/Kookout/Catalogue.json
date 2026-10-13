@@ -7,6 +7,7 @@
   {"id": "hemsedal", "name": "Hemsedal 690 MOH", "area": "Hemsedal", "lat": 60.8598, "lon": 8.5189, "tz": "Europe/Oslo", "sport": "powder", "altitude": 690},
   {"id": "movik", "name": "Møvik", "area": "Rygge", "lat": 59.3331, "lon": 10.7185, "tz": "Europe/Oslo", "sport": "wing", "dirs": ["SSW", "SW"]},
   {"id": "presteskjaer", "name": "Presteskjær", "area": "Nesodden", "lat": 59.8091, "lon": 10.7035, "tz": "Europe/Oslo", "sport": "wing", "dirs": ["N", "NNE", "NE"], "altitude": 1},
+  {"id": "saltstein", "name": "Saltstein", "area": "Nevlunghavn", "lat": 58.966, "lon": 9.838, "tz": "Europe/Oslo", "sport": "surf", "dirs": ["N", "NNE", "NE", "ENE", "E", "W", "WNW", "NW", "NNW"], "maxWind": 8},
   {"id": "apelviken", "name": "Apelviken", "area": "Varberg", "lat": 57.0832, "lon": 12.2668, "tz": "Europe/Stockholm", "sport": "wing", "dirs": ["SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"], "altitude": 6},
   {"id": "traslovslage", "name": "Träslövsläge", "area": "Varberg", "lat": 57.0581, "lon": 12.275, "tz": "Europe/Stockholm", "sport": "wing", "dirs": ["N", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]},
   {"id": "getteron", "name": "Getterön", "area": "Varberg", "lat": 57.12, "lon": 12.2124, "tz": "Europe/Stockholm", "sport": "wing", "dirs": ["N", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]},

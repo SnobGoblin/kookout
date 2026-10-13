@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreLocation
 
 struct SpotListView: View {
     @Environment(SpotStore.self) private var store
@@ -6,6 +7,7 @@ struct SpotListView: View {
     @State private var showAdd = false
     @State private var path: [Route] = []
     @State private var locating = false
+    @State private var pickNear: CLLocation?
 
     var body: some View {
         @Bindable var store = store
@@ -33,6 +35,9 @@ struct SpotListView: View {
                 }
             }
             .sheet(isPresented: $showSettings) { SettingsView() }
+            .sheet(item: $pickNear) { here in
+                NearbyPicker(location: here) { showAdd = true }
+            }
             // A new spot opens straight in its settings (directions and limits); Back goes to its forecast.
             .sheet(isPresented: $showAdd) { AddSpotView { spot in path = [.detail(spot), .edit(spot)] } }
             .navigationDestination(for: Route.self) { route in
@@ -64,13 +69,86 @@ extension SpotListView {
             Button("Spots near me") {
                 Task {
                     locating = true
-                    if let here = await Locator.current() { store.addNearest(to: here) } else { showAdd = true }
+                    if let here = await Locator.current() { pickNear = here } else { showAdd = true }
                     locating = false
                 }
             }
             .buttonStyle(.borderedProminent)
             .disabled(locating)
             Button("Add a spot on the map") { showAdd = true }
+        }
+    }
+}
+
+extension CLLocation: @retroactive Identifiable {
+    public var id: String { "\(coordinate.latitude),\(coordinate.longitude)" }
+}
+
+/// The popular spots within 200 km, to pick from (for the welcome screen).
+struct NearbyPicker: View {
+    @Environment(SpotStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    let location: CLLocation
+    /// "Add a spot on the map", for when there's nothing nearby.
+    var addOwn: () -> Void
+    @State private var picked: Set<String> = []
+
+    private var nearby: [(entry: Catalogue.Entry, meters: Double)] {
+        Catalogue.nearest(to: location, excluding: Set(store.spots.map(\.id)))
+    }
+
+    var body: some View {
+        NavigationStack {
+            List(nearby, id: \.entry.spot.id) { item in
+                let spot = item.entry.spot
+                Button {
+                    if picked.contains(spot.id) { picked.remove(spot.id) } else { picked.insert(spot.id) }
+                } label: {
+                    HStack {
+                        Image(systemName: spot.sport.symbol).frame(width: 24)
+                        VStack(alignment: .leading) {
+                            Text(spot.name)
+                            Text("\(item.entry.area) · \(Measurement.distance(item.meters))").font(.caption).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: picked.contains(spot.id) ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(picked.contains(spot.id) ? Color.accentColor : .secondary)
+                            .imageScale(.large)
+                    }
+                }
+                .foregroundStyle(.primary)
+                .accessibilityAddTraits(picked.contains(spot.id) ? .isSelected : [])
+            }
+            .overlay {
+                if nearby.isEmpty {
+                    ContentUnavailableView {
+                        Label("No popular spots within 200 km", systemImage: "mappin.slash")
+                    } description: {
+                        Text("Add your own spot on the map instead.")
+                    } actions: {
+                        Button("Add a spot on the map") { dismiss(); addOwn() }
+                    }
+                }
+            }
+            .navigationTitle("Spots near you")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add") {
+                        store.add(contentsOf: nearby.map(\.entry.spot).filter { picked.contains($0.id) })
+                        dismiss()
+                    }
+                    .disabled(picked.isEmpty)
+                }
+                if !nearby.isEmpty {
+                    ToolbarItem(placement: .bottomBar) {
+                        Button(picked.count == nearby.count ? "Select none" : "Select all") {
+                            picked = picked.count == nearby.count ? [] : Set(nearby.map(\.entry.spot.id))
+                        }
+                    }
+                }
+            }
         }
     }
 }

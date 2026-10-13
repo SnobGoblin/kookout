@@ -1,77 +1,78 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "CFBundleDisplayName": {
-      "comment": "Bundle display name",
-      "extractionState": "extracted_with_value",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "Kookout"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "comment" : "Bundle display name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Kookout"
           }
         }
       },
-      "shouldTranslate": false
+      "shouldTranslate" : false
     },
-    "CFBundleName": {
-      "comment": "Bundle name",
-      "extractionState": "extracted_with_value",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "Kookout"
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Kookout"
           }
         }
       }
     },
-    "NSLocationWhenInUseUsageDescription": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout bruker posisjonen din for å finne spoter nær deg og vise hvor du er på kartet."
+    "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "Privacy - Location When In Use Usage Description",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout bruger din placering til at finde spots nær dig og vise, hvor du er på kortet."
           }
         },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout använder din plats för att hitta spots nära dig och visa var du är på kartan."
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout verwendet deinen Standort, um Spots in deiner Nähe zu finden und zu zeigen, wo du auf der Karte bist."
           }
         },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout bruger din placering til at finde spots nær dig og vise, hvor du er på kortet."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout uses your location to find spots near you and to show where you are on the map."
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout verwendet deinen Standort, um Spots in deiner Nähe zu finden und zu zeigen, wo du auf der Karte bist."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout usa tu ubicación para encontrar spots cerca de ti y mostrar dónde estás en el mapa."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout utilise votre position pour trouver des spots près de vous et vous situer sur la carte."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout utilise votre position pour trouver des spots près de vous et vous situer sur la carte."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout usa tu ubicación para encontrar spots cerca de ti y mostrar dónde estás en el mapa."
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout bruker posisjonen din for å finne spoter nær deg og vise hvor du er på kartet."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kookout uses your location to find spots near you and to show where you are on the map."
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kookout använder din plats för att hitta spots nära dig och visa var du är på kartan."
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

@@ -148,7 +148,7 @@ struct AddSpotView: View {
     /// that the user doesn't have yet.
     private var suggestions: [(entry: Catalogue.Entry, meters: Double)] {
         guard let place = center ?? location.location else { return [] }
-        return Catalogue.nearest(to: place, excluding: Set(store.spots.map(\.id)), count: 5)
+        return Catalogue.nearest(to: place, excluding: Set(store.spots.map(\.id)), count: 5) // within 200 km
     }
 
     private func addPopular(_ spot: Spot) {

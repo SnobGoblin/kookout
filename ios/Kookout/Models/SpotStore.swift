@@ -45,9 +45,8 @@ final class SpotStore {
         forecasts[spot.id] = nil // the rules may have changed; worked out again by refresh
     }
 
-    /// Adds the catalogue spots nearest to a place (the ones not already in the list).
-    func addNearest(to location: CLLocation, count: Int = 5) {
-        let new = Catalogue.nearest(to: location, excluding: Set(spots.map(\.id)), count: count).map(\.entry.spot)
+    /// Adds several spots at once (picked from the popular spots nearby).
+    func add(contentsOf new: [Spot]) {
         spots += new
         Task { await withTaskGroup(of: Void.self) { group in for spot in new { group.addTask { await self.refresh(spot) } } } }
     }
