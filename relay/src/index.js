@@ -8,6 +8,8 @@
 //                                     in the US also NOAA's National Weather Service),
 //                                     plus Holfuy stations within 50 km (number, name, distance)
 //   GET /obs?ids=SN17280,KV:8925059,NWS:KDLS,NDBC:FTPC1  -> the latest reading for the given stations
+//   POST /analyse  {spot, units?, waveUnit?} -> the spot's forecast with the good hours marked, using the same
+//                                     rules as the web page (rules.js). For the app and notifications.
 //   GET /tz?lat=21.28&lon=-157.83   -> the place's time zone, e.g. {"tz":"Pacific/Honolulu"} (worked out locally)
 //   GET /waves?lat=58.80&lon=5.55   -> wave forecast (total height in m, period, direction) about a week ahead:
 //                                     MET's Oceanforecast in Scandinavian waters, NOAA WaveWatch III elsewhere
@@ -15,6 +17,7 @@
 // All wind speeds are returned in m/s.
 
 import tzlookup from "@photostructure/tz-lookup";
+import { analyse } from "../../rules.js"; // the same rules as the web page
 
 const FROST = "https://frost.met.no";
 const ALLOWED_ORIGINS = ["https://kookout.no", "https://www.kookout.no", "https://sternell.com",
@@ -37,6 +40,8 @@ export default {
     const reply = (body, status = 200) => new Response(JSON.stringify(body), {
       status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...cors } });
 
+    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...cors,
+      "Access-Control-Allow-Methods": "GET, POST", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "86400" } });
     if (!env.FROST_CLIENT_ID) return reply({ error: "FROST_CLIENT_ID is not set" }, 500);
     const frost = path => fetch(FROST + path, {
       headers: { Authorization: "Basic " + btoa(env.FROST_CLIENT_ID + ":") },
@@ -83,6 +88,14 @@ export default {
         return reply({ stations: all, holfuy });
       }
 
+      if (url.pathname === "/analyse" && request.method === "POST") {
+        const body = await request.json().catch(() => null);
+        const spot = body?.spot;
+        if (!spot || !Number.isFinite(spot.lat) || !Number.isFinite(spot.lon) || !(spot.wind || spot.surf || spot.powder))
+          return reply({ error: "spot with lat, lon and a wind, surf or powder rule required" }, 400);
+        return reply(await analyseSpot(spot, body.units, body.waveUnit, env, ctx));
+      }
+
       if (url.pathname === "/tz") {
         const lat = parseFloat(url.searchParams.get("lat")), lon = parseFloat(url.searchParams.get("lon"));
         if (!Number.isFinite(lat) || !Number.isFinite(lon)) return reply({ error: "lat and lon required" }, 400);
@@ -93,17 +106,7 @@ export default {
         const lat = parseFloat(url.searchParams.get("lat")), lon = parseFloat(url.searchParams.get("lon"));
         if (!Number.isFinite(lat) || !Number.isFinite(lon)) return reply({ error: "lat and lon required" }, 400);
         // MET has the better wave heights in Scandinavia but no wave period, so we borrow NOAA's period there.
-        const [met, noaa] = await Promise.all([metWaves(lat, lon), storedNoaaWaves(lat, lon, env, ctx)]);
-        if (met && noaa) {
-          const periods = noaa.points.map(pt => ({ t: Date.parse(pt.time), period: pt.period }));
-          for (const pt of met.points) {
-            const t = Date.parse(pt.time);
-            const near = periods.reduce((b, x) => !b || Math.abs(x.t - t) < Math.abs(b.t - t) ? x : b, null);
-            if (near && Math.abs(near.t - t) <= 3 * 3600e3) pt.period = near.period;
-          }
-          met.periodFrom = "NOAA";
-        }
-        return reply(met ?? noaa ?? { source: null, points: [] });
+        return reply(await surfWaves(lat, lon, env, ctx) ?? { source: null, points: [] });
       }
 
       return reply({ error: "Not found. Use /near, /obs or /waves" }, 404);
@@ -194,6 +197,49 @@ async function kvNear(lat, lon) {
   return (await kvReadings())
     .map(r => ({ ...r, km: round(distanceKm(lat, lon, r.lat, r.lon), 1) }))
     .filter(r => r.km <= MAX_KM);
+}
+
+// ---- Working out a spot (the forecast, waves, time zone and the shared rules) -------------
+async function analyseSpot(spot, units = "ms", waveUnit = "m", env, ctx) {
+  const tz = spot.tz ?? tzlookup(spot.lat, spot.lon);
+  const query = `lat=${spot.lat.toFixed(4)}&lon=${spot.lon.toFixed(4)}` + (spot.alt != null ? `&altitude=${Math.round(spot.alt)}` : "");
+  const [forecastRes, waves] = await Promise.all([
+    fetch(`https://api.met.no/weatherapi/locationforecast/2.0/complete?${query}`, { headers: NWS_HEADERS, cf: { cacheTtl: 600 } }),
+    spot.surf ? surfWaves(spot.lat, spot.lon, env, ctx) : null,
+  ]);
+  if (!forecastRes.ok) throw new Error(`MET forecast: ${forecastRes.status}`);
+  const rows = analyse(spot, await forecastRes.json(), waves, { units, waveUnit, zone: tz });
+
+  // The good periods, joined up: e.g. [{ start: "…T10:00Z", end: "…T14:00Z" }]
+  const periods = [];
+  for (const r of rows) {
+    if (!r.good) continue;
+    const start = r.time.getTime(), end = start + r.hours * 3600e3, last = periods.at(-1);
+    if (last && last.end === start) last.end = end; else periods.push({ start, end });
+  }
+  const iso = t => new Date(t).toISOString();
+  return {
+    tz, units, waveUnit,
+    good: periods.map(p => ({ start: iso(p.start), end: iso(p.end) })),
+    powderDays: [...new Set(rows.filter(r => r.powderDay).map(r => r.day))],
+    rows: rows.map(r => ({ time: r.time.toISOString(), hours: r.hours, symbol: r.symbol, temp: r.temp, rain: r.rain,
+      wind: r.wind, gust: r.gust, dir: r.dir, deg: r.deg, wave: r.wave, period: r.period,
+      daylight: r.daylight, good: !!r.good, snow: !!r.snow })),
+  };
+}
+
+// The same waves as /waves: MET in Scandinavia (with NOAA's period), NOAA elsewhere.
+async function surfWaves(lat, lon, env, ctx) {
+  const [met, noaa] = await Promise.all([metWaves(lat, lon), storedNoaaWaves(lat, lon, env, ctx)]);
+  if (met && noaa) {
+    const periods = noaa.points.map(pt => ({ t: Date.parse(pt.time), period: pt.period }));
+    for (const pt of met.points) {
+      const t = Date.parse(pt.time);
+      const near = periods.reduce((b, x) => !b || Math.abs(x.t - t) < Math.abs(b.t - t) ? x : b, null);
+      if (near && Math.abs(near.t - t) <= 3 * 3600e3) pt.period = near.period;
+    }
+  }
+  return met ?? noaa;
 }
 
 // ---- Wave forecasts ------------------------------------------------------------------------

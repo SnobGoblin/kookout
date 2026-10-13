@@ -21,7 +21,9 @@ Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
 
 ## How it works
 
-Everything lives in `index.html`: plain HTML, CSS and JavaScript, no build step.
+The page is `index.html` (plain HTML, CSS and JavaScript, no build step) plus `rules.js`, the rules that turn a
+forecast into good hours. `rules.js` is shared with the relay, whose `POST /analyse` gives the app and
+notifications exactly the same answers as the page.
 The page fetches forecasts straight from MET's
 [Locationforecast API](https://api.met.no/weatherapi/locationforecast/2.0/documentation)
 in the browser.
