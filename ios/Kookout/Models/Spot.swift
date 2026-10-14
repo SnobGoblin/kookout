@@ -70,6 +70,10 @@ struct Spot: Identifiable, Codable, Hashable {
     /// A weekend spot: only good on days off (weekends and public holidays where the person lives), looking
     /// further ahead and needing longer sessions.
     var weekend: Bool?
+    /// The station for "Measured now": an official one ("SN17280", "KV:…", "NDBC:…") or a Holfuy one ("holfuy:1815",
+    /// shown with Holfuy's widget). Nil: the nearest official station with a recent reading.
+    var station: String?
+    var stationName: String?
 
     var notifies: Bool { notify ?? true }
     var timeZone: TimeZone { TimeZone(identifier: timeZoneID) ?? .current }

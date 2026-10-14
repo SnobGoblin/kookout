@@ -45,6 +45,16 @@ struct SpotEditView: View {
 
             if let community = spot.community { communitySection(community) }
 
+            if spot.wind != nil || spot.surf != nil {
+                Section {
+                    NavigationLink { StationPicker(spot: $spot) } label: {
+                        LabeledContent("Wind station", value: stationName)
+                    }
+                } footer: {
+                    Text("For “Measured now” on the forecast.")
+                }
+            }
+
             if spot.wind != nil { windSection }
             if spot.surf != nil { surfSection }
             if spot.powder != nil { powderSection }
@@ -125,6 +135,11 @@ struct SpotEditView: View {
         store.update(spot)
         Task { await store.refresh(spot) }
         dismiss()
+    }
+
+    private var stationName: String {
+        guard let id = spot.station else { return String(localized: "Automatic") }
+        return spot.stationName ?? id
     }
 
     // MARK: - Community
