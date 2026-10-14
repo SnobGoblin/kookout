@@ -54,3 +54,42 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE INDEX IF NOT EXISTS sessions_user ON sessions (user_id);
 -- Added with accounts (for databases made before):
 --   ALTER TABLE shared_spots ADD COLUMN user_id TEXT;
+
+-- Community spots (src/community.js). Name and position are fixed by anyone signed in (logged in edits, can be
+-- undone); the rules are the majority of the followers' versions.
+CREATE TABLE IF NOT EXISTS spots (
+  id TEXT PRIMARY KEY,           -- the app's id (a UUID, or the catalogue's id like "saltstein")
+  sport TEXT NOT NULL,           -- wing, surf or powder
+  tz TEXT NOT NULL,
+  name TEXT NOT NULL,
+  lat REAL NOT NULL,
+  lon REAL NOT NULL,
+  alt REAL,
+  rule TEXT NOT NULL,            -- JSON: the community version of the rule for its sport
+  created_by TEXT,               -- users.id (null for the built-in spots, or once the account is deleted)
+  created TEXT NOT NULL,
+  updated TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active', -- 'gone' when nobody follows it any more
+  catalogue INTEGER NOT NULL DEFAULT 0   -- 1 for the app's built-in spots (they never go away)
+);
+CREATE INDEX IF NOT EXISTS spots_lat ON spots (lat);
+CREATE TABLE IF NOT EXISTS followers (
+  spot_id TEXT NOT NULL,
+  follower TEXT NOT NULL,        -- SHA-256 of the app's random key (works without an account)
+  rule TEXT,                     -- JSON: their own version, or null when they follow the community's
+  last_active TEXT NOT NULL,
+  PRIMARY KEY (spot_id, follower)
+);
+CREATE INDEX IF NOT EXISTS followers_follower ON followers (follower);
+CREATE TABLE IF NOT EXISTS edits (  -- the log: who changed what, when
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  spot_id TEXT NOT NULL,
+  user_id TEXT,                  -- users.id (null once the account is deleted: "a former rider")
+  at TEXT NOT NULL,
+  field TEXT NOT NULL,           -- 'created', 'name' or 'position'
+  old TEXT,                      -- JSON
+  new TEXT,                      -- JSON
+  undoes INTEGER                 -- edits.id this one undid
+);
+CREATE INDEX IF NOT EXISTS edits_spot ON edits (spot_id);
+CREATE INDEX IF NOT EXISTS edits_user ON edits (user_id, at);

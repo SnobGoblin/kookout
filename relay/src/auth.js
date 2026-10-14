@@ -24,16 +24,15 @@ export async function handleAuth(request, env, url, reply) {
       const b = await request.json().catch(() => ({}));
       const name = cleanName(b.name);
       await env.DB.prepare("UPDATE users SET name = ? WHERE id = ?").bind(name, user.id).run();
-      // Spots the person shares show the new name too
-      await env.DB.prepare("UPDATE shared_spots SET by_name = ? WHERE user_id = ?").bind(name || null, user.id).run();
       return reply({ user: publicUser({ ...user, name }) });
     }
     if (request.method === "DELETE") {
       if (user.refresh_token) await revoke(env, user.refresh_token).catch(e => console.log("Apple revoke failed:", e.message));
       await env.DB.batch([
         env.DB.prepare("DELETE FROM sessions WHERE user_id = ?").bind(user.id),
-        // Their shared spots stay for the people who use them, without their name
-        env.DB.prepare("UPDATE shared_spots SET by_name = NULL, user_id = NULL WHERE user_id = ?").bind(user.id),
+        // Their spots stay for the people who use them, and their changes stay in the log, without their name
+        env.DB.prepare("UPDATE spots SET created_by = NULL WHERE created_by = ?").bind(user.id),
+        env.DB.prepare("UPDATE edits SET user_id = NULL WHERE user_id = ?").bind(user.id),
         env.DB.prepare("DELETE FROM users WHERE id = ?").bind(user.id),
       ]);
       return reply({ ok: true });
