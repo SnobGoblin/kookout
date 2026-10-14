@@ -103,7 +103,7 @@ export function majorityRule(votes, current) {
     } else if (typeof sample === "number") {                      // limits, hours, powder days
       const xs = values.filter(Number.isFinite);
       if (!half(xs.length)) { if (key in current) out[key] = current[key]; continue; }
-      out[key] = Number.isInteger(sample) && xs.every(Number.isInteger) ? Math.round(median(xs)) : median(xs);
+      out[key] = ["hours", "days"].includes(key) ? Math.round(median(xs)) : median(xs); // counts stay whole
     } else if (typeof sample === "boolean") {                     // daylight, powder "sunny days only"
       out[key] = half(values.filter(x => x === true).length);
     } else if (sample && typeof sample === "object") {            // the wind rule's sunny-day limits
