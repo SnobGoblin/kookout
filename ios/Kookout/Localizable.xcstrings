@@ -4047,6 +4047,46 @@
         }
       }
     },
+    "You're signed out, so this spot isn't updated for others. Switch it off to stop sharing it, or sign in with Apple in Settings.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du er logget ut, så spoten oppdateres ikke for andre. Slå av for å slutte å dele den, eller logg inn med Apple i Innstillinger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du är utloggad, så spoten uppdateras inte för andra. Stäng av för att sluta dela den, eller logga in med Apple i Inställningar."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du er logget ud, så spottet opdateres ikke for andre. Slå fra for at stoppe med at dele det, eller log ind med Apple i Indstillinger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du bist abgemeldet, daher wird dieser Spot für andere nicht aktualisiert. Schalte ihn aus, um ihn nicht mehr zu teilen, oder melde dich in den Einstellungen mit Apple an."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous êtes déconnecté, ce spot n'est donc pas mis à jour pour les autres. Désactivez-le pour arrêter de le partager, ou connectez-vous avec Apple dans les Réglages."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Has cerrado sesión, así que este spot no se actualiza para otros. Desactívalo para dejar de compartirlo o inicia sesión con Apple en Ajustes."
+          }
+        }
+      }
+    },
     "Your name": {
       "localizations": {
         "nb": {

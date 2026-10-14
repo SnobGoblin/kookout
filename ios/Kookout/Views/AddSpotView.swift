@@ -125,7 +125,7 @@ struct AddSpotView: View {
                             Label("Powder", systemImage: Sport.powder.symbol).tag(Sport.powder)
                         }
                         .pickerStyle(.segmented)
-                        if Settings.shared.shareNewSpots == true {
+                        if Settings.shared.shareNewSpots == true && Account.shared.signedIn {
                             Text("This spot will be shared with other Kookout users. Change it under Edit, or for new spots in Settings.")
                                 .font(.footnote).foregroundStyle(.secondary)
                         }
@@ -141,7 +141,9 @@ struct AddSpotView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
                         // The first spot they make: ask whether to share it (and their spots from now on).
-                        if Settings.shared.shareNewSpots == nil { askToShare = true } else { add() }
+                        // (and ask again if they chose to share but aren't signed in: sharing needs an account)
+                        let choice = Settings.shared.shareNewSpots
+                        if choice == nil || (choice == true && !Account.shared.signedIn) { askToShare = true } else { add() }
                     }
                         .disabled(pin == nil || name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
@@ -235,7 +237,8 @@ struct AddSpotView: View {
         var spot = Spot(id: UUID().uuidString, name: name.trimmingCharacters(in: .whitespaces),
                         latitude: rounded(pin.latitude), longitude: rounded(pin.longitude),
                         timeZoneID: (timeZone ?? .current).identifier)
-        spot.shared = Settings.shared.shareNewSpots ?? false // as they answered the first time (changeable under Edit)
+        // As they answered (changeable under Edit); never public without an account
+        spot.shared = Settings.shared.shareNewSpots == true && Account.shared.signedIn
         switch sport {
         case .wing: spot.wind = WindRule()
         case .surf: spot.surf = SurfRule()

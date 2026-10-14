@@ -89,7 +89,7 @@ struct SettingsView: View {
 
                 Section {
                     AccountRows()
-                    Toggle("Share new spots", isOn: Binding(get: { settings.shareNewSpots == true },
+                    Toggle("Share new spots", isOn: Binding(get: { settings.shareNewSpots == true && account.signedIn },
                                                             set: { settings.shareNewSpots = $0 }))
                         .disabled(!account.signedIn)
                     if account.signedIn {
