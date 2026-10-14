@@ -12,6 +12,8 @@ struct SpotEditView: View {
     @State private var confirmDelete = false
     @State private var saving = false
     @State private var problem: String?
+    @State private var moving = false
+    @State private var reporting = false
     private let original: Spot
 
     init(spot: Spot) {
@@ -28,15 +30,16 @@ struct SpotEditView: View {
             Section {
                 TextField("Name", text: $spot.name)
                     .disabled(!canFix)
-                SpotPositionPicker(spot: $spot, enabled: canFix)
+                SpotPositionPicker(spot: $spot)
+                if canFix {
+                    Button("Move pin") { moving = true }
+                }
             } header: {
                 Text("Name and position")
             } footer: {
                 if isCommunity {
                     Text(canFix ? "Changes to the name or position are for everyone who follows this spot, and show your name in its history."
                                 : "To fix the name or position for everyone, sign in with Apple in Settings.")
-                } else {
-                    Text("Tap the map to move the spot.")
                 }
             }
 
@@ -79,6 +82,10 @@ struct SpotEditView: View {
                     .disabled(saving || spot.name.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }
+        .sheet(isPresented: $moving) {
+            MoveSpotView(spot: spot) { c in spot.latitude = c.latitude; spot.longitude = c.longitude }
+        }
+        .sheet(isPresented: $reporting) { ReportView(spot: spot) }
         .alert("Couldn't save", isPresented: Binding(get: { problem != nil }, set: { if !$0 { problem = nil } })) {
             Button("OK") { problem = nil }
         } message: {
@@ -112,14 +119,41 @@ struct SpotEditView: View {
 
     // MARK: - Community
 
+    /// "Most riders here use E–S." when the community's rules (the majority, from 3 followers) differ from theirs
+    /// and they haven't already chosen to keep their own against this version.
+    private func nudge(_ community: Community.Info) -> String? {
+        guard community.followers >= 3, Community.Rules(spot) != community.rules,
+              spot.keptOwnAgainst != community.rules else { return nil }
+        let mine = spot.wind?.dirs ?? spot.surf?.dirs, theirs = community.rules.wind?.dirs ?? community.rules.surf?.dirs
+        if let mine, let theirs, Set(mine) != Set(theirs) {
+            return String(localized: "Most riders here use \(Compass.ranges(theirs)).")
+        }
+        return String(localized: "Most riders here use other limits.")
+    }
+
     private func communitySection(_ community: Community.Info) -> some View {
         Section {
-            if Community.Rules(spot) != community.rules {
+            if let nudge = nudge(community) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label(nudge, systemImage: "person.3")
+                    HStack {
+                        Button("Switch") {
+                            spot.wind = community.rules.wind; spot.surf = community.rules.surf; spot.powder = community.rules.powder
+                            spot.keptOwnAgainst = nil
+                        }
+                        .buttonStyle(.borderedProminent)
+                        Button("Keep mine") { spot.keptOwnAgainst = community.rules }
+                            .buttonStyle(.bordered)
+                    }
+                }
+                .padding(.vertical, 4)
+            } else if Community.Rules(spot) != community.rules {
                 Button("Use the community's rules") {
                     spot.wind = community.rules.wind; spot.surf = community.rules.surf; spot.powder = community.rules.powder
                 }
             }
             NavigationLink("History") { SpotHistoryView(spot: spot) }
+            Button("Report a problem") { reporting = true }
         } header: {
             Text("Community")
         } footer: {
@@ -326,27 +360,17 @@ struct CompassPicker: View {
     }
 }
 
-/// A small map of the spot; tap to move it.
+/// A small map of the spot (moving it is done with "Move pin", so a stray tap can't).
 struct SpotPositionPicker: View {
     @Binding var spot: Spot
-    let enabled: Bool
-    @State private var position: MapCameraPosition = .automatic
 
     var body: some View {
-        MapReader { proxy in
-            Map(position: $position) {
-                Marker(spot.name, systemImage: spot.sport.symbol, coordinate: spot.coordinate)
-            }
-            .onTapGesture { point in
-                guard enabled, let c = proxy.convert(point, from: .local) else { return }
-                spot.latitude = (c.latitude * 10_000).rounded() / 10_000
-                spot.longitude = (c.longitude * 10_000).rounded() / 10_000
-            }
+        Map(position: .constant(.region(MKCoordinateRegion(center: spot.coordinate, latitudinalMeters: 2500, longitudinalMeters: 2500))),
+            interactionModes: []) {
+            Marker(spot.name, systemImage: spot.sport.symbol, coordinate: spot.coordinate)
         }
-        .frame(height: 200)
+        .frame(height: 170)
         .listRowInsets(EdgeInsets())
-        .onAppear {
-            position = .region(MKCoordinateRegion(center: spot.coordinate, latitudinalMeters: 2500, longitudinalMeters: 2500))
-        }
+        .id("\(spot.latitude),\(spot.longitude)") // recentre after a move
     }
 }

@@ -66,6 +66,17 @@ enum Community {
         return await change("spots/\(spot.id)", body: body, store: store)
     }
 
+    /// Report a spot, or a change to it. Nil when it was sent, otherwise what went wrong.
+    static func report(_ spot: Spot, edit: LogEntry?, reason: String, note: String) async -> String? {
+        var body: [String: Any] = ["key": SharedSpots.key, "spot": spot.id, "reason": reason, "note": note]
+        if let edit { body["edit"] = edit.id }
+        var problem: String?
+        guard await call("POST", "reports", body: body, problem: &problem) != nil else {
+            return problem ?? String(localized: "Couldn't reach Kookout. Check the internet connection.")
+        }
+        return nil
+    }
+
     static func undo(_ edit: LogEntry, store: SpotStore) async -> String? {
         await change("edits/\(edit.id)/undo", body: [:], store: store)
     }

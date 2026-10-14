@@ -244,6 +244,15 @@ struct SpotRow: View {
 
 extension Sport {
     /// SF Symbols for the sports (placeholders until the app has its own icons).
+    /// "wing", "surf" or "powder", in the phone's language, for sentences like "a surf spot".
+    var label: String {
+        switch self {
+        case .wing: String(localized: "wing")
+        case .surf: String(localized: "surf")
+        case .powder: String(localized: "powder")
+        }
+    }
+
     var symbol: String {
         switch self {
         case .wing: "wind"

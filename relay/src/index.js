@@ -14,6 +14,7 @@
 //   PUT/DELETE /devices/<id>, POST /devices/<id>/test  -> notifications for a phone (see notify.js)
 //   PUT /following, GET /spots, POST /spots/<id>, …    -> community spots: following, editing, the log (see community.js)
 //   POST /auth/apple, GET/PUT/DELETE /me              -> accounts, Sign in with Apple (see auth.js)
+//   POST /reports                                      -> report a spot or a change (see reports.js)
 //   GET /waves?lat=58.80&lon=5.55   -> wave forecast (total height in m, period, direction) about a week ahead:
 //                                     MET's Oceanforecast in Scandinavian waters, NOAA WaveWatch III elsewhere
 //
@@ -24,6 +25,7 @@ import { analyse } from "../../rules.js"; // the same rules as the web page
 import { handleDevices, notifyAll } from "./notify.js";
 import { handleCommunity } from "./community.js";
 import { handleAuth } from "./auth.js";
+import { handleReports } from "./reports.js";
 import catalogue from "../../ios/Kookout/Catalogue.json"; // the app's built-in spots
 
 const FROST = "https://frost.met.no";
@@ -97,6 +99,7 @@ export default {
 
       if (url.pathname.startsWith("/devices/")) return handleDevices(request, env, url, reply);
       if (url.pathname === "/auth/apple" || url.pathname === "/me") return handleAuth(request, env, url, reply);
+      if (url.pathname === "/reports") return handleReports(request, env, url, reply);
       if (/^\/(shared|spots|following|edits)(\/|$)/.test(url.pathname)) return handleCommunity(request, env, url, reply);
 
       if (url.pathname === "/analyse" && request.method === "POST") {

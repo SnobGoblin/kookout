@@ -30,3 +30,5 @@ APNS_TOPIC = "com.sternell.kookout"
 # Sign in with Apple: the key for revoking sign-ins when someone deletes their account (src/auth.js).
 # The key itself is a secret: npx wrangler secret put SIWA_KEY < AuthKey_XXXXXXXXXX.p8
 SIWA_KEY_ID = "4MA9SPG573"
+# Reports are emailed here through Resend when the secret RESEND_API_KEY is set (src/reports.js)
+REPORT_EMAIL = "hi@kookout.no"

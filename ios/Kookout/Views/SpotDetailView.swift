@@ -14,6 +14,9 @@ struct SpotDetailView: View {
             if store.failed.contains(spot.id) && forecast == nil {
                 Text("Couldn't load the forecast.").foregroundStyle(.red)
             }
+            if current.community != nil {
+                Section { CommunityLine(spot: current) }
+            }
             ForEach(days, id: \.day) { group in
                 Section {
                     ForEach(group.hours) { hour in

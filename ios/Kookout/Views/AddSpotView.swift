@@ -27,6 +27,8 @@ struct AddSpotView: View {
     /// A spot picked on the map.
     @State private var selectedID: String?
     @State private var askToShare = false
+    /// An existing spot (same sport, within 500 m) the new one might be.
+    @State private var duplicate: Nearby?
 
     /// A spot that can be added from the map or the list: built in, or shared by someone.
     struct Nearby {
@@ -140,6 +142,7 @@ struct AddSpotView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
+                        if let twin = nearbyTwin() { duplicate = twin; return }
                         // The first spot they make: ask whether to share it (and their spots from now on).
                         // (and ask again if they chose to share but aren't signed in: sharing needs an account)
                         let choice = Settings.shared.shareNewSpots
@@ -147,6 +150,15 @@ struct AddSpotView: View {
                     }
                         .disabled(pin == nil || name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
+            }
+            .confirmationDialog(duplicate.map { String(localized: "Did you mean \($0.spot.name)?") } ?? "",
+                                isPresented: Binding(get: { duplicate != nil }, set: { if !$0 { duplicate = nil } }),
+                                titleVisibility: .visible, presenting: duplicate) { twin in
+                Button("Use \(twin.spot.name)") { addPopular(twin.spot) }
+                Button("Add a new spot") { duplicate = nil; addOwn() }
+                Button("Cancel", role: .cancel) { duplicate = nil }
+            } message: { twin in
+                Text("There's already a \(twin.spot.sport.label) spot \(Measurement.distance(twin.meters)) away. Following it keeps riders and fixes in one place.")
             }
             .sheet(isPresented: $askToShare) {
                 ShareQuestion { share in
@@ -229,6 +241,23 @@ struct AddSpotView: View {
         Task { await store.refresh(spot) }
         dismiss()
         onAdd(spot)
+    }
+
+    /// An existing spot for the same sport within 500 m of the new pin, nearest first.
+    private func nearbyTwin() -> Nearby? {
+        guard let pin else { return nil }
+        let here = CLLocation(latitude: pin.latitude, longitude: pin.longitude)
+        let mine = Set(store.spots.map(\.id))
+        let builtIn = Catalogue.nearest(to: here, excluding: mine).map { Nearby(spot: $0.entry.spot, detail: $0.entry.area, meters: $0.meters) }
+        let others = shared.filter { !mine.contains($0.id) }
+            .map { Nearby(spot: $0.spot, detail: Self.addedBy($0.by), meters: $0.location.distance(from: here)) }
+        return (builtIn + others).filter { $0.meters <= 500 && $0.spot.sport == sport }.min { $0.meters < $1.meters }
+    }
+
+    /// After the duplicate check: the sharing question the first time, then add.
+    private func addOwn() {
+        let choice = Settings.shared.shareNewSpots
+        if choice == nil || (choice == true && !Account.shared.signedIn) { askToShare = true } else { add() }
     }
 
     private func add() {

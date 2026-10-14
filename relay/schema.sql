@@ -93,3 +93,16 @@ CREATE TABLE IF NOT EXISTS edits (  -- the log: who changed what, when
 );
 CREATE INDEX IF NOT EXISTS edits_spot ON edits (spot_id);
 CREATE INDEX IF NOT EXISTS edits_user ON edits (user_id, at);
+
+-- Reports about a spot, or about a change someone made (src/reports.js). Sent to REPORT_EMAIL when RESEND_API_KEY is set.
+CREATE TABLE IF NOT EXISTS reports (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  spot_id TEXT NOT NULL,
+  edit_id INTEGER,              -- the change it's about (and so the person who made it), if any
+  reason TEXT NOT NULL,         -- wrong, private, offensive, other
+  note TEXT,
+  reporter_user TEXT,           -- users.id if signed in
+  reporter TEXT NOT NULL,       -- SHA-256 of the app's random key
+  at TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open'
+);

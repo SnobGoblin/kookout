@@ -80,6 +80,10 @@ can fix them, every change is logged and can be undone (History on the spot's Ed
 2 km are refused. Wind directions and limits are preferences: each follower has their own, and the
 community version is the majority's from 3 active followers (`node relay/test-community.mjs`). The app
 follows the community spots in its list with a random key, so following works without an account.
+Moving a spot is deliberate (Edit → Move pin, a full map with a crosshair). When most riders' rules differ from
+yours, Edit suggests switching ("Most riders here use E–S"). Adding a spot within 500 m of one for the same
+sport asks "Did you mean …?". Spots and changes can be reported (`POST /reports`, table `reports`); reports are
+emailed to `REPORT_EMAIL` through Resend once `npx wrangler secret put RESEND_API_KEY` is set.
 
 ### Shared spots
 

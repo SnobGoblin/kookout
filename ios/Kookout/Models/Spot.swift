@@ -62,6 +62,8 @@ struct Spot: Identifiable, Codable, Hashable {
     var addedBy: String?
     /// For community spots (shared ones and the built-in ones): the community's version and who changed it last.
     var community: Community.Info?
+    /// The community rules the person chose to keep their own version against (so it isn't suggested again).
+    var keptOwnAgainst: Community.Rules?
 
     var notifies: Bool { notify ?? true }
     var timeZone: TimeZone { TimeZone(identifier: timeZoneID) ?? .current }

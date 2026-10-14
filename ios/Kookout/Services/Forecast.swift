@@ -43,6 +43,24 @@ struct SpotForecast: Decodable {
 enum Compass {
     static let points = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
                          "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
+
+    /// Directions as runs around the compass: ["E","ESE","SE","SSE","S","W"] -> "E–S, W".
+    static func ranges(_ dirs: [String]) -> String {
+        let on = points.map { dirs.contains($0) }
+        if on.allSatisfy({ $0 }) { return String(localized: "all directions") }
+        guard let start = on.indices.first(where: { on[$0] && !on[($0 + 15) % 16] }) else { return "" }
+        var runs: [String] = [], k = 0
+        while k < 16 {
+            let i = (start + k) % 16
+            if on[i] && !on[(i + 15) % 16] {
+                var j = i
+                while on[(j + 1) % 16] { j = (j + 1) % 16 }
+                runs.append(i == j ? points[i] : "\(points[i])–\(points[j])")
+            }
+            k += 1
+        }
+        return runs.joined(separator: ", ")
+    }
 }
 
 /// Asks Kookout's relay to work out a spot: it fetches MET's forecast (and waves for surf spots)

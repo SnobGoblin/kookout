@@ -7,6 +7,7 @@ struct SpotHistoryView: View {
     let spot: Spot
     @State private var entries: [Community.LogEntry]?
     @State private var problem: String?
+    @State private var reporting: Community.LogEntry?
 
     var body: some View {
         List {
@@ -19,6 +20,14 @@ struct SpotHistoryView: View {
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                         Spacer()
+                        if entry.field != "created" {
+                            Menu {
+                                Button("Report this change", systemImage: "flag") { reporting = entry }
+                            } label: {
+                                Image(systemName: "ellipsis.circle").foregroundStyle(.secondary)
+                            }
+                            .accessibilityLabel("More")
+                        }
                         if entry.undone {
                             Text("Undone").font(.caption).foregroundStyle(.secondary)
                         } else if canUndo(entry) {
@@ -39,6 +48,7 @@ struct SpotHistoryView: View {
                                        description: Text("Name and position changes show up here, with who made them."))
             }
         }
+        .sheet(item: $reporting) { ReportView(spot: spot, edit: $0) }
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }

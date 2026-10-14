@@ -97,6 +97,11 @@
      server only as a scrambled (hashed) value; it isn't linked to your account or your notifications. When you remove a
      spot, you stop following it. Spots nobody follows any more disappear from the map.</p>
 
+  <h3>Reports</h3>
+  <p>You can report a community spot, or a change someone made to it. Kookout stores the report (the spot, the change if any,
+     the reason and your note, your account if you're signed in, and the app's random key) and reads it, by email to
+     hi@kookout.no. Reports are deleted when they've been dealt with.</p>
+
   <h3>Shared spots</h3>
   <p>The first time you make a spot, the app asks whether to share your spots with other Kookout users, so they can find
      them on the map, and if so, which name to show. Your answer applies to the spots you make from then on; change it in
@@ -113,8 +118,8 @@
   <p>To show forecasts and live wind, the app, the page or Kookout's server contacts these services. Like any request on the
      internet, they see the IP address it comes from, along with the spot's position or your search.</p>
   <ul>
-    <li><b>Kookout's server</b>, on Cloudflare (Workers and its database): forecasts, notifications and shared spots, as
-        described above. Cloudflare handles technical traffic data under its own privacy policy.</li>
+    <li><b>Kookout's server</b>, on Cloudflare (Workers and its database): forecasts, notifications, accounts, community
+        spots and reports, as described above. Reports are emailed to Kookout through <b>Resend</b>. Cloudflare handles technical traffic data under its own privacy policy.</li>
     <li><b>Apple</b>: notifications (Apple Push Notification service), maps and place search in the app.</li>
     <li><b>MET Norway</b> (api.met.no, frost.met.no): weather and wave forecasts, wind observations.</li>
     <li><b>The Norwegian Coastal Administration</b> (Kystvær) and <b>NOAA</b> (weather service, buoys, WaveWatch III via PacIOOS
