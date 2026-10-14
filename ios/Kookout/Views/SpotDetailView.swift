@@ -142,7 +142,7 @@ struct HourRow: View {
 /// station, a button that opens Holfuy's own widget.
 struct LiveWindRow: View {
     let station: LiveWind.Station
-    @State private var showWidget = false
+    @State private var open = false
 
     var body: some View {
         Section {
@@ -159,11 +159,13 @@ struct LiveWindRow: View {
                 }
                 Text("\(station.name), \(Measurement.distance(station.km * 1000)) · \(live.time.formatted(.relative(presentation: .named)))")
                     .font(.caption).foregroundStyle(.secondary)
-            } else if station.isHolfuy {
-                Button("See wind now at \(station.name)") { showWidget = true }
-                    .sheet(isPresented: $showWidget) {
-                        if let number = station.holfuyNumber { HolfuyWidget(number: number, name: station.name) }
-                    }
+            } else if let number = station.holfuyNumber {
+                // Holfuy's own live widget (they only share their readings with station owners), folded away until opened
+                DisclosureGroup("See wind now at \(station.name)", isExpanded: $open) {
+                    HolfuyWidget.Embedded(number: number)
+                        .frame(height: 175)
+                        .listRowInsets(EdgeInsets())
+                }
             } else {
                 Text("No recent reading from \(station.name).").foregroundStyle(.secondary)
             }

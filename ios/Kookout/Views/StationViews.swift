@@ -54,21 +54,34 @@ struct StationPicker: View {
 
 /// Holfuy's own live widget for a station (Holfuy only shares its readings with station owners).
 struct HolfuyWidget: View {
+    /// The widget on its own, to put in a list row: shrunk to fit, not scrollable.
+    struct Embedded: View {
+        let number: String
+        var body: some View {
+            WebView(url: HolfuyWidget.url(number), scrolls: false)
+        }
+    }
+
+    static func url(_ number: String) -> URL {
+        URL(string: "https://widget.holfuy.com/?station=\(number)&su=\(Settings.shared.wind == .kn ? "knots" : "m/s")&t=C&lang=en&mode=detailed")!
+    }
+
     @Environment(\.dismiss) private var dismiss
     let number: String
     let name: String
 
     var body: some View {
         NavigationStack {
-            WebView(url: URL(string: "https://widget.holfuy.com/?station=\(number)&su=\(Settings.shared.wind == .kn ? "knots" : "m/s")&t=C&lang=en&mode=detailed")!)
+            WebView(url: Self.url(number))
                 .navigationTitle(name)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
     }
 
-    private struct WebView: UIViewRepresentable {
+    fileprivate struct WebView: UIViewRepresentable {
         let url: URL
+        var scrolls = true
         func makeUIView(context: Context) -> WKWebView {
             // The widget is made for a wider screen: shrink it to the phone's width once it has loaded
             let fit = WKUserScript(source: """
@@ -80,6 +93,8 @@ struct HolfuyWidget: View {
             let config = WKWebViewConfiguration()
             config.userContentController.addUserScript(fit)
             let view = WKWebView(frame: .zero, configuration: config)
+            view.scrollView.isScrollEnabled = scrolls
+            view.isOpaque = false
             view.load(URLRequest(url: url))
             return view
         }
