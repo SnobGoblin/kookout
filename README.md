@@ -84,6 +84,14 @@ Moving a spot is deliberate (Edit → Move pin, a full map with a crosshair). Wh
 yours, Edit suggests switching ("Most riders here use E–S"). Adding a spot within 500 m of one for the same
 sport asks "Did you mean …?". Spots and changes can be reported (`POST /reports`, table `reports`); reports are
 emailed to `REPORT_EMAIL` through Resend once `npx wrangler secret put RESEND_API_KEY` is set.
+For now, moderation is by hand (Apple's guideline 1.2 asks for a way to block abusive users), from `relay/`:
+
+```bash
+npx wrangler d1 execute kookout --remote --command "SELECT id, name FROM users"
+npx wrangler d1 execute kookout --remote --command "UPDATE users SET blocked = 1 WHERE id = '<id>'"   # can't sign in or edit
+npx wrangler d1 execute kookout --remote --command "UPDATE spots SET status = 'gone' WHERE id = '<id>'" # off the map
+npx wrangler d1 execute kookout --remote --command "SELECT at, reason, note, spot_id FROM reports ORDER BY at DESC"
+```
 
 ### Shared spots
 
