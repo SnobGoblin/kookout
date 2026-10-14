@@ -242,13 +242,10 @@ async function surfWaves(lat, lon, env, ctx) {
   const met = await metWaves(lat, lon);
   // Where MET has the heights, NOAA only adds the period: don't keep the user waiting for NOAA's slow first
   // fetch of a new place (it finishes in the background and is used from the next request on).
-  let noaa;
-  if (met) {
-    ctx.waitUntil(noaaFetch);
-    noaa = await Promise.race([noaaFetch, new Promise(resolve => setTimeout(() => resolve(null), 2500))]);
-  } else {
-    noaa = await noaaFetch;
-  }
+  // Elsewhere NOAA is all we have, but its server is sometimes down: show the forecast without waves after 8 s
+  // rather than keep the app spinning. Either way the fetch finishes in the background for the next request.
+  ctx.waitUntil(noaaFetch);
+  const noaa = await Promise.race([noaaFetch, new Promise(resolve => setTimeout(() => resolve(null), met ? 2500 : 8000))]);
   if (met && noaa) {
     const periods = noaa.points.map(pt => ({ t: Date.parse(pt.time), period: pt.period }));
     for (const pt of met.points) {
