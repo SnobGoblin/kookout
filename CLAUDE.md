@@ -5,7 +5,8 @@ spot's own rules (wind directions, limits, waves, snow), with push notifications
 or change. Built by Christian (owner, not a programmer; learning as we go) with Claude. README.md has the
 details of each part; this file is the short version plus how we work.
 
-**Business:** an iPhone app at about $10/year, no paid APIs until it breaks even. The web page is free.
+**Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
+breaks even. The web page is free.
 **Status (14 Oct 2026):** build 1 in TestFlight beta review, builds up to 8 uploaded or ready; testers
 ("Family plus a couple guys") start when a build is approved. Not built yet: subscription/paywall.
 
@@ -41,6 +42,13 @@ emailed through Resend). Tests: `node relay/test-notify.mjs`, `node relay/test-c
 - **Accent colour:** sea blue `#1C6EA4` (light), buoy orange `#FF6B2C` (dark). Navy `#0E2A3B` for the brand.
 - **Moderation by hand** for now (SQL in README); a block/hide UI waits until there are many users.
 - **Languages:** en, nb, sv, da, de, fr, es. Every new app text gets translated in `Localizable.xcstrings`.
+- **Pricing (decided 14 Oct 2026):** free at launch, no paywall yet; the goal is active users. The first 10,000
+  users are *founding users*: at least 12 months free from when they join (the app knows the first download
+  date from Apple). The real end date is not fixed yet; it lives on the relay so it can change without a new
+  build, and only ever in users' favour, with plenty of warning. Once 10,000 is reached, new users pay after a
+  taster (e.g. 10 good-condition notifications, not a time-based trial, since the sports are seasonal). Planned
+  price: about $10/year, perhaps also a lifetime option. Family stays free via Family Sharing or offer codes
+  (no homemade free-account lists; Apple's rules). Never take a promised free period away early.
 - **Privacy page** (English only) must match what the app actually does. Update it with every data change.
 
 ## How we work
@@ -94,5 +102,6 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 
 ## Next up
 
-Subscription and paywall (StoreKit, App Store Connect, tax/bank details); App Store page (texts, screenshots,
+Founding-user count and "free while we launch" text in the app; later the subscription and paywall (StoreKit,
+App Store Connect, tax/bank details); App Store page (texts, screenshots,
 privacy labels, review notes on moderation); a test copy of the relay; a pre-release checklist.
