@@ -14,6 +14,16 @@ targets:
     type: application
     platform: iOS
     sources: [Kookout]
+    # The launch screen: splash D (brand/render.swift); the app then animates it (Views/SplashView.swift)
+    info:
+      path: Kookout/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)  # the versions come from the settings below
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+          UIImageName: SplashLaunch
+          UIImageRespectsSafeAreaInsets: false
     # Push notifications (Apple's sandbox for builds from Xcode; the App Store build switches to production)
     entitlements:
       path: Kookout/Kookout.entitlements
@@ -24,7 +34,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sternell.kookout
         MARKETING_VERSION: "1.0"
-        CURRENT_PROJECT_VERSION: "8"
+        CURRENT_PROJECT_VERSION: "9"
         SWIFT_VERSION: "6.0"
         TARGETED_DEVICE_FAMILY: "1" # iPhone
         CODE_SIGN_STYLE: Automatic
@@ -35,7 +45,6 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: YES # let Xcode find the app's texts for translation (Localizable.xcstrings)
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
         INFOPLIST_KEY_CFBundleDisplayName: Kookout
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.weather
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO # only HTTPS, so no export-compliance questions per upload

@@ -6,6 +6,9 @@
 //   brand/kookout-wordmark-navy.svg, brand/kookout-wordmark-white.svg   (KOOKOUT, the O's "looking out")
 //   brand/kookout-mark.svg                                             (the two O's alone)
 //   apple-touch-icon.png (180 px) and brand/favicon-64.png, for the web page
+//   ios/Kookout/Assets.xcassets/SplashLaunch (splash D with the pupils looking out: iOS's launch screen) and
+//   SplashEyes (the same without pupils, for the app's short "looking around" animation), plus
+//   ios/Kookout/Views/SplashGeometry.swift with where the pupils go
 //
 // The look: the two O's are eyes looking out: an orange dot in each, both shifted the same way
 // (right and a little up), 0.15 em across.
@@ -146,3 +149,88 @@ icon(background: navy, letters: white, dots: orange, to: "brand/favicon-64.png",
 svg("KOOKOUT", dotIndexes: [1, 2], letterColor: "#0E2A3B", dotColor: "#FF6B2C", to: "brand/kookout-wordmark-navy.svg")
 svg("KOOKOUT", dotIndexes: [1, 2], letterColor: "#FFFFFF", dotColor: "#FF6B2C", to: "brand/kookout-wordmark-white.svg")
 svg("OO", dotIndexes: [0, 1], letterColor: "#0E2A3B", dotColor: "#FF6B2C", to: "brand/kookout-mark.svg")
+
+
+// MARK: - Splash screen D: orange eyes on near-black, the name small and wide-spaced under them
+
+func splash(pupils: Bool, to file: String) -> (size: CGSize, centers: [CGPoint], pupil: CGFloat, em: CGFloat) {
+    let scale: CGFloat = 3                       // @3x, so 1 point = 3 pixels
+    let canvas = CGSize(width: 260 * scale, height: 170 * scale)
+    let oo = letters("OO", size: 1000, tracking: 0)
+    let name = letters("KOOKOUT", size: 1000, tracking: 0.32)
+    let ooBox = oo.path.boundingBoxOfPath, nameBox = name.path.boundingBoxOfPath
+    let ooScale = 190 * scale / ooBox.width              // the eyes 190 pt wide
+    let nameScale = (15 * scale) / 1000                  // the name at 15 pt
+    let gap = 28 * scale
+    let total = ooBox.height * ooScale + gap + nameBox.height * nameScale
+    let top = (canvas.height - total) / 2                // from the top, in pixels
+
+    let space = CGColorSpace(name: CGColorSpace.sRGB)!
+    let context = CGContext(data: nil, width: Int(canvas.width), height: Int(canvas.height), bitsPerComponent: 8,
+                            bytesPerRow: 0, space: space, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+    // Eyes (CG's y goes up: place them by their top edge)
+    let eyeOrigin = CGPoint(x: (canvas.width - ooBox.width * ooScale) / 2 - ooBox.minX * ooScale,
+                            y: canvas.height - top - ooBox.maxY * ooScale)
+    context.saveGState()
+    context.translateBy(x: eyeOrigin.x, y: eyeOrigin.y)
+    context.scaleBy(x: ooScale, y: ooScale)
+    context.addPath(oo.path)
+    context.setFillColor(orange)
+    context.fillPath()
+    var centers: [CGPoint] = []
+    for o in oo.glyphBounds {
+        let d = dot(in: o, size: oo.size)
+        if pupils { context.setFillColor(white); context.fillEllipse(in: d) }
+        // in points from the top-left of the image, for SwiftUI
+        centers.append(CGPoint(x: (eyeOrigin.x + d.midX * ooScale) / scale,
+                               y: (canvas.height - (eyeOrigin.y + d.midY * ooScale)) / scale))
+    }
+    context.restoreGState()
+    // The name, white at 85 %
+    context.saveGState()
+    let nameTop = top + ooBox.height * ooScale + gap
+    context.translateBy(x: (canvas.width - nameBox.width * nameScale) / 2 - nameBox.minX * nameScale,
+                        y: canvas.height - nameTop - nameBox.maxY * nameScale)
+    context.scaleBy(x: nameScale, y: nameScale)
+    context.addPath(name.path)
+    context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 0.85))
+    context.fillPath()
+    context.restoreGState()
+
+    let png = NSBitmapImageRep(cgImage: context.makeImage()!).representation(using: .png, properties: [:])!
+    try! png.write(to: URL(fileURLWithPath: file))
+    print("wrote \(file)")
+    let pupil = 0.15 * oo.size * ooScale / scale
+    return (CGSize(width: canvas.width / scale, height: canvas.height / scale), centers, pupil, oo.size * ooScale / scale)
+}
+
+func imageSet(_ name: String) -> String {
+    let dir = "ios/Kookout/Assets.xcassets/\(name).imageset"
+    try! FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+    let json = #"{"images":[{"filename":"\#(name).png","idiom":"universal","scale":"3x"}],"info":{"author":"xcode","version":1}}"#
+    try! json.write(toFile: "\(dir)/Contents.json", atomically: true, encoding: .utf8)
+    return "\(dir)/\(name).png"
+}
+
+_ = splash(pupils: true, to: imageSet("SplashLaunch"))
+let geometry = splash(pupils: false, to: imageSet("SplashEyes"))
+let colorDir = "ios/Kookout/Assets.xcassets/LaunchBackground.colorset"
+try! FileManager.default.createDirectory(atPath: colorDir, withIntermediateDirectories: true)
+try! #"{"colors":[{"idiom":"universal","color":{"color-space":"srgb","components":{"alpha":"1.000","red":"0x05","green":"0x12","blue":"0x1A"}}}],"info":{"author":"xcode","version":1}}"#
+    .write(toFile: "\(colorDir)/Contents.json", atomically: true, encoding: .utf8)
+let f = { (v: CGFloat) in String(format: "%.2f", v) }
+let swift = """
+// Generated by brand/render.swift: where splash D's pupils sit in the SplashEyes image (points, from its top-left).
+import CoreGraphics
+
+enum SplashGeometry {
+    static let size = CGSize(width: \(f(geometry.size.width)), height: \(f(geometry.size.height)))
+    static let pupils = [\(geometry.centers.map { "CGPoint(x: \(f($0.x)), y: \(f($0.y)))" }.joined(separator: ", "))]
+    static let pupilSize: CGFloat = \(f(geometry.pupil))
+    /// The letters' size, to move the pupils in proportion (the resting pupils sit 0.08 em right of centre).
+    static let em: CGFloat = \(f(geometry.em))
+}
+
+"""
+try! swift.write(toFile: "ios/Kookout/Views/SplashGeometry.swift", atomically: true, encoding: .utf8)
+print("wrote ios/Kookout/Views/SplashGeometry.swift")
