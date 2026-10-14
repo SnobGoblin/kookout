@@ -14,7 +14,11 @@ struct KookoutApp: App {
                     SharedSpots.sync(old: [], new: store.spots) // re-share at launch, in case a share failed (offline)
                     await Notifications.shared.start(spots: store.spots)
                 }
-                .onChange(of: scenePhase) { if scenePhase == .active { Task { await Notifications.shared.refreshStatus() } } }
+                .onChange(of: scenePhase) {
+                    guard scenePhase == .active else { return }
+                    Task { await Notifications.shared.refreshStatus() }
+                    Task { await store.refreshIfStale() } // forecasts from last night aren't today's
+                }
         }
     }
 }

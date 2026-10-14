@@ -33,6 +33,11 @@ struct SpotForecast: Decodable {
         let start: Date
         let end: Date
     }
+
+    /// The hours that haven't ended yet (a forecast fetched last night still starts at last night).
+    var upcomingRows: [ForecastHour] { rows.filter { $0.end > .now } }
+    /// The good periods that haven't ended yet.
+    var upcomingGood: [Period] { good.filter { $0.end > .now } }
 }
 
 enum Compass {

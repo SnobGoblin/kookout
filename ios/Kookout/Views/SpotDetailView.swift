@@ -39,7 +39,7 @@ struct SpotDetailView: View {
     private var days: [(day: Date, title: String, hours: [ForecastHour])] {
         var calendar = Calendar.current
         calendar.timeZone = spot.timeZone
-        let grouped = Dictionary(grouping: forecast?.rows ?? []) { calendar.startOfDay(for: $0.time) }
+        let grouped = Dictionary(grouping: forecast?.upcomingRows ?? []) { calendar.startOfDay(for: $0.time) }
         var style = Date.FormatStyle.dateTime.weekday(.wide).day().month(.wide)
         style.timeZone = spot.timeZone
         return grouped.keys.sorted().map { day in (day, day.formatted(style), grouped[day]!) }

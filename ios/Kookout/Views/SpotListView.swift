@@ -60,6 +60,7 @@ struct SpotListView: View {
                 guard let id = Notifications.shared.openSpotID, let spot = store.spots.first(where: { $0.id == id }) else { return }
                 path = [.detail(spot)]
                 Notifications.shared.openSpotID = nil
+                Task { await store.refresh(spot) } // the notification is about the latest forecast: show that
             }
             .refreshable { await store.refreshAll() }
         }
@@ -195,7 +196,7 @@ struct SpotRow: View {
     private var next: String? {
         guard let forecast else { return nil }
         let zone = spot.timeZone
-        if let first = forecast.good.first {
+        if let first = forecast.upcomingGood.first {
             let day = Self.dayLabel(first.start, zone: zone)
             let hours = Units.hours(first.start, first.end, zone: zone)
             return String(localized: "Good \(day) \(hours)")

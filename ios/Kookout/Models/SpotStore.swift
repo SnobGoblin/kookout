@@ -10,12 +10,21 @@ final class SpotStore {
     var spots: [Spot] { didSet { save(); SharedSpots.sync(old: oldValue, new: spots) } }
     private(set) var forecasts: [Spot.ID: SpotForecast] = [:]
     private(set) var failed: Set<Spot.ID> = []
+    /// When all spots were last worked out.
+    private var refreshed: Date?
 
     init() {
         spots = (try? JSONDecoder().decode([Spot].self, from: Data(contentsOf: Self.file))) ?? []
     }
 
+    /// Back in the app after a while (or tapped a notification): fetch new forecasts if these are 15+ minutes old.
+    func refreshIfStale() async {
+        guard let refreshed, Date.now.timeIntervalSince(refreshed) > 15 * 60 else { return }
+        await refreshAll()
+    }
+
     func refreshAll() async {
+        refreshed = .now
         let (units, waveUnit) = (Settings.shared.wind.rawValue, Settings.shared.wave.rawValue)
         await withTaskGroup(of: (Spot.ID, SpotForecast?).self) { group in
             for spot in spots {
