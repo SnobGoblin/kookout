@@ -86,20 +86,30 @@ async function settle(env, id) {
     await env.DB.prepare("UPDATE spots SET rule = ?, updated = ? WHERE id = ?").bind(JSON.stringify(majority), new Date().toISOString(), id).run();
 }
 
-/// The majority's rule: compass points included by more than half, the median of each number, the majority's yes/no.
+/// The majority's rule: compass points included by more than half, the median of each number, the majority's yes/no,
+/// and settings only some have (the sunny-day limits, powder days) when more than half have them. Exported for tests.
 export function majorityRule(votes, current) {
-  const out = { ...current };
-  for (const [key, value] of Object.entries(current)) {
-    if (Array.isArray(value)) { // directions
-      const points = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
-      out[key] = points.filter(p => votes.filter(v => Array.isArray(v[key]) && v[key].includes(p)).length * 2 > votes.length);
-    } else if (typeof value === "number") {
-      const xs = votes.map(v => v[key]).filter(Number.isFinite).sort((a, b) => a - b);
-      if (xs.length) out[key] = xs.length % 2 ? xs[(xs.length - 1) / 2] : (xs[xs.length / 2 - 1] + xs[xs.length / 2]) / 2;
-      if (Number.isInteger(value)) out[key] = Math.round(out[key]);
-    } else if (typeof value === "boolean") {
-      out[key] = votes.filter(v => v[key] === true).length * 2 > votes.length;
-    } // anything else (the sunny-day limits) stays as it is
+  const POINTS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+  const half = n => n * 2 > votes.length;
+  const median = xs => { xs = xs.slice().sort((a, b) => a - b); const m = xs.length >> 1;
+                         return xs.length % 2 ? xs[m] : (xs[m - 1] + xs[m]) / 2; };
+  const keys = new Set([...Object.keys(current), ...votes.flatMap(v => Object.keys(v ?? {}))]);
+  const out = {};
+  for (const key of keys) {
+    const sample = current[key] ?? votes.map(v => v[key]).find(x => x != null);
+    const values = votes.map(v => v[key]);
+    if (Array.isArray(sample)) {                                  // directions
+      out[key] = POINTS.filter(p => half(values.filter(x => Array.isArray(x) && x.includes(p)).length));
+    } else if (typeof sample === "number") {                      // limits, hours, powder days
+      const xs = values.filter(Number.isFinite);
+      if (!half(xs.length)) { if (key in current) out[key] = current[key]; continue; }
+      out[key] = Number.isInteger(sample) && xs.every(Number.isInteger) ? Math.round(median(xs)) : median(xs);
+    } else if (typeof sample === "boolean") {                     // daylight, powder "sunny days only"
+      out[key] = half(values.filter(x => x === true).length);
+    } else if (sample && typeof sample === "object") {            // the wind rule's sunny-day limits
+      const objects = values.filter(x => x && typeof x === "object");
+      if (half(objects.length)) out[key] = majorityRule(objects, objects[0]);
+    }
   }
   return out;
 }
