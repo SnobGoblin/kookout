@@ -42,10 +42,10 @@ emailed through Resend). Tests: `node relay/test-notify.mjs`, `node relay/test-c
 - **Accent colour:** sea blue `#1C6EA4` (light), buoy orange `#FF6B2C` (dark). Navy `#0E2A3B` for the brand.
 - **Moderation by hand** for now (SQL in README); a block/hide UI waits until there are many users.
 - **Languages:** en, nb, sv, da, de, fr, es. Every new app text gets translated in `Localizable.xcstrings`.
-- **Pricing (decided 14 Oct 2026):** free at launch, no paywall yet; the goal is active users. The first 10,000
+- **Pricing (decided 14 Oct 2026):** free at launch, no paywall yet; the goal is active users. The first 2,000
   users are *founding users*: at least 12 months free from when they join (the app knows the first download
   date from Apple). The real end date is not fixed yet; it lives on the relay so it can change without a new
-  build, and only ever in users' favour, with plenty of warning. Once 10,000 is reached, new users pay after a
+  build, and only ever in users' favour, with plenty of warning. Once 2,000 is reached, new users pay after a
   taster (e.g. 10 good-condition notifications, not a time-based trial, since the sports are seasonal). Planned
   price: about $10/year, perhaps also a lifetime option. Family stays free via Family Sharing or offer codes
   (no homemade free-account lists; Apple's rules). Never take a promised free period away early.
