@@ -99,7 +99,8 @@ struct HourRow: View {
                     .fixedSize()
             }
             Spacer()
-            Text("\(Units.wind(hour.wind)) (\(hour.gust.map(Units.wind) ?? "–"))")
+            // "5 (9)": mean wind and gusts. MET has no gusts outside the Nordic countries: then just "5".
+            Text(hour.gust.map { "\(Units.wind(hour.wind)) (\(Units.wind($0)))" } ?? Units.wind(hour.wind))
                 .monospacedDigit()
                 .lineLimit(1)
                 .fixedSize()
