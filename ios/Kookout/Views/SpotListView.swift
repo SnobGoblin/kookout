@@ -10,8 +10,15 @@ struct SpotListView: View {
     @State private var pickNear: CLLocation?
 
     var body: some View {
-        @Bindable var store = store
         NavigationStack(path: $path) {
+            listContent
+        }
+        .environment(\.backToList, BackToList { path = [] })
+    }
+
+    private var listContent: some View {
+        @Bindable var store = store
+        return Group {
             List {
                 ForEach(store.spots) { spot in
                     NavigationLink(value: Route.detail(spot)) {
@@ -160,6 +167,16 @@ struct NearbyPicker: View {
             }
         }
     }
+}
+
+/// Goes back to the list from any screen (e.g. after deleting a spot, whose forecast screen is gone too).
+struct BackToList: Sendable {
+    let action: @MainActor @Sendable () -> Void
+    @MainActor func callAsFunction() { action() }
+}
+
+extension EnvironmentValues {
+    @Entry var backToList = BackToList {}
 }
 
 /// The screens you can go to from the list.

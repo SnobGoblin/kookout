@@ -7,6 +7,7 @@ import MapKit
 struct SpotEditView: View {
     @Environment(SpotStore.self) private var store
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.backToList) private var backToList
     @State private var spot: Spot
     @State private var confirmDelete = false
     @State private var saving = false
@@ -86,7 +87,7 @@ struct SpotEditView: View {
         .confirmationDialog("Delete \(spot.name)?", isPresented: $confirmDelete, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 store.spots.removeAll { $0.id == spot.id }
-                dismiss()
+                backToList() // its forecast screen is gone too
             }
         }
     }
