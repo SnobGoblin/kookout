@@ -72,6 +72,13 @@ wind directions that usually work. A new install starts with a welcome screen: "
 of them within 200 km to pick from; the add-spot screen lists the five nearest you don't have yet. "Start over" in Settings removes all
 spots and settings and goes back to the welcome screen.
 
+### Weekend spots and powder
+
+A spot can be a weekend spot (Edit): it's only good on days off, weekends and the public holidays of the
+phone's country (from [Nager.Date](https://date.nager.at), cached in KV), needs 5 hours in a row by default,
+and its notifications look further ahead (Settings, default 5 days). Powder counts the snow of the day and
+the day before (yesterday's snow makes today good), and can require a sunny day.
+
 ### Community spots
 
 Shared spots and the built-in catalogue are community spots (`relay/src/community.js`, tables `spots`,

@@ -79,7 +79,18 @@ struct AddSpotView: View {
                                 .accessibilityLabel("Clear")
                         }
                     }
-                    if !results.isEmpty {
+                    if !results.isEmpty || !namedMatches.isEmpty {
+                        // Kookout's own spots (built in and shared) first, then places from Apple Maps
+                        ForEach(namedMatches, id: \.spot.id) { item in
+                            Button {
+                                pin = nil
+                                selectedID = item.spot.id
+                                position = .region(MKCoordinateRegion(center: item.spot.coordinate, latitudinalMeters: 4000, longitudinalMeters: 4000))
+                                query = ""
+                                searching = false
+                            } label: { NearbyRow(item: item) }
+                            .foregroundStyle(.primary)
+                        }
                         ForEach(results, id: \.self) { item in
                             Button {
                                 if let coordinate = item.placemark.location?.coordinate {
@@ -99,8 +110,8 @@ struct AddSpotView: View {
                     } else if let selected {
                         Section {
                             NearbyRow(item: selected)
-                            Button("Add this spot") { addPopular(selected.spot) }
-                                .bold()
+                        } footer: {
+                            Text("Tap Add to add this spot.")
                         }
                     } else if pin == nil {
                         Text("Or tap the map where the spot is.")
@@ -133,7 +144,7 @@ struct AddSpotView: View {
                         }
                     }
                 }
-                .frame(height: !results.isEmpty ? 330 : selected != nil ? 230 : pin == nil ? (suggestions.isEmpty ? 150 : 400) : 260)
+                .frame(height: !results.isEmpty || !namedMatches.isEmpty ? 330 : selected != nil ? 230 : pin == nil ? (suggestions.isEmpty ? 150 : 400) : 260)
             }
             .task(id: query) { await search() }
             .navigationTitle("Add spot")
@@ -142,13 +153,14 @@ struct AddSpotView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
+                        if let selected { addPopular(selected.spot); return } // a spot picked on the map or in search
                         if let twin = nearbyTwin() { duplicate = twin; return }
                         // The first spot they make: ask whether to share it (and their spots from now on).
                         // (and ask again if they chose to share but aren't signed in: sharing needs an account)
                         let choice = Settings.shared.shareNewSpots
                         if choice == nil || (choice == true && !Account.shared.signedIn) { askToShare = true } else { add() }
                     }
-                        .disabled(pin == nil || name.trimmingCharacters(in: .whitespaces).isEmpty)
+                        .disabled(selected == nil && (pin == nil || name.trimmingCharacters(in: .whitespaces).isEmpty))
                 }
             }
             .confirmationDialog(duplicate.map { String(localized: "Did you mean \($0.spot.name)?") } ?? "",
@@ -229,7 +241,34 @@ struct AddSpotView: View {
 
     private var suggestions: [Nearby] { Array(nearby.prefix(5)) }
     private var onMap: [Nearby] { Array(nearby.prefix(80)) }
-    private var selected: Nearby? { selectedID.flatMap { id in nearby.first { $0.spot.id == id } } }
+    private var selected: Nearby? { selectedID.flatMap { id in candidates.first { $0.spot.id == id } } }
+
+    /// Every spot that can be added: all the built-in ones and the shared ones near the map, nearest first.
+    private var candidates: [Nearby] {
+        let place = center ?? location.location ?? CLLocation(latitude: 0, longitude: 0)
+        let mine = Set(store.spots.map(\.id))
+        let builtIn = Catalogue.entries.filter { !mine.contains($0.spot.id) }
+            .map { Nearby(spot: $0.spot, detail: $0.area, meters: $0.location.distance(from: place)) }
+        let others = shared.filter { !mine.contains($0.id) }
+            .map { Nearby(spot: $0.spot, detail: Self.addedBy($0.by), meters: $0.location.distance(from: place)) }
+        return (builtIn + others).sorted { $0.meters < $1.meters }
+    }
+
+    /// Kookout's spots whose name (or area) matches the search, nearest first.
+    private var namedMatches: [Nearby] {
+        let text = query.trimmingCharacters(in: .whitespaces)
+        guard text.count >= 2 else { return [] }
+        let wanted = Self.plain(text)
+        return Array(candidates.filter { Self.plain($0.spot.name).contains(wanted) || Self.plain($0.detail).contains(wanted) }.prefix(5))
+    }
+
+    /// For matching names however they're typed: "Drøbak" and "drobak" are the same (ø, æ and ß too, which
+    /// iOS doesn't count as accented letters).
+    static func plain(_ text: String) -> String {
+        text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil)
+            .replacingOccurrences(of: "ø", with: "o").replacingOccurrences(of: "æ", with: "ae")
+            .replacingOccurrences(of: "œ", with: "oe").replacingOccurrences(of: "ß", with: "ss")
+    }
 
     static func addedBy(_ name: String?) -> String {
         if let name, !name.isEmpty { return String(localized: "Added by \(name)") }

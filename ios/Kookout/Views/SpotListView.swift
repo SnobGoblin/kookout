@@ -7,6 +7,7 @@ struct SpotListView: View {
     @State private var showAdd = false
     @State private var path: [Route] = []
     @State private var locating = false
+    @State private var editMode: EditMode = .inactive
     @State private var pickNear: CLLocation?
 
     var body: some View {
@@ -24,17 +25,33 @@ struct SpotListView: View {
                     NavigationLink(value: Route.detail(spot)) {
                         SpotRow(spot: spot, forecast: store.forecasts[spot.id], failed: store.failed.contains(spot.id))
                     }
+                    // Long-press: rearrange the list (the same as Edit) or delete the spot
+                    .contextMenu {
+                        Button("Rearrange", systemImage: "arrow.up.arrow.down") {
+                            withAnimation { editMode = .active }
+                        }
+                        Button("Delete", systemImage: "trash", role: .destructive) {
+                            store.spots.removeAll { $0.id == spot.id }
+                        }
+                    }
                 }
                 .onDelete { store.spots.remove(atOffsets: $0) }
                 .onMove { store.spots.move(fromOffsets: $0, toOffset: $1) }
             }
+            .environment(\.editMode, $editMode)
             .overlay {
                 if store.spots.isEmpty { welcome }
             }
             .navigationTitle("Kookout")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                if !store.spots.isEmpty { ToolbarItem(placement: .topBarLeading) { EditButton() } }
+                if !store.spots.isEmpty {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button(editMode == .active ? "Done" : "Edit") {
+                            withAnimation { editMode = editMode == .active ? .inactive : .active }
+                        }
+                    }
+                }
                 ToolbarItem(placement: .principal) {
                     Image("Wordmark") // KOOKOUT with the O's looking out (brand/)
                         .resizable()

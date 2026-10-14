@@ -4,6 +4,9 @@
     "%@ · %@": {
       "shouldTranslate": false
     },
+    "%@, %@ · %@": {
+      "shouldTranslate": false
+    },
     "12-hour": {
       "localizations": {
         "da": {
@@ -280,46 +283,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Añadir el spot"
-          }
-        }
-      }
-    },
-    "Add this spot": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Legg til denne spoten"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lägg till den här spoten"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tilføj dette spot"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diesen Spot hinzufügen"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajouter ce spot"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Añadir este spot"
           }
         }
       }
@@ -964,6 +927,86 @@
         }
       }
     },
+    "Counted on the day itself": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Telles bare samme dag"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Räknas bara samma dag"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tælles kun samme dag"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur am selben Tag gezählt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compté le jour même"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contado solo ese día"
+          }
+        }
+      }
+    },
+    "Counted over %lld days": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Telles over %lld dager"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Räknas över %lld dagar"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tælles over %lld dage"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über %lld Tage gezählt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compté sur %lld jours"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contado en %lld días"
+          }
+        }
+      }
+    },
     "Daylight only": {
       "localizations": {
         "da": {
@@ -1006,6 +1049,18 @@
     },
     "Delete": {
       "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slett"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Radera"
+          }
+        },
         "da": {
           "stringUnit": {
             "state": "translated",
@@ -1018,28 +1073,16 @@
             "value": "Löschen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eliminar"
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Supprimer"
           }
         },
-        "nb": {
+        "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Slett"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Radera"
+            "value": "Eliminar"
           }
         }
       }
@@ -2087,6 +2130,46 @@
         }
       }
     },
+    "Measured now (%@)": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Målt nå (%@)"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uppmätt nu (%@)"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Målt nu (%@)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jetzt gemessen (%@)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mesuré maintenant (%@)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medido ahora (%@)"
+          }
+        }
+      }
+    },
     "More": {
       "localizations": {
         "nb": {
@@ -2363,46 +2446,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Devuelto %1$@ por %2$@"
-          }
-        }
-      }
-    },
-    "Moved by %@ %@": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flyttet av %1$@ %2$@"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flyttad av %1$@ %2$@"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flyttet af %1$@ %2$@"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verschoben von %1$@ %2$@"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Déplacé par %1$@ %2$@"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Movido por %1$@ %2$@"
           }
         }
       }
@@ -2876,7 +2919,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Actuel"
+            "value": "Maintenant"
           }
         },
         "es": {
@@ -2923,6 +2966,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "OK"
+          }
+        }
+      }
+    },
+    "Only good on days off: weekends and public holidays. Notifications look %@ ahead (set in Settings).": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bare bra på fridager: helger og helligdager. Varsler ser %@ fremover (velges i Innstillinger)."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bara bra på lediga dagar: helger och helgdagar. Notiser ser %@ framåt (väljs i Inställningar)."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun godt på fridage: weekender og helligdage. Notifikationer ser %@ frem (vælges i Indstillinger)."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur an freien Tagen gut: Wochenenden und Feiertage. Mitteilungen schauen %@ voraus (in den Einstellungen)."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bon seulement les jours de repos : week-ends et jours fériés. Les notifications regardent %@ à l'avance (dans les Réglages)."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo bueno en días libres: fines de semana y festivos. Las notificaciones miran %@ por delante (en Ajustes)."
           }
         }
       }
@@ -3167,46 +3250,6 @@
         }
       }
     },
-    "Popular spot": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Populær spot"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Populär spot"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Populært spot"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beliebter Spot"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spot populaire"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spot popular"
-          }
-        }
-      }
-    },
     "Powder": {
       "localizations": {
         "da": {
@@ -3283,46 +3326,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Puder %@"
-          }
-        }
-      }
-    },
-    "Precipitation in a day over %lld mm": {
-      "localizations": {
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nedbør på en dag over %lld mm"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niederschlag an einem Tag über %lld mm"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Precipitación en un día de más de %lld mm"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Précipitations sur une journée de plus de %lld mm"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nedbør på en dag over %lld mm"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nederbörd på en dag över %lld mm"
           }
         }
       }
@@ -3407,6 +3410,46 @@
         }
       }
     },
+    "Rearrange": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endre rekkefølge"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ändra ordning"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skift rækkefølge"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neu anordnen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réorganiser"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reordenar"
+          }
+        }
+      }
+    },
     "Reason": {
       "localizations": {
         "nb": {
@@ -3483,46 +3526,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "¿Eliminar todos tus spots y ajustes y empezar de nuevo?"
-          }
-        }
-      }
-    },
-    "Renamed by %@ %@": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Omdøpt av %1$@ %2$@"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bytte namn av %1$@ %2$@"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Omdøbt af %1$@ %2$@"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Umbenannt von %1$@ %2$@"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Renommé par %1$@ %2$@"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Renombrado por %1$@ %2$@"
           }
         }
       }
@@ -4367,6 +4370,46 @@
         }
       }
     },
+    "Snow over %lld mm": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snø over %lld mm"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snö över %lld mm"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sne over %lld mm"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schnee über %lld mm"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neige au-delà de %lld mm"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nieve por encima de %lld mm"
+          }
+        }
+      }
+    },
     "Something else": {
       "localizations": {
         "nb": {
@@ -4767,6 +4810,46 @@
         }
       }
     },
+    "Sunny days only": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bare solskinnsdager"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bara soliga dagar"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun solskinsdage"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur sonnige Tage"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jours ensoleillés seulement"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo días soleados"
+          }
+        }
+      }
+    },
     "Sunny days: mean wind at least": {
       "localizations": {
         "da": {
@@ -4923,6 +5006,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Activa primero las notificaciones de al menos un spot."
+          }
+        }
+      }
+    },
+    "Tap Add to add this spot.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trykk Legg til for å legge til denne spoten."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tryck Lägg till för att lägga till den här spoten."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tryk Tilføj for at tilføje dette spot."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe auf Hinzufügen, um diesen Spot hinzuzufügen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touchez Ajouter pour ajouter ce spot."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca Añadir para añadir este spot."
           }
         }
       }
@@ -5683,6 +5806,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vågor minst"
+          }
+        }
+      }
+    },
+    "Weekend spot": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Helgespot"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Helgspot"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekendspot"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wochenend-Spot"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spot du week-end"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spot de fin de semana"
+          }
+        }
+      }
+    },
+    "Weekend spots": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Helgespoter"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Helgspots"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekendspots"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wochenend-Spots"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots du week-end"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots de fin de semana"
           }
         }
       }

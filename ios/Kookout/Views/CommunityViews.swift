@@ -121,28 +121,3 @@ struct MoveSpotView: View {
         }
     }
 }
-
-/// On the forecast screen: who added the spot and the latest change, opening the history.
-struct CommunityLine: View {
-    let spot: Spot
-
-    var body: some View {
-        if let community = spot.community {
-            NavigationLink { SpotHistoryView(spot: spot) } label: {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(community.catalogue ? String(localized: "Popular spot") : AddSpotView.addedBy(community.by))
-                    if let last = community.lastEdit {
-                        Text(lastChange(last)).foregroundStyle(.secondary)
-                    }
-                }
-                .font(.footnote)
-            }
-        }
-    }
-
-    private func lastChange(_ e: Community.Info.Edit) -> String {
-        let who = e.by.flatMap { $0.isEmpty ? nil : $0 } ?? String(localized: "a Kookout user")
-        let when = e.at.formatted(.relative(presentation: .named))
-        return e.field == "name" ? String(localized: "Renamed by \(who) \(when)") : String(localized: "Moved by \(who) \(when)")
-    }
-}

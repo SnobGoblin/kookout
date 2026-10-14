@@ -142,7 +142,9 @@ final class Settings {
     }
     /// How far ahead notifications look, in hours.
     var notifyHours: Int { didSet { save(notifyHours, "notifyHours") } }
-    static let notifyChoices = [12, 24, 48, 72, 120, 168]
+    /// The same for weekend spots, which are planned further ahead (default 5 days).
+    var weekendNotifyHours: Int { didSet { save(weekendNotifyHours, "weekendNotifyHours") } }
+    static let notifyChoices = [12, 24, 48, 72, 120, 168, 240]
 
     private func save(_ value: Any, _ key: String) {
         UserDefaults.standard.set(value, forKey: key)
@@ -156,12 +158,13 @@ final class Settings {
         tempUnit = defaults.string(forKey: "tempUnit").flatMap(TempUnit.init) ?? .automatic
         clock = defaults.string(forKey: "clock").flatMap(Clock.init) ?? .automatic
         notifyHours = defaults.object(forKey: "notifyHours") as? Int ?? 48
+        weekendNotifyHours = defaults.object(forKey: "weekendNotifyHours") as? Int ?? 120
         shareNewSpots = defaults.string(forKey: "shareNewSpots").map { $0 == "yes" }
     }
 
     /// Back to how a new install starts.
     func reset() {
-        windUnit = .automatic; waveUnit = .automatic; tempUnit = .automatic; clock = .automatic; notifyHours = 48
+        windUnit = .automatic; waveUnit = .automatic; tempUnit = .automatic; clock = .automatic; notifyHours = 48; weekendNotifyHours = 120
         shareNewSpots = nil
     }
 

@@ -69,6 +69,9 @@ struct SettingsView: View {
                         Picker("Look ahead", selection: $settings.notifyHours) {
                             ForEach(Settings.notifyChoices, id: \.self) { Text(Settings.hoursText($0)).tag($0) }
                         }
+                        Picker("Weekend spots", selection: $settings.weekendNotifyHours) {
+                            ForEach(Settings.notifyChoices, id: \.self) { Text(Settings.hoursText($0)).tag($0) }
+                        }
                         Button(testState.label) {
                             Task {
                                 testState = .sending

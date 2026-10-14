@@ -4,6 +4,7 @@ import SwiftUI
 struct SpotDetailView: View {
     @Environment(SpotStore.self) private var store
     let spot: Spot
+    @State private var live: LiveWind?
 
     private var forecast: SpotForecast? { store.forecasts[spot.id] }
     /// The latest saved version of the spot (it may have been edited since this screen opened).
@@ -14,9 +15,7 @@ struct SpotDetailView: View {
             if store.failed.contains(spot.id) && forecast == nil {
                 Text("Couldn't load the forecast.").foregroundStyle(.red)
             }
-            if current.community != nil {
-                Section { CommunityLine(spot: current) }
-            }
+            if let live { LiveWindRow(live: live) }
             ForEach(days, id: \.day) { group in
                 Section {
                     ForEach(group.hours) { hour in
@@ -35,7 +34,11 @@ struct SpotDetailView: View {
             }
         }
         .overlay { if forecast == nil && !store.failed.contains(spot.id) { ProgressView() } }
-        .refreshable { await store.refresh(spot) }
+        .task(id: spot.id) { live = await LiveWind.near(current) }
+        .refreshable {
+            await store.refresh(spot)
+            live = await LiveWind.near(current)
+        }
     }
 
     /// The hours grouped by calendar day at the spot.
@@ -133,4 +136,28 @@ struct HourRow: View {
 
 #Preview {
     NavigationStack { SpotDetailView(spot: Catalogue.entries[1].spot) }.environment(SpotStore())
+}
+
+/// "Now 6 (9) ↗ SSW · Hallangsodden, 1.4 km · 12 min ago": the latest measurement near the spot.
+struct LiveWindRow: View {
+    let live: LiveWind
+
+    var body: some View {
+        Section {
+            HStack(spacing: 8) {
+                Text("Now").bold()
+                Text(live.gust.map { "\(Units.wind(live.wind)) (\(Units.wind($0)))" } ?? Units.wind(live.wind))
+                    .monospacedDigit()
+                if let dir = live.dir {
+                    Image(systemName: "arrow.up").rotationEffect(.degrees(dir + 180))
+                    Text(Compass.points[Int((dir / 22.5).rounded()) % 16])
+                }
+                Spacer()
+            }
+            Text("\(live.name), \(Measurement.distance(live.km * 1000)) · \(live.time.formatted(.relative(presentation: .named)))")
+                .font(.caption).foregroundStyle(.secondary)
+        } header: {
+            Text("Measured now (\(Units.windUnit))")
+        }
+    }
 }

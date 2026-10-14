@@ -33,11 +33,14 @@ struct SurfRule: Codable, Hashable {
     var dirs: [String] = Compass.points
 }
 
-/// Powder: a day with more than `mm` precipitation, colder than `maxTemp` °C, wind under `maxWind` m/s.
+/// Powder: more than `mm` of snow over the day and the `days` - 1 before it (yesterday's snow makes today good),
+/// colder than `maxTemp` °C, wind under `maxWind` m/s, and if `sunny`, a mostly sunny day.
 struct PowderRule: Codable, Hashable {
     var mm: Double = 10
     var maxTemp: Double = 2
     var maxWind: Double = 8
+    var days: Int? = 2      // optional: spots saved before this existed have none (the relay then uses 2)
+    var sunny: Bool?
 }
 
 /// A place the user cares about, with the rules for when it's good. The rules are the same as on the
@@ -64,6 +67,9 @@ struct Spot: Identifiable, Codable, Hashable {
     var community: Community.Info?
     /// The community rules the person chose to keep their own version against (so it isn't suggested again).
     var keptOwnAgainst: Community.Rules?
+    /// A weekend spot: only good on days off (weekends and public holidays where the person lives), looking
+    /// further ahead and needing longer sessions.
+    var weekend: Bool?
 
     var notifies: Bool { notify ?? true }
     var timeZone: TimeZone { TimeZone(identifier: timeZoneID) ?? .current }

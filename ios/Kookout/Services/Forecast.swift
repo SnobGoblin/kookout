@@ -86,14 +86,17 @@ enum KookoutAPI {
         let spot: RelaySpot
         let units: String
         let waveUnit: String
+        /// The phone's region, whose public holidays are days off for weekend spots.
+        let country = Locale.current.region?.identifier
     }
 
     private struct RelaySpot: Encodable {
         let lat: Double, lon: Double, alt: Double?, tz: String
         let wind: WindRule?, surf: SurfRule?, powder: PowderRule?
+        let weekend: Bool?
         init(_ s: Spot) {
             lat = s.latitude; lon = s.longitude; alt = s.altitude; tz = s.timeZoneID
-            wind = s.wind; surf = s.surf; powder = s.powder
+            wind = s.wind; surf = s.surf; powder = s.powder; weekend = s.weekend == true ? true : nil
         }
     }
 

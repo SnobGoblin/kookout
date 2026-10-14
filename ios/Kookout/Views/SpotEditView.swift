@@ -65,9 +65,19 @@ struct SpotEditView: View {
             }
 
             Section {
+                Toggle("Weekend spot", isOn: Binding(get: { spot.weekend == true }, set: { on in
+                    spot.weekend = on
+                    // Worth the trip only for a proper session: at least 5 hours in a row
+                    if on {
+                        if let h = spot.wind?.hours, h < 5 { spot.wind!.hours = 5 }
+                        if let h = spot.surf?.hours, h < 5 { spot.surf!.hours = 5 }
+                    }
+                }))
                 Toggle("Notifications", isOn: Binding(get: { spot.notifies }, set: { spot.notify = $0 }))
             } footer: {
-                Text("When good conditions come up in the next \(Settings.hoursText(Settings.shared.notifyHours)), or change. How far ahead is set in Settings.")
+                Text(spot.weekend == true
+                     ? "Only good on days off: weekends and public holidays. Notifications look \(Settings.hoursText(Settings.shared.weekendNotifyHours)) ahead (set in Settings)."
+                     : "When good conditions come up in the next \(Settings.hoursText(Settings.shared.notifyHours)), or change. How far ahead is set in Settings.")
             }
 
             Section {
@@ -252,8 +262,12 @@ struct SpotEditView: View {
 
     private var powderSection: some View {
         Section("Powder") {
-            Stepper("Precipitation in a day over \(Int(spot.powder!.mm)) mm",
+            Stepper("Snow over \(Int(spot.powder!.mm)) mm",
                     value: Binding(get: { spot.powder!.mm }, set: { spot.powder!.mm = $0 }), in: 0...100)
+            Stepper(spot.powder!.days ?? 2 == 1 ? String(localized: "Counted on the day itself")
+                                                 : String(localized: "Counted over \(spot.powder!.days ?? 2) days"),
+                    value: Binding(get: { spot.powder!.days ?? 2 }, set: { spot.powder!.days = $0 }), in: 1...5)
+            Toggle("Sunny days only", isOn: Binding(get: { spot.powder!.sunny == true }, set: { spot.powder!.sunny = $0 }))
             HStack {
                 Text("Colder than")
                 Spacer()

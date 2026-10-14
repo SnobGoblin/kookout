@@ -92,6 +92,7 @@ final class Notifications {
             let settings = Settings.shared
             let body = Device(token: token, sandbox: Self.sandbox,
                               lang: Bundle.main.preferredLocalizations.first ?? "en",
+                              country: Locale.current.region?.identifier,
                               units: settings.wind.rawValue, waveUnit: settings.wave.rawValue,
                               h12: settings.uses12Hour, tz: TimeZone.current.identifier,
                               windowHours: settings.notifyHours, spots: wanted.map(Device.Spot.init))
@@ -114,16 +115,20 @@ final class Notifications {
     }
 
     private struct Device: Encodable {
-        let token: String, sandbox: Bool, lang: String, units: String, waveUnit: String, h12: Bool, tz: String
+        let token: String, sandbox: Bool, lang: String, country: String?, units: String, waveUnit: String, h12: Bool, tz: String
         let windowHours: Int
         let spots: [Spot]
 
         struct Spot: Encodable {
             let id: String, name: String, lat: Double, lon: Double, alt: Double?, tz: String
             let wind: WindRule?, surf: SurfRule?, powder: PowderRule?
-            init(_ s: Kookout.Spot) {
+            let weekend: Bool?
+            let windowHours: Int?   // weekend spots look further ahead
+            @MainActor init(_ s: Kookout.Spot) {
                 id = s.id; name = s.name; lat = s.latitude; lon = s.longitude; alt = s.altitude; tz = s.timeZoneID
                 wind = s.wind; surf = s.surf; powder = s.powder
+                weekend = s.weekend == true ? true : nil
+                windowHours = s.weekend == true ? Settings.shared.weekendNotifyHours : nil
             }
         }
     }
