@@ -103,13 +103,6 @@ final class Settings {
     var shareNewSpots: Bool? {
         didSet { UserDefaults.standard.set(shareNewSpots.map { $0 ? "yes" : "no" }, forKey: "shareNewSpots") }
     }
-    /// The name shown as "added by" on spots the user shares (empty: no name).
-    var sharingName: String {
-        didSet {
-            UserDefaults.standard.set(sharingName, forKey: "sharingName")
-            SharedSpots.nameChanged()
-        }
-    }
     /// How far ahead notifications look, in hours.
     var notifyHours: Int { didSet { save(notifyHours, "notifyHours") } }
     static let notifyChoices = [12, 24, 48, 72, 120, 168]
@@ -126,14 +119,12 @@ final class Settings {
         tempUnit = defaults.string(forKey: "tempUnit").flatMap(TempUnit.init) ?? .automatic
         clock = defaults.string(forKey: "clock").flatMap(Clock.init) ?? .automatic
         notifyHours = defaults.object(forKey: "notifyHours") as? Int ?? 48
-        sharingName = defaults.string(forKey: "sharingName") ?? ""
         shareNewSpots = defaults.string(forKey: "shareNewSpots").map { $0 == "yes" }
     }
 
     /// Back to how a new install starts.
     func reset() {
         windUnit = .automatic; waveUnit = .automatic; tempUnit = .automatic; clock = .automatic; notifyHours = 48
-        sharingName = ""
         shareNewSpots = nil
     }
 

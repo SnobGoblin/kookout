@@ -42,12 +42,13 @@
   <h2>In short</h2>
   <div class="short">
     <ul>
-      <li>No account, no ads, no tracking and no analytics.</li>
+      <li>No ads, no tracking and no analytics. You only need an account (Sign in with Apple) to share spots and edit
+          shared spots.</li>
       <li><b>The app</b> keeps your spots and settings on your phone. Copies are also kept on Kookout's server for
           notifications (on unless you switch them off: the spots with notifications on, with your phone's settings) and for
           sharing (only if you say yes when the app asks, the first time you make a spot: the spots you made, so others
-          can find them). Nothing there is linked to your
-          name, email or Apple ID, unless you type a name to show on the spots you share.</li>
+          can find them). Notifications aren't linked to your name, email
+          or Apple ID; shared spots are linked to your Kookout account.</li>
       <li><b>The web page</b> keeps your spots in your browser's local storage. It works like a cookie but is never sent to
           us, and the page sets no cookies.</li>
       <li>To show forecasts, the <b>location of your spots</b> is sent to Kookout's server and the weather services listed
@@ -76,12 +77,22 @@
      name, email or Apple ID. It's deleted when you switch notifications off for all spots or for Kookout in the iPhone's
      Settings (the next time you open the app), and when Apple tells us the app was removed from the phone.</p>
 
+  <h3>Your account</h3>
+  <p>To share spots, or edit spots others share, you sign in with Apple. Kookout gets Apple's id for you (the same every time
+     you sign in to Kookout, different for every app) and, the first time, your first name. You can change the name; it's shown
+     on the spots you share and next to changes you make to shared spots. Kookout doesn't ask for your email address. The app
+     keeps a session key in the iPhone's Keychain. To revoke the sign-in when you delete the account, Kookout's server also keeps
+     a token from Apple.</p>
+  <p><b>Deleting your account:</b> Settings → Sharing → Delete account. It deletes your account and sessions, and tells
+     Apple to revoke Kookout's sign-in. Spots you shared stay for the people who use them, without your name. Your spots on
+     the phone stay too. You can also stop using Sign in with Apple for Kookout in the iPhone's Settings → Apple account →
+     Sign in with Apple; the app then signs out.</p>
+
   <h3>Shared spots</h3>
   <p>The first time you make a spot, the app asks whether to share your spots with other Kookout users, so they can find
      them on the map, and if so, which name to show. Your answer applies to the spots you make from then on; change it in
-     Settings → Sharing, or for one spot with "Share with others" under Edit. What's shared: the spot's name, position, time zone and rules, and the name you may have typed
-     under Settings → Sharing, shown as "Added by …". Shared spots aren't linked to your phone or your notifications: the app
-     makes a separate random key, which only lets your phone change or remove the spots it shared. Switching sharing off, or
+     Settings → Sharing, or for one spot with "Share with others" under Edit. Sharing needs an account (above). What's shared: the spot's name, position, time zone and rules, and your public
+     name, shown as "Added by …". Shared spots are linked to your account, but not to your notifications. Switching sharing off, or
      deleting the spot, removes it from the server. Spots that came with the app or from other people aren't shared again.</p>
 
   <h2>The web page</h2>

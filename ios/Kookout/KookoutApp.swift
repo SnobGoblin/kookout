@@ -11,6 +11,7 @@ struct KookoutApp: App {
             SpotListView()
                 .environment(store)
                 .task {
+                    await Account.shared.checkStillSignedIn()
                     SharedSpots.sync(old: [], new: store.spots) // re-share at launch, in case a share failed (offline)
                     await Notifications.shared.start(spots: store.spots)
                 }

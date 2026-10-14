@@ -1,8 +1,8 @@
 import Foundation
 import CoreLocation
 
-/// Spots people share with each other through Kookout's relay. A spot the user adds is shared unless they
-/// switch it off (Edit), with the name they chose in Settings as "added by", if any. Nothing links a shared
+/// Spots people share with each other through Kookout's relay. Sharing needs an account (Sign in with Apple), and
+/// the account's public name is shown as "added by". Nothing links a shared
 /// spot to the phone's notifications: the relay only knows a hash of a random key kept here, which lets this
 /// phone (and only this phone) change or remove its shared spots.
 @MainActor
@@ -35,8 +35,8 @@ enum SharedSpots {
         }
     }
 
-    /// The user's name changed: update "added by" on everything they share.
-    static func nameChanged() {
+    /// Just signed in: share the spots that were waiting for it.
+    static func resync() {
         for spot in spots where spot.shared == true { Task { await put(spot) } }
     }
 
@@ -50,8 +50,10 @@ enum SharedSpots {
         return answer.spots.compactMap(\.shared)
     }
 
+    /// Sharing needs an account (the relay shows the account's name as "added by"); until then the spot waits.
     private static func put(_ spot: Spot) async {
-        let body = Body(key: key, name: spot.name, by: Settings.shared.sharingName.isEmpty ? nil : Settings.shared.sharingName,
+        guard Account.shared.signedIn else { return }
+        let body = Body(key: key, name: spot.name,
                         lat: spot.latitude, lon: spot.longitude, alt: spot.altitude, tz: spot.timeZoneID,
                         sport: spot.sport.rawValue, rule: Rule(spot))
         await send("PUT", spot.id, try? JSONEncoder().encode(body))
@@ -66,12 +68,12 @@ enum SharedSpots {
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = body
+        Account.shared.authorize(&request)
         _ = try? await URLSession.shared.data(for: request)
     }
 
     private struct Body: Encodable {
         let key, name: String
-        let by: String?
         let lat, lon: Double
         let alt: Double?
         let tz, sport: String

@@ -267,11 +267,11 @@ struct NearbyRow: View {
     }
 }
 
-/// Asked once, the first time someone makes a spot: share it (and later ones) with other Kookout users? And if so,
-/// under which name.
+/// Asked once, the first time someone makes a spot: share it (and later ones) with other Kookout users? Sharing
+/// needs Sign in with Apple, and the name to show.
 struct ShareQuestion: View {
     let answer: (Bool) -> Void
-    @Bindable private var settings = Settings.shared
+    private let account = Account.shared
     @State private var share = true
 
     var body: some View {
@@ -289,16 +289,16 @@ struct ShareQuestion: View {
                 }
                 if share {
                     Section {
-                        TextField("Your name (optional)", text: $settings.sharingName)
-                            .textContentType(.givenName) // the keyboard suggests the name on the phone's own contact card
-                            .autocorrectionDisabled()
+                        AccountRows()
                     } footer: {
-                        Text("Shown as “Added by …” on the spots you share. Leave it empty to share without a name.")
+                        Text(account.signedIn ? "Shown as “Added by …” on the spots you share, and next to changes you make."
+                                              : "Sharing needs Sign in with Apple, so changes to spots show who made them. Kookout gets your name, not your email.")
                     }
                 }
                 Section {
                     Button(share ? "Share and add the spot" : "Add the spot") { answer(share) }
                         .bold()
+                        .disabled(share && !account.signedIn)
                 }
             }
             .navigationTitle("Sharing")

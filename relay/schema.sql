@@ -35,3 +35,22 @@ CREATE TABLE IF NOT EXISTS shared_spots (
 CREATE INDEX IF NOT EXISTS shared_spots_lat ON shared_spots (lat);
 -- Added later (for databases made before by_name existed):
 --   ALTER TABLE shared_spots ADD COLUMN by_name TEXT;
+
+-- Accounts (Sign in with Apple), only for sharing and editing spots. See src/auth.js.
+CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY,          -- our own id
+  apple_sub TEXT NOT NULL UNIQUE, -- Apple's stable id for this person and app
+  name TEXT,                    -- the public name they chose (shown on shared spots and in the log)
+  created TEXT NOT NULL,
+  last_active TEXT,
+  refresh_token TEXT,           -- Apple's, so we can revoke the sign-in when they delete the account
+  blocked INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS sessions (
+  token_hash TEXT PRIMARY KEY,  -- SHA-256 of the app's session token
+  user_id TEXT NOT NULL,
+  created TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS sessions_user ON sessions (user_id);
+-- Added with accounts (for databases made before):
+--   ALTER TABLE shared_spots ADD COLUMN user_id TEXT;

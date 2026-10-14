@@ -13,6 +13,7 @@
 //   GET /tz?lat=21.28&lon=-157.83   -> the place's time zone, e.g. {"tz":"Pacific/Honolulu"} (worked out locally)
 //   PUT/DELETE /devices/<id>, POST /devices/<id>/test  -> notifications for a phone (see notify.js)
 //   GET /shared?lat&lon, PUT/DELETE /shared/<id>       -> spots people share on the map (see shared.js)
+//   POST /auth/apple, GET/PUT/DELETE /me              -> accounts, Sign in with Apple (see auth.js)
 //   GET /waves?lat=58.80&lon=5.55   -> wave forecast (total height in m, period, direction) about a week ahead:
 //                                     MET's Oceanforecast in Scandinavian waters, NOAA WaveWatch III elsewhere
 //
@@ -22,6 +23,7 @@ import tzlookup from "@photostructure/tz-lookup";
 import { analyse } from "../../rules.js"; // the same rules as the web page
 import { handleDevices, notifyAll } from "./notify.js";
 import { handleShared } from "./shared.js";
+import { handleAuth } from "./auth.js";
 import catalogue from "../../ios/Kookout/Catalogue.json"; // the app's built-in spots
 
 const FROST = "https://frost.met.no";
@@ -46,7 +48,7 @@ export default {
       status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...cors } });
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...cors,
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "86400" } });
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", "Access-Control-Allow-Headers": "Content-Type, Authorization", "Access-Control-Max-Age": "86400" } });
     if (!env.FROST_CLIENT_ID) return reply({ error: "FROST_CLIENT_ID is not set" }, 500);
     const frost = path => fetch(FROST + path, {
       headers: { Authorization: "Basic " + btoa(env.FROST_CLIENT_ID + ":") },
@@ -94,6 +96,7 @@ export default {
       }
 
       if (url.pathname.startsWith("/devices/")) return handleDevices(request, env, url, reply);
+      if (url.pathname === "/auth/apple" || url.pathname === "/me") return handleAuth(request, env, url, reply);
       if (url.pathname === "/shared" || url.pathname.startsWith("/shared/")) return handleShared(request, env, url, reply);
 
       if (url.pathname === "/analyse" && request.method === "POST") {

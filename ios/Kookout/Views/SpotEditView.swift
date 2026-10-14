@@ -23,8 +23,11 @@ struct SpotEditView: View {
             if spot.shared != nil {
                 Section {
                     Toggle("Share with others", isOn: Binding(get: { spot.shared == true }, set: { spot.shared = $0 }))
+                        .disabled(!Account.shared.signedIn && spot.shared != true)
                 } footer: {
-                    Text("Other Kookout users can find this spot on the map: its name, place and rules, and your name from Settings if you've set one.")
+                    Text(Account.shared.signedIn
+                         ? "Other Kookout users can find this spot on the map: its name, place and rules, and your name."
+                         : "To share spots, sign in with Apple in Settings.")
                 }
             } else if let by = spot.addedBy {
                 Section { Text(AddSpotView.addedBy(by)).foregroundStyle(.secondary) }

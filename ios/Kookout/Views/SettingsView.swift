@@ -8,6 +8,8 @@ struct SettingsView: View {
     @State private var confirmReset = false
     @State private var testState = TestState.ready
     @State private var testProblem: String?
+    @State private var confirmDelete = false
+    private let account = Account.shared
     private let notifications = Notifications.shared
 
     private enum TestState {
@@ -86,17 +88,20 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    AccountRows()
                     Toggle("Share new spots", isOn: Binding(get: { settings.shareNewSpots == true },
                                                             set: { settings.shareNewSpots = $0 }))
-                    if settings.shareNewSpots == true {
-                        TextField("Your name (optional)", text: $settings.sharingName)
-                            .textContentType(.givenName) // the keyboard suggests the name on the phone's own contact card
-                            .autocorrectionDisabled()
+                        .disabled(!account.signedIn)
+                    if account.signedIn {
+                        Button("Sign out") { account.signOut() }
+                        Button("Delete account", role: .destructive) { confirmDelete = true }
                     }
                 } header: {
                     Text("Sharing")
                 } footer: {
-                    Text("Spots you make are shared with other Kookout users, so they can find them on the map. Your name is shown as “Added by …”; leave it empty to share without one. Each spot can be changed under Edit.")
+                    Text(account.signedIn
+                         ? "Spots you make are shared with other Kookout users, so they can find them on the map. Your name is shown as “Added by …” and next to changes you make. Each spot can be changed under Edit."
+                         : "Sign in with Apple to share spots and edit spots others share. Kookout gets your name, not your email. Everything else works without an account.")
                 }
 
                 Section {
@@ -113,6 +118,11 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+            .confirmationDialog("Delete your Kookout account?", isPresented: $confirmDelete, titleVisibility: .visible) {
+                Button("Delete account", role: .destructive) { Task { _ = await account.delete() } }
+            } message: {
+                Text("Your spots stay on this phone. Spots you shared stay for the people who use them, without your name.")
+            }
             .confirmationDialog("Remove all your spots and settings, and start over?", isPresented: $confirmReset, titleVisibility: .visible) {
                 Button("Start over", role: .destructive) { store.removeAll(); settings.reset(); dismiss() }
             }

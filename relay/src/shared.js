@@ -3,9 +3,11 @@
 // the phone that shared a spot can change or remove it.
 //
 //   GET    /shared?lat=59.6&lon=10.6     -> shared spots within about 300 km, nearest first (at most 200)
-//   PUT    /shared/<id>   {key, name, by?, lat, lon, alt?, tz, sport, rule}   share or update a spot
-//                         (by: the name the person chose to show as "added by", optional)
+//   PUT    /shared/<id>   {key, name, lat, lon, alt?, tz, sport, rule}   share or update a spot. Needs an account
+//                         (Authorization: Bearer <session>); "added by" is the account's public name.
 //   DELETE /shared/<id>   {key}                                          stop sharing it
+
+import { currentUser, sha256 } from "./auth.js";
 
 const SPORTS = ["wing", "surf", "powder"];
 const MAX_PER_OWNER = 100;
@@ -40,29 +42,26 @@ export async function handleShared(request, env, url, reply) {
   }
 
   if (request.method === "PUT") {
+    const user = await currentUser(request, env);
+    if (!user) return reply({ error: "sign in to share spots" }, 401);
     const name = typeof b.name === "string" ? b.name.trim().slice(0, 60) : "";
-    const by = typeof b.by === "string" && b.by.trim() ? b.by.trim().slice(0, 40) : null;
+    const by = user.name || null;
     if (!name || !Number.isFinite(b.lat) || !Number.isFinite(b.lon) || Math.abs(b.lat) > 90 || Math.abs(b.lon) > 180 ||
         !SPORTS.includes(b.sport) || typeof b.rule !== "object" || !validZone(b.tz)) return reply({ error: "name, lat, lon, tz, sport and rule required" }, 400);
     if (!existing) {
       const { n } = await env.DB.prepare("SELECT count(*) AS n FROM shared_spots WHERE owner = ?").bind(owner).first();
       if (n >= MAX_PER_OWNER) return reply({ error: "too many shared spots" }, 429);
     }
-    await env.DB.prepare(`INSERT INTO shared_spots (id, owner, name, by_name, lat, lon, alt, tz, sport, rule, updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(id) DO UPDATE SET name = excluded.name, by_name = excluded.by_name, lat = excluded.lat, lon = excluded.lon, alt = excluded.alt,
+    await env.DB.prepare(`INSERT INTO shared_spots (id, owner, user_id, name, by_name, lat, lon, alt, tz, sport, rule, updated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET user_id = excluded.user_id, name = excluded.name, by_name = excluded.by_name, lat = excluded.lat, lon = excluded.lon, alt = excluded.alt,
           tz = excluded.tz, sport = excluded.sport, rule = excluded.rule, updated = excluded.updated`)
-      .bind(id, owner, name, by, Math.round(b.lat * 1e4) / 1e4, Math.round(b.lon * 1e4) / 1e4, Number.isFinite(b.alt) ? b.alt : null,
+      .bind(id, owner, user.id, name, by, Math.round(b.lat * 1e4) / 1e4, Math.round(b.lon * 1e4) / 1e4, Number.isFinite(b.alt) ? b.alt : null,
             b.tz, b.sport, JSON.stringify(b.rule), new Date().toISOString()).run();
     return reply({ ok: true });
   }
 
   return reply({ error: "not found" }, 404);
-}
-
-async function sha256(text) {
-  const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
-  return [...bytes].map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
 function validZone(tz) {

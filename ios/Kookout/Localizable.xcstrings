@@ -1,9 +1,6 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "%@ (%@)": {
-      "shouldTranslate": false
-    },
     "%@ · %@": {
       "shouldTranslate": false
     },
@@ -403,6 +400,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Añadido por un usuario de Kookout"
+          }
+        }
+      }
+    },
+    "Apple didn't send what Kookout needs. Try again.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple sendte ikke det Kookout trenger. Prøv igjen."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple skickade inte det Kookout behöver. Försök igen."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple sendte ikke det, Kookout skal bruge. Prøv igen."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple hat nicht gesendet, was Kookout braucht. Versuch es noch einmal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple n'a pas envoyé ce dont Kookout a besoin. Réessayez."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple no envió lo que Kookout necesita. Inténtalo de nuevo."
           }
         }
       }
@@ -887,6 +924,46 @@
         }
       }
     },
+    "Delete account": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slett kontoen"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Radera kontot"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slet kontoen"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konto löschen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer le compte"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eliminar la cuenta"
+          }
+        }
+      }
+    },
     "Delete spot": {
       "localizations": {
         "da": {
@@ -923,6 +1000,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Radera spot"
+          }
+        }
+      }
+    },
+    "Delete your Kookout account?": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slette Kookout-kontoen din?"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Radera ditt Kookout-konto?"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slette din Kookout-konto?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Kookout-Konto löschen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer votre compte Kookout ?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Eliminar tu cuenta de Kookout?"
           }
         }
       }
@@ -1890,42 +2007,42 @@
         }
       }
     },
-    "Other Kookout users can find this spot on the map: its name, place and rules, and your name from Settings if you've set one.": {
+    "Other Kookout users can find this spot on the map: its name, place and rules, and your name.": {
       "localizations": {
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Andre Kookout-brukere kan finne denne spoten på kartet: navn, sted og regler, og navnet ditt fra Innstillinger hvis du har skrevet det inn."
+            "value": "Andre Kookout-brukere kan finne denne spoten på kartet: navn, sted og regler, og navnet ditt."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Andra Kookout-användare kan hitta den här spoten på kartan: namn, plats och regler, och ditt namn från Inställningar om du har angett det."
+            "value": "Andra Kookout-användare kan hitta den här spoten på kartan: namn, plats och regler, och ditt namn."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Andre Kookout-brugere kan finde dette spot på kortet: navn, sted og regler, og dit navn fra Indstillinger, hvis du har skrevet det."
+            "value": "Andre Kookout-brugere kan finde dette spot på kortet: navn, sted og regler, og dit navn."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Andere Kookout-Nutzer finden diesen Spot auf der Karte: Name, Ort und Regeln, und deinen Namen aus den Einstellungen, falls angegeben."
+            "value": "Andere Kookout-Nutzer finden diesen Spot auf der Karte: Name, Ort, Regeln und dein Name."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les autres utilisateurs de Kookout peuvent trouver ce spot sur la carte : son nom, son lieu et ses règles, et votre nom des Réglages si vous l'avez indiqué."
+            "value": "Les autres utilisateurs de Kookout peuvent trouver ce spot sur la carte : nom, lieu, règles et votre nom."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otros usuarios de Kookout pueden encontrar este spot en el mapa: su nombre, lugar y reglas, y tu nombre de Ajustes si lo has puesto."
+            "value": "Otros usuarios de Kookout pueden encontrar este spot en el mapa: nombre, lugar, reglas y tu nombre."
           }
         }
       }
@@ -2690,42 +2807,162 @@
         }
       }
     },
-    "Shown as “Added by …” on the spots you share. Leave it empty to share without a name.": {
+    "Sharing needs Sign in with Apple, so changes to spots show who made them. Kookout gets your name, not your email.": {
       "localizations": {
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vises som «Lagt til av …» på spotene du deler. La feltet stå tomt for å dele uten navn."
+            "value": "Deling krever innlogging med Apple, så endringer på spoter viser hvem som gjorde dem. Kookout får navnet ditt, ikke e-postadressen."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Visas som ”Tillagd av …” på spots du delar. Lämna tomt för att dela utan namn."
+            "value": "Delning kräver inloggning med Apple, så att ändringar av spots visar vem som gjorde dem. Kookout får ditt namn, inte din e-post."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vises som »Tilføjet af …« på de spots, du deler. Lad feltet være tomt for at dele uden navn."
+            "value": "Deling kræver log ind med Apple, så ændringer af spots viser, hvem der lavede dem. Kookout får dit navn, ikke din e-mail."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wird als „Hinzugefügt von …“ bei deinen geteilten Spots angezeigt. Leer lassen, um ohne Namen zu teilen."
+            "value": "Zum Teilen brauchst du die Anmeldung mit Apple, damit Änderungen zeigen, wer sie gemacht hat. Kookout bekommt deinen Namen, nicht deine E-Mail."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Affiché comme « Ajouté par … » sur les spots que vous partagez. Laissez vide pour partager sans nom."
+            "value": "Le partage nécessite de se connecter avec Apple, pour que les modifications indiquent qui les a faites. Kookout reçoit votre nom, pas votre e-mail."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Se muestra como «Añadido por …» en los spots que compartes. Déjalo vacío para compartir sin nombre."
+            "value": "Compartir requiere iniciar sesión con Apple, para que los cambios muestren quién los hizo. Kookout recibe tu nombre, no tu correo."
+          }
+        }
+      }
+    },
+    "Shown as “Added by …” on the spots you share, and next to changes you make.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vises som «Lagt til av …» på spotene du deler, og ved endringer du gjør."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visas som ”Tillagd av …” på spots du delar, och vid ändringar du gör."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vises som »Tilføjet af …« på de spots, du deler, og ved ændringer, du laver."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird als „Hinzugefügt von …“ bei deinen geteilten Spots und bei deinen Änderungen angezeigt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affiché comme « Ajouté par … » sur les spots que vous partagez, et à côté de vos modifications."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se muestra como «Añadido por …» en los spots que compartes y junto a tus cambios."
+          }
+        }
+      }
+    },
+    "Sign in with Apple to share spots and edit spots others share. Kookout gets your name, not your email. Everything else works without an account.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logg inn med Apple for å dele spoter og endre spoter andre deler. Kookout får navnet ditt, ikke e-postadressen. Alt annet virker uten konto."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logga in med Apple för att dela spots och ändra spots som andra delar. Kookout får ditt namn, inte din e-post. Allt annat fungerar utan konto."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log ind med Apple for at dele spots og ændre spots, andre deler. Kookout får dit navn, ikke din e-mail. Alt andet virker uden konto."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich mit Apple an, um Spots zu teilen und geteilte Spots zu bearbeiten. Kookout bekommt deinen Namen, nicht deine E-Mail. Alles andere geht ohne Konto."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connectez-vous avec Apple pour partager des spots et modifier ceux des autres. Kookout reçoit votre nom, pas votre e-mail. Tout le reste fonctionne sans compte."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicia sesión con Apple para compartir spots y editar los de otros. Kookout recibe tu nombre, no tu correo. Todo lo demás funciona sin cuenta."
+          }
+        }
+      }
+    },
+    "Sign out": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logg ut"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logga ut"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log ud"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abmelden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se déconnecter"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerrar sesión"
           }
         }
       }
@@ -2930,42 +3167,42 @@
         }
       }
     },
-    "Spots you make are shared with other Kookout users, so they can find them on the map. Your name is shown as “Added by …”; leave it empty to share without one. Each spot can be changed under Edit.": {
+    "Spots you make are shared with other Kookout users, so they can find them on the map. Your name is shown as “Added by …” and next to changes you make. Each spot can be changed under Edit.": {
       "localizations": {
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spoter du lager, deles med andre Kookout-brukere, så de kan finne dem på kartet. Navnet ditt vises som «Lagt til av …»; la feltet stå tomt for å dele uten navn. Hver spot kan endres under Rediger."
+            "value": "Spoter du lager, deles med andre Kookout-brukere, så de kan finne dem på kartet. Navnet ditt vises som «Lagt til av …» og ved endringer du gjør. Hver spot kan endres under Rediger."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spots du skapar delas med andra Kookout-användare, så att de kan hitta dem på kartan. Ditt namn visas som ”Tillagd av …”; lämna tomt för att dela utan namn. Varje spot kan ändras under Redigera."
+            "value": "Spots du skapar delas med andra Kookout-användare, så att de kan hitta dem på kartan. Ditt namn visas som ”Tillagd av …” och vid ändringar du gör. Varje spot kan ändras under Redigera."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spots, du laver, deles med andre Kookout-brugere, så de kan finde dem på kortet. Dit navn vises som »Tilføjet af …«; lad feltet være tomt for at dele uden navn. Hvert spot kan ændres under Rediger."
+            "value": "Spots, du laver, deles med andre Kookout-brugere, så de kan finde dem på kortet. Dit navn vises som »Tilføjet af …« og ved ændringer, du laver. Hvert spot kan ændres under Rediger."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Deine Spots werden mit anderen Kookout-Nutzern geteilt, damit sie sie auf der Karte finden. Dein Name erscheint als „Hinzugefügt von …“; leer lassen, um ohne Namen zu teilen. Jeder Spot lässt sich unter Bearbeiten ändern."
+            "value": "Deine Spots werden mit anderen Kookout-Nutzern geteilt, damit sie sie auf der Karte finden. Dein Name erscheint als „Hinzugefügt von …“ und bei deinen Änderungen. Jeder Spot lässt sich unter Bearbeiten ändern."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les spots que vous créez sont partagés avec les autres utilisateurs de Kookout, qui peuvent les trouver sur la carte. Votre nom s'affiche comme « Ajouté par … » ; laissez vide pour partager sans nom. Chaque spot peut être modifié sous Modifier."
+            "value": "Les spots que vous créez sont partagés avec les autres utilisateurs de Kookout, qui peuvent les trouver sur la carte. Votre nom s'affiche comme « Ajouté par … » et à côté de vos modifications. Chaque spot peut être modifié sous Modifier."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Los spots que creas se comparten con otros usuarios de Kookout para que los encuentren en el mapa. Tu nombre aparece como «Añadido por …»; déjalo vacío para compartir sin nombre. Cada spot se puede cambiar en Editar."
+            "value": "Los spots que creas se comparten con otros usuarios de Kookout para que los encuentren en el mapa. Tu nombre aparece como «Añadido por …» y junto a tus cambios. Cada spot se puede cambiar en Editar."
           }
         }
       }
@@ -3370,6 +3607,46 @@
         }
       }
     },
+    "To share spots, sign in with Apple in Settings.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For å dele spoter, logg inn med Apple i Innstillinger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logga in med Apple i Inställningar för att dela spots."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log ind med Apple i Indstillinger for at dele spots."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich in den Einstellungen mit Apple an, um Spots zu teilen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour partager des spots, connectez-vous avec Apple dans les Réglages."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para compartir spots, inicia sesión con Apple en Ajustes."
+          }
+        }
+      }
+    },
     "Units": {
       "localizations": {
         "da": {
@@ -3770,42 +4047,82 @@
         }
       }
     },
-    "Your name (optional)": {
+    "Your name": {
       "localizations": {
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Navnet ditt (valgfritt)"
+            "value": "Navnet ditt"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ditt namn (valfritt)"
+            "value": "Ditt namn"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dit navn (valgfrit)"
+            "value": "Dit navn"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dein Name (optional)"
+            "value": "Dein Name"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Votre nom (facultatif)"
+            "value": "Votre nom"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tu nombre (opcional)"
+            "value": "Tu nombre"
+          }
+        }
+      }
+    },
+    "Your spots stay on this phone. Spots you shared stay for the people who use them, without your name.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spotene dine blir på denne telefonen. Spoter du har delt, blir værende for dem som bruker dem, uten navnet ditt."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dina spots stannar på den här telefonen. Spots du har delat finns kvar för dem som använder dem, utan ditt namn."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dine spots bliver på denne telefon. Spots, du har delt, bliver for dem, der bruger dem, uden dit navn."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Spots bleiben auf diesem Telefon. Geteilte Spots bleiben für alle, die sie nutzen, ohne deinen Namen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos spots restent sur ce téléphone. Les spots partagés restent pour ceux qui les utilisent, sans votre nom."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tus spots se quedan en este teléfono. Los spots que compartiste siguen para quienes los usan, sin tu nombre."
           }
         }
       }

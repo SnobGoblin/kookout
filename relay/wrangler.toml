@@ -27,3 +27,6 @@ crons = ["17 */3 * * *", "7 * * * *"]
 APNS_KEY_ID = "WVA3H73V3C"
 APNS_TEAM_ID = "5KZ7KF5NNH"
 APNS_TOPIC = "com.sternell.kookout"
+# Sign in with Apple: the key for revoking sign-ins when someone deletes their account (src/auth.js).
+# The key itself is a secret: npx wrangler secret put SIWA_KEY < AuthKey_XXXXXXXXXX.p8
+SIWA_KEY_ID = ""
