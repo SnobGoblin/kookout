@@ -70,5 +70,20 @@
   {"id": "salvo", "name": "Salvo Day Use", "area": "Salvo", "lat": 35.5334, "lon": -75.478, "tz": "America/New_York", "sport": "wing", "dirs": ["N", "NNE", "NE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]},
   {"id": "realslick", "name": "The Slick", "area": "Waves", "lat": 35.5668, "lon": -75.472, "tz": "America/New_York", "sport": "wing", "dirs": ["N", "NNE", "NE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]},
   {"id": "sturns", "name": "S-Turns", "area": "Rodanthe", "lat": 35.608, "lon": -75.464, "tz": "America/New_York", "sport": "surf", "dirs": ["SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]},
-  {"id": "lighthouse", "name": "Cape Hatteras Lighthouse", "area": "Buxton", "lat": 35.248, "lon": -75.522, "tz": "America/New_York", "sport": "surf", "dirs": ["N", "SW", "WSW", "W", "WNW", "NW", "NNW"]}
+  {"id": "lighthouse", "name": "Cape Hatteras Lighthouse", "area": "Buxton", "lat": 35.248, "lon": -75.522, "tz": "America/New_York", "sport": "surf", "dirs": ["N", "SW", "WSW", "W", "WNW", "NW", "NNW"]},
+  {"id": "famara", "name": "Famara", "area": "Teguise", "lat": 29.1151, "lon": -13.5553, "tz": "Atlantic/Canary", "sport": "wing", "dirs": ["N", "NNE", "NE", "ENE", "W", "WNW", "NW", "NNW"]},
+  {"id": "lasanta", "name": "La Santa (El Quemao)", "area": "Tinajo", "lat": 29.109, "lon": -13.6656, "tz": "Atlantic/Canary", "sport": "surf", "dirs": ["SE", "SSE", "S", "SSW", "SW"]},
+  {"id": "lascucharas", "name": "Las Cucharas", "area": "Costa Teguise", "lat": 28.9983, "lon": -13.4883, "tz": "Atlantic/Canary", "sport": "wing", "dirs": ["N", "NNE", "NE", "ENE", "E"]},
+  {"id": "arrieta", "name": "Arrieta", "area": "Haría", "lat": 29.1347, "lon": -13.4614, "tz": "Atlantic/Canary", "sport": "surf", "dirs": ["SW", "WSW", "W", "WNW", "NW"]},
+  {"id": "newbrighton", "name": "New Brighton", "area": "Christchurch", "lat": -43.4782, "lon": 172.7221, "tz": "Pacific/Auckland", "sport": "surf", "dirs": ["SW", "WSW", "W", "WNW", "NW"]},
+  {"id": "taylorsmistake", "name": "Taylors Mistake", "area": "Christchurch", "lat": -43.582, "lon": 172.7793, "tz": "Pacific/Auckland", "sport": "surf", "dirs": ["S", "SSW", "SW", "WSW", "W"]},
+  {"id": "sumner", "name": "Sumner", "area": "Christchurch", "lat": -43.5679, "lon": 172.7618, "tz": "Pacific/Auckland", "sport": "wing", "dirs": ["NE", "ENE", "E", "ESE", "SE", "SSE"]},
+  {"id": "waikuku", "name": "Waikuku Beach", "area": "Waimakariri", "lat": -43.2877, "lon": 172.7187, "tz": "Pacific/Auckland", "sport": "wing", "dirs": ["NNE", "NE", "ENE", "E", "ESE", "SE"]},
+  {"id": "brooklands", "name": "Brooklands Lagoon", "area": "Christchurch", "lat": -43.4109, "lon": 172.7063, "tz": "Pacific/Auckland", "sport": "wing", "dirs": ["NE", "ENE", "E", "SW", "WSW"]},
+  {"id": "ellesmere", "name": "Lake Ellesmere", "area": "Selwyn", "lat": -43.7867, "lon": 172.5077, "tz": "Pacific/Auckland", "sport": "wing", "dirs": ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]},
+  {"id": "pointchevalier", "name": "Point Chevalier", "area": "Auckland", "lat": -36.8545, "lon": 174.7023, "tz": "Pacific/Auckland", "sport": "wing", "dirs": ["N", "NE", "SW", "WSW", "W", "WNW", "NW"]},
+  {"id": "piha", "name": "Piha", "area": "Auckland", "lat": -36.9443, "lon": 174.4634, "tz": "Pacific/Auckland", "sport": "surf", "dirs": ["NE", "ENE", "E", "ESE", "SE"]},
+  {"id": "manubay", "name": "Manu Bay", "area": "Raglan", "lat": -37.8231, "lon": 174.8126, "tz": "Pacific/Auckland", "sport": "surf", "dirs": ["E", "ESE", "SE", "SSE"]},
+  {"id": "lyallbay", "name": "Lyall Bay", "area": "Wellington", "lat": -41.3384, "lon": 174.8023, "tz": "Pacific/Auckland", "sport": "surf", "dirs": ["N", "NNE", "NE", "NW", "NNW"]},
+  {"id": "plimmerton", "name": "Plimmerton", "area": "Porirua", "lat": -41.0847, "lon": 174.8662, "tz": "Pacific/Auckland", "sport": "wing", "dirs": ["SW", "WSW", "W", "WNW", "NW", "NNW"]}
 ]

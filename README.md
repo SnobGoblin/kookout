@@ -66,7 +66,7 @@ Bundle ID `com.sternell.kookout`, iOS 17+, English as the base language.
 
 ### Popular spots
 
-`ios/Kookout/Catalogue.json` holds about 70 well-known spots (Oslofjord, Saltstein, Halland, Øresund, Stockholm,
+`ios/Kookout/Catalogue.json` holds about 70 well-known spots (Oslofjord, Saltstein, Halland, Øresund, Stockholm, Lanzarote, New Zealand,
 Jæren, Hvide Sande, Montpellier, Biarritz, Fuerteventura, San Francisco, Cape Cod, Hatteras), each with the
 wind directions that usually work. A new install starts with a welcome screen: "Spots near me" lists all
 of them within 200 km to pick from; the add-spot screen lists the five nearest you don't have yet. "Start over" in Settings removes all
