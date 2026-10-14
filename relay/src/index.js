@@ -107,7 +107,7 @@ export default {
         const spot = body?.spot;
         if (!spot || !Number.isFinite(spot.lat) || !Number.isFinite(spot.lon) || !(spot.wind || spot.surf || spot.powder))
           return reply({ error: "spot with lat, lon and a wind, surf or powder rule required" }, 400);
-        return reply(await analyseSpot(spot, body.units, body.waveUnit, env, ctx));
+        return reply(await analyseSpot(spot, body.units, body.waveUnit, env, ctx, body.country));
       }
 
       if (url.pathname === "/tz") {
@@ -214,15 +214,16 @@ async function kvNear(lat, lon) {
 }
 
 // ---- Working out a spot (the forecast, waves, time zone and the shared rules) -------------
-async function analyseSpot(spot, units = "ms", waveUnit = "m", env, ctx) {
+async function analyseSpot(spot, units = "ms", waveUnit = "m", env, ctx, country) {
   const tz = spot.tz ?? tzlookup(spot.lat, spot.lon);
   const query = `lat=${spot.lat.toFixed(4)}&lon=${spot.lon.toFixed(4)}` + (spot.alt != null ? `&altitude=${Math.round(spot.alt)}` : "");
-  const [forecastRes, waves] = await Promise.all([
+  const [forecastRes, waves, daysOff] = await Promise.all([
     fetch(`https://api.met.no/weatherapi/locationforecast/2.0/complete?${query}`, { headers: NWS_HEADERS, cf: { cacheTtl: 600 } }),
     spot.surf ? surfWaves(spot.lat, spot.lon, env, ctx) : null,
+    spot.weekend ? daysOffFor(country, env).catch(() => undefined) : undefined,
   ]);
   if (!forecastRes.ok) throw new Error(`MET forecast: ${forecastRes.status}`);
-  const rows = analyse(spot, await forecastRes.json(), waves, { units, waveUnit, zone: tz });
+  const rows = analyse(spot, await forecastRes.json(), waves, { units, waveUnit, zone: tz, daysOff });
 
   // The good periods, joined up: e.g. [{ start: "…T10:00Z", end: "…T14:00Z" }]
   const periods = [];
@@ -240,6 +241,29 @@ async function analyseSpot(spot, units = "ms", waveUnit = "m", env, ctx) {
       wind: r.wind, gust: r.gust, dir: r.dir, deg: r.deg, wave: r.wave, period: r.period,
       daylight: r.daylight, good: !!r.good, snow: !!r.snow })),
   };
+}
+
+// Days off for weekend spots: Saturdays, Sundays and the public holidays of the person's country (from Nager.Date,
+// date.nager.at, free and open; kept for a week), for the next two weeks. Without a country: just weekends.
+export async function daysOffFor(country, env) {
+  const days = [];
+  for (let i = 0; i < 15; i++) {
+    const d = new Date(Date.now() + i * 86400e3);
+    if ([0, 6].includes(d.getUTCDay())) days.push(d.toISOString().slice(0, 10));
+  }
+  if (!/^[A-Z]{2}$/.test(country ?? "")) return days;
+  const years = [...new Set([0, 15].map(i => new Date(Date.now() + i * 86400e3).getUTCFullYear()))];
+  for (const year of years) {
+    const key = `holidays:${country}:${year}`;
+    let list = await env.WAVES.get(key, "json");
+    if (!list) {
+      const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`, { signal: AbortSignal.timeout(5000) });
+      list = res.ok ? (await res.json()).filter(h => h.global !== false).map(h => h.date) : [];
+      await env.WAVES.put(key, JSON.stringify(list), { expirationTtl: 7 * 86400 });
+    }
+    days.push(...list);
+  }
+  return [...new Set(days)];
 }
 
 // The same waves as /waves: MET in Scandinavia (with NOAA's period), NOAA elsewhere.

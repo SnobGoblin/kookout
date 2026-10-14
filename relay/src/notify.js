@@ -6,7 +6,8 @@
 //   - good conditions in the window change (start or end moved by 2+ hours, or no longer good).
 // Nothing is sent between 22 and 07 on the phone's clock: the changes wait until the morning.
 //
-//   PUT    /devices/<id>       {token, sandbox, lang, units, waveUnit, h12, tz, windowHours, spots}
+//   PUT    /devices/<id>       {token, sandbox, lang, country, units, waveUnit, h12, tz, windowHours, spots}
+//                              (a spot may set its own windowHours, e.g. weekend spots looking further ahead)
 //   DELETE /devices/<id>       stop all notifications for this phone
 //   POST   /devices/<id>/test  send a test notification
 
@@ -74,12 +75,13 @@ export async function handleDevices(request, env, url, reply) {
       return reply({ ok: true });
     }
     // Keep what we last told the phone (state), so changing a setting doesn't repeat old notifications.
-    await env.DB.prepare(`INSERT INTO devices (id, token, sandbox, lang, units, wave_unit, h12, tz, window_hours, spots, updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    await env.DB.prepare(`INSERT INTO devices (id, token, sandbox, lang, country, units, wave_unit, h12, tz, window_hours, spots, updated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(id) DO UPDATE SET token = excluded.token, sandbox = excluded.sandbox, lang = excluded.lang,
+          country = excluded.country,
           units = excluded.units, wave_unit = excluded.wave_unit, h12 = excluded.h12, tz = excluded.tz,
           window_hours = excluded.window_hours, spots = excluded.spots, updated = excluded.updated`)
-      .bind(id, device.token, device.sandbox, device.lang, device.units, device.waveUnit, device.h12, device.tz,
+      .bind(id, device.token, device.sandbox, device.lang, device.country, device.units, device.waveUnit, device.h12, device.tz,
             device.windowHours, JSON.stringify(device.spots), new Date().toISOString()).run();
     return reply({ ok: true });
   }
@@ -97,10 +99,13 @@ function cleanDevice(b) {
     if (typeof s?.id !== "string" || s.id.length > 64 || typeof s.name !== "string" ||
         !Number.isFinite(s.lat) || !Number.isFinite(s.lon) || !(s.wind || s.surf || s.powder)) return "spot with id, name, lat, lon and a rule required";
     spots.push({ id: s.id, name: s.name.slice(0, 80), lat: s.lat, lon: s.lon, alt: Number.isFinite(s.alt) ? s.alt : undefined,
-                 tz: validZone(s.tz) ? s.tz : undefined, wind: s.wind ?? undefined, surf: s.surf ?? undefined, powder: s.powder ?? undefined });
+                 tz: validZone(s.tz) ? s.tz : undefined, wind: s.wind ?? undefined, surf: s.surf ?? undefined, powder: s.powder ?? undefined,
+                 weekend: s.weekend === true || undefined,
+                 windowHours: Number.isFinite(s.windowHours) ? Math.min(240, Math.max(1, Math.round(s.windowHours))) : undefined });
   }
   return {
     token: b.token.toLowerCase(), sandbox: b.sandbox ? 1 : 0, lang: LANGS.includes(b.lang) ? b.lang : "en",
+    country: /^[A-Z]{2}$/.test(b.country ?? "") ? b.country : null,
     units: b.units === "kn" ? "kn" : "ms", waveUnit: b.waveUnit === "ft" ? "ft" : "m", h12: b.h12 ? 1 : 0, tz: b.tz,
     windowHours: Math.min(168, Math.max(1, Math.round(Number(b.windowHours) || 48))), spots,
   };
@@ -118,9 +123,10 @@ export async function notifyAll(env, analyseSpot) {
   const { results } = await env.DB.prepare("SELECT * FROM devices").all();
   // Phones with the same spot and rules share one forecast.
   const forecasts = new Map();
-  const forecast = (spot, units, waveUnit) => {
-    const key = JSON.stringify([spot.lat, spot.lon, spot.alt, spot.wind, spot.surf, spot.powder, units, waveUnit]);
-    if (!forecasts.has(key)) forecasts.set(key, analyseSpot({ ...spot }, units, waveUnit, env, { waitUntil() {} })
+  const forecast = (spot, units, waveUnit, country) => {
+    const key = JSON.stringify([spot.lat, spot.lon, spot.alt, spot.wind, spot.surf, spot.powder, spot.weekend, units, waveUnit,
+                                spot.weekend ? country : null]);
+    if (!forecasts.has(key)) forecasts.set(key, analyseSpot({ ...spot }, units, waveUnit, env, { waitUntil() {} }, country)
       .catch(e => { console.log("Forecast failed:", spot.name, e.message); return null; }));
     return forecasts.get(key);
   };
@@ -131,7 +137,7 @@ export async function notifyAll(env, analyseSpot) {
 }
 
 async function notifyDevice(device, env, forecast) {
-  const now = Date.now(), horizon = now + device.window_hours * HOUR;
+  const now = Date.now();
   const spots = JSON.parse(device.spots), old = JSON.parse(device.state || "{}");
   const quiet = (h => h >= 22 || h < 7)(hourOf(new Date(now), device.tz));
   const state = {};
@@ -139,7 +145,8 @@ async function notifyDevice(device, env, forecast) {
 
   for (const spot of spots) {
     const prev = old[spot.id];
-    const f = await forecast(spot, device.units, device.wave_unit);
+    const horizon = now + (spot.windowHours ?? device.window_hours) * HOUR;
+    const f = await forecast(spot, device.units, device.wave_unit, device.country);
     if (!f) { if (prev) state[spot.id] = prev; continue; }
     const periods = goodPeriods(spot, f).filter(p => p.end > now && p.start < horizon);
     // A spot we haven't seen before (just turned on): remember what's good now without notifying.

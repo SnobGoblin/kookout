@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS devices (
   token TEXT NOT NULL,            -- APNs device token (hex)
   sandbox INTEGER NOT NULL,       -- 1 for builds from Xcode (Apple's sandbox push service)
   lang TEXT NOT NULL,             -- the app's language: en, nb, sv, da, de, fr, es
+  country TEXT,                   -- the phone's region (NO, SE…): whose public holidays count for weekend spots
   units TEXT NOT NULL,            -- "ms" or "kn": how the rules round wind, as in the app
   wave_unit TEXT NOT NULL,        -- "m" or "ft"
   h12 INTEGER NOT NULL,           -- 1 for a 12-hour clock in the texts

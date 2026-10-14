@@ -12,6 +12,8 @@
 // units:       "ms" or "kn"  (wind is judged on the rounded numbers in this unit, as shown on screen)
 // waveUnit:    "m" or "ft"   (likewise for wave heights)
 // zone:        the spot's time zone, e.g. "Pacific/Honolulu" (undefined = the computer's own)
+// daysOff:     for weekend spots (spot.weekend): the person's days off ("YYYY-MM-DD": weekends and public
+//              holidays where they live). Missing: Saturdays and Sundays.
 //
 // Rules (all wind values in m/s, wave heights in m):
 // wind:   good when (mean >= min AND gust >= gust) OR mean >= steady, from one of `dirs`, for `hours` in a
@@ -19,7 +21,10 @@
 //         days that are mostly sunny (sea breeze).
 // surf:   good when waves are at least minWave (and the period at least minPeriod s, if set), and the wind
 //         is at most maxWind, from one of `dirs`, for `hours` in a row (in daylight if `daylight`).
-// powder: good when a day has > mm precipitation, stays below maxTemp °C, with wind under maxWind.
+// powder: good on a day when the snow that fell (precipitation in hours below maxTemp °C) over that day and the
+//         `days` - 1 before it (default 2: yesterday's snow makes today good) is more than mm, the day stays below
+//         maxTemp, the wind stays under maxWind, and (if `sunny`) the day is mostly sunny.
+// weekend: spot.weekend = true keeps only the good periods on days off (above).
 
 export const COMPASS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
 export const compass = deg => COMPASS[Math.round(deg / 22.5) % 16];
@@ -39,14 +44,15 @@ const format = (zone, locale, opts) => formatters[zone + locale + JSON.stringify
 export const dayKey = (d, zone) => format(zone, "en-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 export const hourOf = (d, zone) => Number(format(zone, "en-GB", { hour: "numeric", hourCycle: "h23" }).format(d));
 
-export function analyse(spot, data, waves, { units = "ms", waveUnit = "m", zone } = {}) {
+export function analyse(spot, data, waves, { units = "ms", waveUnit = "m", zone, daysOff } = {}) {
   const w = ms => windShown(ms, units);
   const wv = m => waveShown(m, waveUnit);
   const rows = toRows(data, zone);
   markDaylight(rows, spot, zone);
   if (spot.surf) { addWaves(rows, waves); judgeSurf(rows, spot.surf, w, wv); }
   if (spot.wind) judgeWind(rows, spot.wind, w, zone);
-  if (spot.powder) judgePowder(rows, spot.powder);
+  if (spot.powder) judgePowder(rows, spot.powder, zone);
+  if (spot.weekend) keepDaysOff(rows, daysOff, zone);
   return rows;
 }
 
@@ -171,19 +177,30 @@ function addWaves(rows, waves) {
   }
 }
 
-function judgePowder(rows, rule) {
+function judgePowder(rows, rule, zone) {
   const days = {};
   for (const r of rows) {
-    const d = days[r.day] ??= { mm: 0, maxTemp: -99, maxWind: 0 };
-    d.mm += r.rain;
+    const d = days[r.day] ??= { snow: 0, maxTemp: -99, maxWind: 0 };
+    if (r.temp < rule.maxTemp) d.snow += r.rain; // precipitation in the cold hours falls as snow
     d.maxTemp = Math.max(d.maxTemp, r.temp);
     d.maxWind = Math.max(d.maxWind, r.wind);
   }
+  const keys = Object.keys(days).sort();
+  const span = Math.max(1, Math.round(rule.days ?? 2));
+  const sunny = rule.sunny ? sunnyDays(rows, zone) : null;
   for (const r of rows) {
-    const d = days[r.day];
-    if (d.mm > rule.mm && d.maxTemp < rule.maxTemp && d.maxWind < rule.maxWind) {
-      r.powderDay = d.mm;
-      if (r.rain > 0) r.snow = true;
-    }
+    if (r.rain > 0 && r.temp < rule.maxTemp) r.snow = true;
+    const i = keys.indexOf(r.day), d = days[r.day];
+    // The forecast starts today: snow that fell before it isn't known, so the first day counts what's ahead only
+    const fresh = keys.slice(Math.max(0, i - span + 1), i + 1).reduce((sum, k) => sum + days[k].snow, 0);
+    if (fresh > rule.mm && d.maxTemp < rule.maxTemp && d.maxWind < rule.maxWind && (!sunny || sunny[r.day]))
+      r.powderDay = Math.round(fresh * 10) / 10;
   }
+}
+
+// Weekend spots: only days off count.
+function keepDaysOff(rows, daysOff, zone) {
+  const off = daysOff ? new Set(daysOff) : null;
+  const isOff = day => off ? off.has(day) : [0, 6].includes(new Date(day + "T12:00:00Z").getUTCDay());
+  for (const r of rows) if (!isOff(r.day)) { r.good = false; delete r.powderDay; }
 }
