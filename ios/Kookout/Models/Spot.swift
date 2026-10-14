@@ -60,6 +60,8 @@ struct Spot: Identifiable, Codable, Hashable {
     var shared: Bool?
     /// Who shared it, for spots added from someone else's ("Christian"; nil if they didn't give a name).
     var addedBy: String?
+    /// For community spots (shared ones and the built-in ones): the community's version and who changed it last.
+    var community: Community.Info?
 
     var notifies: Bool { notify ?? true }
     var timeZone: TimeZone { TimeZone(identifier: timeZoneID) ?? .current }

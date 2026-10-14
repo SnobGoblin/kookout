@@ -524,6 +524,46 @@
         }
       }
     },
+    "Changes to the name or position are for everyone who follows this spot, and show your name in its history.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endringer av navn eller posisjon gjelder alle som følger spoten, og viser navnet ditt i historikken."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ändringar av namn eller position gäller alla som följer spoten och visar ditt namn i historiken."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ændringer af navn eller position gælder alle, der følger spottet, og viser dit navn i historikken."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Änderungen an Name oder Position gelten für alle, die diesem Spot folgen, und zeigen deinen Namen im Verlauf."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les modifications du nom ou de la position s'appliquent à tous ceux qui suivent ce spot et affichent votre nom dans l'historique."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los cambios de nombre o posición son para todos los que siguen este spot y muestran tu nombre en el historial."
+          }
+        }
+      }
+    },
     "Clear": {
       "localizations": {
         "nb": {
@@ -644,6 +684,46 @@
         }
       }
     },
+    "Community": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fellesskap"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemenskap"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fællesskab"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Community"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Communauté"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comunidad"
+          }
+        }
+      }
+    },
     "Couldn't load the forecast": {
       "localizations": {
         "da": {
@@ -760,6 +840,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "No se pudo conectar con Kookout. Comprueba la conexión a internet."
+          }
+        }
+      }
+    },
+    "Couldn't save": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke lagre"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunde inte spara"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke gemme"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speichern fehlgeschlagen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrement impossible"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo guardar"
           }
         }
       }
@@ -1204,6 +1324,46 @@
         }
       }
     },
+    "Followed by %lld riders. The community's rules are the majority's; yours are your own.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fulgt av %lld utøvere. Fellesskapets regler er flertallets; dine er dine egne."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Följs av %lld åkare. Gemenskapens regler är majoritetens; dina är dina egna."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fulgt af %lld udøvere. Fællesskabets regler er flertallets; dine er dine egne."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Rider folgen diesem Spot. Die Regeln der Community sind die der Mehrheit; deine gehören dir."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suivi par %lld riders. Les règles de la communauté sont celles de la majorité ; les vôtres sont à vous."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seguido por %lld riders. Las reglas de la comunidad son las de la mayoría; las tuyas son tuyas."
+          }
+        }
+      }
+    },
     "For example offshore wind. Tap to choose.": {
       "localizations": {
         "da": {
@@ -1484,6 +1644,46 @@
         }
       }
     },
+    "History": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historikk"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historik"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historik"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlauf"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historique"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historial"
+          }
+        }
+      }
+    },
     "Hours in a row: %lld": {
       "localizations": {
         "da": {
@@ -1687,6 +1887,86 @@
         }
       }
     },
+    "Moved %@ by %@": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flyttet %1$@ av %2$@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flyttad %1$@ av %2$@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flyttet %1$@ af %2$@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um %1$@ verschoben von %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacé de %1$@ par %2$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Movido %1$@ por %2$@"
+          }
+        }
+      }
+    },
+    "Moved back %@ by %@": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flyttet tilbake %1$@ av %2$@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flyttad tillbaka %1$@ av %2$@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flyttet tilbage %1$@ af %2$@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um %1$@ zurückverschoben von %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remis en place de %1$@ par %2$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devuelto %1$@ por %2$@"
+          }
+        }
+      }
+    },
     "Name": {
       "localizations": {
         "da": {
@@ -1723,6 +2003,126 @@
           "stringUnit": {
             "state": "translated",
             "value": "Namn"
+          }
+        }
+      }
+    },
+    "Name and position": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navn og posisjon"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Namn och position"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navn og position"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name und Position"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nom et position"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre y posición"
+          }
+        }
+      }
+    },
+    "Name and position changes show up here, with who made them.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endringer av navn og posisjon vises her, med hvem som gjorde dem."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ändringar av namn och position visas här, med vem som gjorde dem."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ændringer af navn og position vises her, med hvem der lavede dem."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Änderungen an Name und Position erscheinen hier, mit wer sie gemacht hat."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les modifications du nom et de la position apparaissent ici, avec leur auteur."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los cambios de nombre y posición aparecen aquí, con quién los hizo."
+          }
+        }
+      }
+    },
+    "Name changed back to “%@” by %@": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navnet endret tilbake til «%1$@» av %2$@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Namnet ändrades tillbaka till ”%1$@” av %2$@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navnet ændret tilbage til »%1$@« af %2$@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name zurückgeändert in „%1$@“ von %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nom remis à « %1$@ » par %2$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre cambiado de nuevo a «%1$@» por %2$@"
           }
         }
       }
@@ -1803,6 +2203,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ny spot"
+          }
+        }
+      }
+    },
+    "No changes yet": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen endringer ennå"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inga ändringar än"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen ændringer endnu"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Änderungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune modification"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún no hay cambios"
           }
         }
       }
@@ -1923,6 +2363,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Las notificaciones de Kookout están desactivadas en los ajustes del iPhone."
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
           }
         }
       }
@@ -2363,6 +2843,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "¿Eliminar todos tus spots y ajustes y empezar de nuevo?"
+          }
+        }
+      }
+    },
+    "Renamed from “%@” to “%@” by %@": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omdøpt fra «%1$@» til «%2$@» av %3$@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bytte namn från ”%1$@” till ”%2$@” av %3$@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omdøbt fra »%1$@« til »%2$@« af %3$@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umbenannt von „%1$@“ in „%2$@“ von %3$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommé de « %1$@ » en « %2$@ » par %3$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renombrado de «%1$@» a «%2$@» por %3$@"
           }
         }
       }
@@ -3407,6 +3927,46 @@
         }
       }
     },
+    "Tap the map to move the spot.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trykk på kartet for å flytte spoten."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tryck på kartan för att flytta spoten."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tryk på kortet for at flytte spottet."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe auf die Karte, um den Spot zu verschieben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touchez la carte pour déplacer le spot."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca el mapa para mover el spot."
+          }
+        }
+      }
+    },
     "Tap to choose. The wind comes from these directions.": {
       "localizations": {
         "da": {
@@ -3607,6 +4167,86 @@
         }
       }
     },
+    "To change spots for everyone, sign in with Apple in Settings.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For å endre spoter for alle, logg inn med Apple i Innstillinger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logga in med Apple i Inställningar för att ändra spots för alla."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log ind med Apple i Indstillinger for at ændre spots for alle."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich in den Einstellungen mit Apple an, um Spots für alle zu ändern."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour modifier les spots pour tous, connectez-vous avec Apple dans les Réglages."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para cambiar spots para todos, inicia sesión con Apple en Ajustes."
+          }
+        }
+      }
+    },
+    "To fix the name or position for everyone, sign in with Apple in Settings.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For å rette navn eller posisjon for alle, logg inn med Apple i Innstillinger."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logga in med Apple i Inställningar för att rätta namn eller position för alla."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log ind med Apple i Indstillinger for at rette navn eller position for alle."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich in den Einstellungen mit Apple an, um Name oder Position für alle zu korrigieren."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour corriger le nom ou la position pour tous, connectez-vous avec Apple dans les Réglages."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para corregir el nombre o la posición para todos, inicia sesión con Apple en Ajustes."
+          }
+        }
+      }
+    },
     "To share spots, sign in with Apple in Settings.": {
       "localizations": {
         "nb": {
@@ -3647,6 +4287,86 @@
         }
       }
     },
+    "Undo": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angre"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ångra"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortryd"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rückgängig"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annuler"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deshacer"
+          }
+        }
+      }
+    },
+    "Undone": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angret"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ångrad"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortrudt"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rückgängig gemacht"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annulé"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deshecho"
+          }
+        }
+      }
+    },
     "Units": {
       "localizations": {
         "da": {
@@ -3683,6 +4403,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Enheter"
+          }
+        }
+      }
+    },
+    "Use the community's rules": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bruk fellesskapets regler"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Använd gemenskapens regler"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brug fællesskabets regler"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Regeln der Community übernehmen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utiliser les règles de la communauté"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usar las reglas de la comunidad"
           }
         }
       }
@@ -4087,6 +4847,46 @@
         }
       }
     },
+    "You're the only one following this spot so far.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foreløpig er det bare du som følger denne spoten."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Än så länge är det bara du som följer den här spoten."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Indtil videre er det kun dig, der følger dette spot."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bisher folgst nur du diesem Spot."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour l'instant, vous êtes le seul à suivre ce spot."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Por ahora eres el único que sigue este spot."
+          }
+        }
+      }
+    },
     "Your name": {
       "localizations": {
         "nb": {
@@ -4163,6 +4963,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tus spots se quedan en este teléfono. Los spots que compartiste siguen para quienes los usan, sin tu nombre."
+          }
+        }
+      }
+    },
+    "a Kookout user": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "en Kookout-bruker"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "en Kookout-användare"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "en Kookout-bruger"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "einer Kookout-Person"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "un utilisateur de Kookout"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "un usuario de Kookout"
           }
         }
       }

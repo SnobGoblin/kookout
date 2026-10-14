@@ -15,7 +15,8 @@ enum SharedSpots {
         var location: CLLocation { CLLocation(latitude: spot.latitude, longitude: spot.longitude) }
     }
 
-    private static let key: String = {
+    /// The phone's random key: lets it change what it shared, and identifies it as a follower (relay/src/community.js).
+    static let key: String = {
         if let key = UserDefaults.standard.string(forKey: "shareKey") { return key }
         let key = (0..<4).map { _ in UUID().uuidString.replacingOccurrences(of: "-", with: "") }.joined().lowercased()
         UserDefaults.standard.set(key, forKey: "shareKey")
@@ -42,7 +43,7 @@ enum SharedSpots {
 
     /// Shared spots within about 300 km of a place, nearest first.
     static func near(_ location: CLLocation) async -> [Shared] {
-        var components = URLComponents(url: KookoutAPI.relay.appending(path: "shared"), resolvingAgainstBaseURL: false)!
+        var components = URLComponents(url: KookoutAPI.relay.appending(path: "spots"), resolvingAgainstBaseURL: false)!
         components.queryItems = [.init(name: "lat", value: String(format: "%.2f", location.coordinate.latitude)),
                                  .init(name: "lon", value: String(format: "%.2f", location.coordinate.longitude))]
         guard let (data, _) = try? await URLSession.shared.data(from: components.url!),

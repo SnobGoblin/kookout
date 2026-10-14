@@ -7,7 +7,13 @@ import CoreLocation
 /// A new install starts empty, with a welcome screen that offers the popular spots nearby (Catalogue).
 @MainActor @Observable
 final class SpotStore {
-    var spots: [Spot] { didSet { save(); SharedSpots.sync(old: oldValue, new: spots) } }
+    var spots: [Spot] {
+        didSet {
+            save()
+            SharedSpots.sync(old: oldValue, new: spots)
+            if spots != oldValue { Community.syncSoon(self) }
+        }
+    }
     private(set) var forecasts: [Spot.ID: SpotForecast] = [:]
     private(set) var failed: Set<Spot.ID> = []
     /// When all spots were last worked out.
@@ -47,6 +53,37 @@ final class SpotStore {
     }
 
     func add(_ spot: Spot) { spots.append(spot) }
+
+    /// The community's versions of the spots this phone follows: name and position always (anyone can fix them for
+    /// everyone), the rules only where the person hasn't made their own. `only`: just these spots (after an edit);
+    /// otherwise spots missing from the answer are no longer community spots.
+    func applyCommunity(_ remotes: [Community.Remote], only: Bool = false) {
+        var next = spots
+        for i in next.indices {
+            guard let r = remotes.first(where: { $0.id == next[i].id }) else {
+                if !only { next[i].community = nil }
+                continue
+            }
+            let untouched = next[i].community.map { Community.Rules(next[i]) == $0.rules } ?? false
+            next[i].name = r.name
+            next[i].latitude = r.lat
+            next[i].longitude = r.lon
+            next[i].timeZoneID = r.tz
+            if untouched { // they follow the community's rules: take the new version
+                next[i].wind = r.info.rules.wind; next[i].surf = r.info.rules.surf; next[i].powder = r.info.rules.powder
+            }
+            if next[i].shared == nil { next[i].addedBy = r.info.by }
+            next[i].community = r.info
+        }
+        if next != spots { spots = next }
+    }
+
+    /// Back to the community's rules for a spot (dropping the person's own).
+    func useCommunityRules(_ id: Spot.ID) {
+        guard let i = spots.firstIndex(where: { $0.id == id }), let rules = spots[i].community?.rules else { return }
+        spots[i].wind = rules.wind; spots[i].surf = rules.surf; spots[i].powder = rules.powder
+        forecasts[id] = nil
+    }
 
     func update(_ spot: Spot) {
         guard let i = spots.firstIndex(where: { $0.id == spot.id }) else { return }

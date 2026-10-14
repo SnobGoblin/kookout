@@ -72,6 +72,15 @@ wind directions that usually work. A new install starts with a welcome screen: "
 of them within 200 km to pick from; the add-spot screen lists the five nearest you don't have yet. "Start over" in Settings removes all
 spots and settings and goes back to the welcome screen.
 
+### Community spots
+
+Shared spots and the built-in catalogue are community spots (`relay/src/community.js`, tables `spots`,
+`followers`, `edits`). Name and position are facts: anyone signed in (Sign in with Apple, `relay/src/auth.js`)
+can fix them, every change is logged and can be undone (History on the spot's Edit screen), and moves over
+2 km are refused. Wind directions and limits are preferences: each follower has their own, and the
+community version is the majority's from 3 active followers (`node relay/test-community.mjs`). The app
+follows the community spots in its list with a random key, so following works without an account.
+
 ### Shared spots
 
 Spots people add are shared with other Kookout users unless switched off for the spot (Edit), with the name

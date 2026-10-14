@@ -1,20 +1,45 @@
 import SwiftUI
+import MapKit
 
-/// Edit a spot: name, the directions that work (tap the compass), and the limits for its sport.
-/// Changes are kept in a copy and saved with "Done".
+/// Edit a spot: name, position, the directions that work (tap the compass), and the limits for its sport.
+/// Changes are kept in a copy and saved with "Done". For community spots, name and position change for everyone
+/// (signed in, logged); the rules are the person's own.
 struct SpotEditView: View {
     @Environment(SpotStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var spot: Spot
     @State private var confirmDelete = false
+    @State private var saving = false
+    @State private var problem: String?
+    private let original: Spot
 
-    init(spot: Spot) { _spot = State(initialValue: spot) }
+    init(spot: Spot) {
+        _spot = State(initialValue: spot)
+        original = spot
+    }
+
+    private var isCommunity: Bool { spot.community != nil }
+    /// Name and position: anyone's own spot, or a community spot when signed in.
+    private var canFix: Bool { !isCommunity || Account.shared.signedIn }
 
     var body: some View {
         Form {
-            Section("Name") {
+            Section {
                 TextField("Name", text: $spot.name)
+                    .disabled(!canFix)
+                SpotPositionPicker(spot: $spot, enabled: canFix)
+            } header: {
+                Text("Name and position")
+            } footer: {
+                if isCommunity {
+                    Text(canFix ? "Changes to the name or position are for everyone who follows this spot, and show your name in its history."
+                                : "To fix the name or position for everyone, sign in with Apple in Settings.")
+                } else {
+                    Text("Tap the map to move the spot.")
+                }
             }
+
+            if let community = spot.community { communitySection(community) }
 
             if spot.wind != nil { windSection }
             if spot.surf != nil { surfSection }
@@ -49,8 +74,14 @@ struct SpotEditView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Done") { save() }.disabled(spot.name.trimmingCharacters(in: .whitespaces).isEmpty)
+                Button("Done") { Task { await save() } }
+                    .disabled(saving || spot.name.trimmingCharacters(in: .whitespaces).isEmpty)
             }
+        }
+        .alert("Couldn't save", isPresented: Binding(get: { problem != nil }, set: { if !$0 { problem = nil } })) {
+            Button("OK") { problem = nil }
+        } message: {
+            Text(problem ?? "")
         }
         .confirmationDialog("Delete \(spot.name)?", isPresented: $confirmDelete, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
@@ -60,11 +91,40 @@ struct SpotEditView: View {
         }
     }
 
-    private func save() {
+    private func save() async {
         spot.name = spot.name.trimmingCharacters(in: .whitespaces)
+        let renamed = spot.name != original.name
+        let moved = spot.latitude != original.latitude || spot.longitude != original.longitude
+        if isCommunity && (renamed || moved) {
+            // For everyone: the relay checks and logs it, then the app takes over the community's version
+            saving = true
+            problem = await Community.edit(spot, name: renamed ? spot.name : nil,
+                                           latitude: moved ? spot.latitude : nil, longitude: moved ? spot.longitude : nil,
+                                           store: store)
+            saving = false
+            if problem != nil { return }
+        }
         store.update(spot)
         Task { await store.refresh(spot) }
         dismiss()
+    }
+
+    // MARK: - Community
+
+    private func communitySection(_ community: Community.Info) -> some View {
+        Section {
+            if Community.Rules(spot) != community.rules {
+                Button("Use the community's rules") {
+                    spot.wind = community.rules.wind; spot.surf = community.rules.surf; spot.powder = community.rules.powder
+                }
+            }
+            NavigationLink("History") { SpotHistoryView(spot: spot) }
+        } header: {
+            Text("Community")
+        } footer: {
+            Text(community.followers == 1 ? String(localized: "You're the only one following this spot so far.")
+                                          : String(localized: "Followed by \(community.followers) riders. The community's rules are the majority's; yours are your own."))
+        }
     }
 
     // MARK: - Wing
@@ -261,6 +321,31 @@ struct CompassPicker: View {
             p.addArc(center: center, radius: inner, startAngle: end, endAngle: start, clockwise: true)
             p.closeSubpath()
             return p
+        }
+    }
+}
+
+/// A small map of the spot; tap to move it.
+struct SpotPositionPicker: View {
+    @Binding var spot: Spot
+    let enabled: Bool
+    @State private var position: MapCameraPosition = .automatic
+
+    var body: some View {
+        MapReader { proxy in
+            Map(position: $position) {
+                Marker(spot.name, systemImage: spot.sport.symbol, coordinate: spot.coordinate)
+            }
+            .onTapGesture { point in
+                guard enabled, let c = proxy.convert(point, from: .local) else { return }
+                spot.latitude = (c.latitude * 10_000).rounded() / 10_000
+                spot.longitude = (c.longitude * 10_000).rounded() / 10_000
+            }
+        }
+        .frame(height: 200)
+        .listRowInsets(EdgeInsets())
+        .onAppear {
+            position = .region(MKCoordinateRegion(center: spot.coordinate, latitudinalMeters: 2500, longitudinalMeters: 2500))
         }
     }
 }
