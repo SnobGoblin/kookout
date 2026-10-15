@@ -151,11 +151,19 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         print("Couldn't register for notifications: \(error)")
     }
 
-    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async
-        -> UNNotificationPresentationOptions { [.banner, .sound] }
+    // The completion-handler versions, answered on the main thread: with the async versions iOS got its answer on a
+    // background thread, and a tap that started the app crashed it (UIKit's main-thread check).
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
+                                            withCompletionHandler completionHandler: @escaping @Sendable (UNNotificationPresentationOptions) -> Void) {
+        Task { @MainActor in completionHandler([.banner, .sound]) }
+    }
 
-    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
+                                            withCompletionHandler completionHandler: @escaping @Sendable () -> Void) {
         let spotID = response.notification.request.content.userInfo["spot"] as? String
-        await MainActor.run { Notifications.shared.openSpotID = spotID }
+        Task { @MainActor in
+            Notifications.shared.openSpotID = spotID
+            completionHandler()
+        }
     }
 }
