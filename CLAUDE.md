@@ -73,8 +73,8 @@ xcodebuild -project Kookout.xcodeproj -scheme Kookout -destination 'platform=iOS
 xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/Kookout.app
 xcrun simctl launch booted com.sternell.kookout -AppleLanguages "(nb)" -AppleLocale nb_NO
 cd relay && npx wrangler deploy
-# Upload a TestFlight build (bump CURRENT_PROJECT_VERSION first; N = the new build number)
-cd ios && xcodebuild archive -project Kookout.xcodeproj -scheme Kookout -configuration Release -destination 'generic/platform=iOS' -archivePath build/Kookout-N.xcarchive -allowProvisioningUpdates -quiet
+# Upload a TestFlight build (bump CURRENT_PROJECT_VERSION first; xcodegen carries it into the project; N = the new build number)
+cd ios && xcodegen && xcodebuild archive -project Kookout.xcodeproj -scheme Kookout -configuration Release -destination 'generic/platform=iOS' -archivePath build/Kookout-N.xcarchive -allowProvisioningUpdates -quiet
 cd ios && xcodebuild -exportArchive -archivePath build/Kookout-N.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/export -allowProvisioningUpdates
 cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 ```
