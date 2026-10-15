@@ -7,8 +7,7 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even. The web page is free.
-**Status (14 Oct 2026):** build 1 in TestFlight beta review, builds up to 10 uploaded or ready; testers
-("Family plus a couple guys") start when a build is approved. Not built yet: subscription/paywall.
+**Status (15 Oct 2026):** build 1 approved for TestFlight testing ("Family plus a couple guys"); build 10 uploaded. Not built yet: subscription/paywall.
 
 ## The parts
 
@@ -73,6 +72,9 @@ xcodebuild -project Kookout.xcodeproj -scheme Kookout -destination 'platform=iOS
 xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/Kookout.app
 xcrun simctl launch booted com.sternell.kookout -AppleLanguages "(nb)" -AppleLocale nb_NO
 cd relay && npx wrangler deploy
+# Upload a TestFlight build (bump CURRENT_PROJECT_VERSION first; N = the new build number)
+cd ios && xcodebuild archive -project Kookout.xcodeproj -scheme Kookout -configuration Release -destination 'generic/platform=iOS' -archivePath build/Kookout-N.xcarchive -allowProvisioningUpdates -quiet
+cd ios && xcodebuild -exportArchive -archivePath build/Kookout-N.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/export -allowProvisioningUpdates
 cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 ```
 
@@ -102,8 +104,8 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 
 ## Reminders for Christian (bring these up when the moment comes)
 
-- **When build 1 is approved for TestFlight:** make a new build from the latest code (build 10 or later, with the
-  About section), upload it, and expire build 6 (ask first; expiring can't be undone).
+- **When build 10 shows up for testers** (uploaded 15 Oct 2026): expire build 6, and the other old builds (1–8),
+  in App Store Connect → TestFlight (ask first; expiring can't be undone).
 - **When Kookout is live in the App Store:** update the web page. kookout.no becomes a landing page (logo, one
   sentence, screenshots, App Store button, "free for the first 2,000"); the forecast tool moves to a subpage.
   Keep `privacy.html` where it is (the App Store and the app link to it).
