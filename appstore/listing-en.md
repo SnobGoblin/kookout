@@ -31,7 +31,7 @@ FOR WIND, WAVES AND SNOW
 
 EVERY SPOT HAS ITS OWN RULES
 • An onshore wind is great at one beach and useless at the next. Kookout judges each spot on its own terms.
-• Weekend spots are only good on your days off, including the public holidays in your country.
+• Home spots and weekend trips: Kookout tells you about your local spot any day, and about the one three hours away only when it's good on a day off, including public holidays.
 • Start with popular spots near you, or drop a pin anywhere in the world.
 • See the live wind from a weather station nearby before you head out.
 
