@@ -115,7 +115,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Text("Kookout is made by Christian Sternell, a wing foiler in Norway who got tired of checking five forecasts to find out if it was worth going. Kookout keeps an eye on your spots, so you don't have to. Ideas, bugs or a spot that's judged wrong? Write to me, I read everything.")
+                    Text("Kookout is made by Christian Sternell, a wing foiler in Norway who wanted to know when and where it's good, without checking the forecast again and again. Kookout knows what makes each of your spots work and tells you when it's on. Ideas, bugs or a spot that's judged wrong? Write to me, I read everything.")
                     Link("hi@kookout.no", destination: URL(string: "mailto:hi@kookout.no")!)
                     Link("Privacy and support", destination: URL(string: "https://kookout.no/privacy.html")!)
                 } header: {

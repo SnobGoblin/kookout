@@ -2130,42 +2130,42 @@
     "Kookout": {
       "shouldTranslate": false
     },
-    "Kookout is made by Christian Sternell, a wing foiler in Norway who got tired of checking five forecasts to find out if it was worth going. Kookout keeps an eye on your spots, so you don't have to. Ideas, bugs or a spot that's judged wrong? Write to me, I read everything.": {
+    "Kookout is made by Christian Sternell, a wing foiler in Norway who wanted to know when and where it's good, without checking the forecast again and again. Kookout knows what makes each of your spots work and tells you when it's on. Ideas, bugs or a spot that's judged wrong? Write to me, I read everything.": {
       "localizations": {
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kookout er laget av Christian Sternell, en wingfoiler i Norge som ble lei av å sjekke fem værvarsler for å finne ut om det var verdt å dra. Kookout holder øye med spotene dine, så du slipper. Ideer, feil eller en spot som blir vurdert feil? Skriv til meg, jeg leser alt."
+            "value": "Kookout er laget av Christian Sternell, en wingfoiler i Norge som ville vite når og hvor det er bra, uten å sjekke værvarselet igjen og igjen. Kookout vet hva som gjør hver av spotene dine bra, og sier fra når forholdene er gode. Ideer, feil eller en spot som blir vurdert feil? Skriv til meg, jeg leser alt."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kookout är gjord av Christian Sternell, en wingfoilare i Norge som tröttnade på att kolla fem prognoser för att se om det var värt att åka. Kookout håller koll på dina spots, så att du slipper. Idéer, buggar eller en spot som bedöms fel? Skriv till mig, jag läser allt."
+            "value": "Kookout är gjord av Christian Sternell, en wingfoilare i Norge som ville veta när och var det är bra, utan att kolla prognosen om och om igen. Kookout vet vad som gör var och en av dina spots bra och säger till när förhållandena är goda. Idéer, buggar eller en spot som bedöms fel? Skriv till mig, jag läser allt."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kookout er lavet af Christian Sternell, en wingfoiler i Norge, der blev træt af at tjekke fem vejrudsigter for at finde ud af, om det var værd at tage afsted. Kookout holder øje med dine spots, så du slipper. Idéer, fejl eller en spot, der bliver vurderet forkert? Skriv til mig, jeg læser alt."
+            "value": "Kookout er lavet af Christian Sternell, en wingfoiler i Norge, der ville vide, hvornår og hvor det er godt, uden at tjekke vejrudsigten igen og igen. Kookout ved, hvad der gør hver af dine spots god, og siger til, når forholdene er gode. Idéer, fejl eller en spot, der bliver vurderet forkert? Skriv til mig, jeg læser alt."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kookout wird von Christian Sternell gemacht, einem Wingfoiler in Norwegen, der es leid war, fünf Vorhersagen zu prüfen, um zu wissen, ob es sich lohnt. Kookout behält deine Spots im Blick, damit du es nicht musst. Ideen, Fehler oder ein Spot, der falsch bewertet wird? Schreib mir, ich lese alles."
+            "value": "Kookout wird von Christian Sternell gemacht, einem Wingfoiler in Norwegen, der wissen wollte, wann und wo es gut ist, ohne immer wieder die Vorhersage zu prüfen. Kookout weiß, was jeden deiner Spots gut macht, und sagt dir Bescheid, wenn die Bedingungen passen. Ideen, Fehler oder ein Spot, der falsch bewertet wird? Schreib mir, ich lese alles."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kookout est créé par Christian Sternell, un wingfoiler en Norvège, lassé de consulter cinq prévisions pour savoir si ça valait le coup d'y aller. Kookout surveille vos spots à votre place. Des idées, un bug ou un spot mal évalué ? Écrivez-moi, je lis tout."
+            "value": "Kookout est créé par Christian Sternell, un wingfoiler en Norvège qui voulait savoir quand et où c'est bon, sans consulter la météo encore et encore. Kookout sait ce qui rend chacun de vos spots bon et vous prévient quand les conditions sont réunies. Des idées, un bug ou un spot mal évalué ? Écrivez-moi, je lis tout."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kookout lo hace Christian Sternell, un wingfoiler en Noruega que se cansó de mirar cinco previsiones para saber si merecía la pena ir. Kookout vigila tus spots por ti. ¿Ideas, errores o un spot mal valorado? Escríbeme, lo leo todo."
+            "value": "Kookout lo hace Christian Sternell, un wingfoiler en Noruega que quería saber cuándo y dónde hay buenas condiciones, sin mirar la previsión una y otra vez. Kookout sabe qué hace bueno cada uno de tus spots y te avisa cuando se dan las condiciones. ¿Ideas, errores o un spot mal valorado? Escríbeme, lo leo todo."
           }
         }
       }
