@@ -109,8 +109,8 @@ struct SpotListView: View {
                 }
             }
             .task { await store.refreshAll() }
-            // A tapped notification opens its spot.
-            .onChange(of: Notifications.shared.openSpotID) {
+            // A tapped notification opens its spot. `initial`: when the tap started the app, it came before this view did.
+            .onChange(of: Notifications.shared.openSpotID, initial: true) {
                 guard let id = Notifications.shared.openSpotID, let spot = store.spots.first(where: { $0.id == id }) else { return }
                 path = [.detail(spot)]
                 Notifications.shared.openSpotID = nil

@@ -167,7 +167,7 @@ async function notifyDevice(device, env, forecast) {
       t.changed.replace("{when}", when(e.period)).replace("{was}", when(e.was)));
     const result = await push(env, device, {
       aps: { alert: { title: spot.name, body: lines.join("\n") }, "thread-id": spot.id,
-             sound: events.every(e => e.type === "gone") ? BAD_NEWS_SOUND : SOUND }, // any good news: the swoosh
+             sound: events[0].type === "gone" ? BAD_NEWS_SOUND : SOUND }, // the top line (nearest in time) decides
       spot: spot.id,
     });
     if (result === "gone") { // the app was deleted or the token is no longer valid
