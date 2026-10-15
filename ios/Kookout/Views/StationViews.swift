@@ -9,8 +9,7 @@ struct StationPicker: View {
     var body: some View {
         List {
             Button { spot.station = nil; spot.stationName = nil } label: {
-                row(String(localized: "Automatic"), detail: String(localized: "The nearest station with a recent reading"),
-                    chosen: spot.station == nil)
+                row(String(localized: "Automatic"), detail: automaticDetail, chosen: spot.station == nil)
             }
             if let stations {
                 ForEach(stations) { s in
@@ -30,6 +29,13 @@ struct StationPicker: View {
         .navigationTitle("Wind station")
         .navigationBarTitleDisplayMode(.inline)
         .task { stations = await LiveWind.stations(near: spot) }
+    }
+
+    /// What "Automatic" means here: the riders' choice when there is one, otherwise the nearest station.
+    private var automaticDetail: String {
+        guard let id = spot.community?.station else { return String(localized: "The nearest station with a recent reading") }
+        let name = spot.community?.stationName ?? id
+        return String(localized: "Most riders' choice: \(name)")
     }
 
     private func row(_ title: String, detail: String, chosen: Bool) -> some View {

@@ -13,7 +13,7 @@ Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
   - 5 m/s with gusts of 9+, or a mean wind of 6+ regardless of gusts
   - from the directions that work at that spot
   - for 2+ hours in a row, between sunrise and sunset
-  - Drøbaksundet: on mostly sunny days 4 (8), or a steady 5+, is enough
+  - Torkild (Drøbak): on mostly sunny days 4 (8), or a steady 5+, is enough
 - **Good surf** highlighted (🏄): total wave height at least X m, wind at most Y m/s from chosen
   (e.g. offshore) directions, for 2+ hours in daylight. Waves come from MET's Oceanforecast in
   Scandinavian waters and NOAA's global WaveWatch III elsewhere (via the relay's `/waves`).
@@ -91,7 +91,9 @@ Shared spots and the built-in catalogue are community spots (`relay/src/communit
 `followers`, `edits`). Name and position are facts: anyone signed in (Sign in with Apple, `relay/src/auth.js`)
 can fix them, every change is logged and can be undone (History on the spot's Edit screen), and moves over
 2 km are refused. Wind directions and limits are preferences: each follower has their own, and the
-community version is the majority's from 3 active followers (`node relay/test-community.mjs`). The app
+community version is the majority's from 3 active followers (`node relay/test-community.mjs`). The wind station for
+"Measured now" works the same way: the station most followers chose ("Automatic" counts for the current one; a tie
+keeps it), starting from the catalogue's `station` where there is one (`relay/migrate-station.sql`). The app
 follows the community spots in its list with a random key, so following works without an account.
 Moving a spot is deliberate (Edit → Move pin, a full map with a crosshair). When most riders' rules differ from
 yours, Edit suggests switching ("Most riders here use E–S"). Adding a spot within 500 m of one for the same

@@ -19,3 +19,12 @@ const powder = { mm: 10, maxTemp: 2, maxWind: 8 };
 check("powder days and sunny, voted in", majorityRule([{ ...powder, days: 3, sunny: true }, { ...powder, days: 3, sunny: true }, powder], powder),
   { mm: 10, maxTemp: 2, maxWind: 8, days: 3, sunny: true });
 check("powder sunny, 1 of 3", majorityRule([{ ...powder, sunny: true }, powder, powder], powder).sunny, false);
+
+// The community's wind station: the one most followers chose ("Automatic" counts for the current one); a tie keeps it.
+import { majorityStation } from "./src/community.js";
+check("station: nobody chose one", majorityStation([null, null, null], null), null);
+check("station: 2 of 3 chose X", majorityStation(["X", "X", null], null), "X");
+check("station: promoted P, one picks X", majorityStation(["X", "P", "P"], "P"), "P");
+check("station: promoted P, all three pick X", majorityStation(["X", "X", "X"], "P"), "X");
+check("station: tie keeps the current one", majorityStation(["X", "Y", "P", "P", "X", "Y"].slice(0, 4), "P"), "P");
+check("station: X and Y tie, current not among them", majorityStation(["X", "Y"], "P"), "P");

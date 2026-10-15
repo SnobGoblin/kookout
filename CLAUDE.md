@@ -30,6 +30,10 @@ emailed through Resend). Tests: `node relay/test-notify.mjs`, `node relay/test-c
   undoable, moves over 2 km refused, moving only via "Move pin"). Rules are *preferences*: each follower has their
   own; the community version is the majority from 3 active followers (directions: more than half; numbers:
   median; counts rounded). A spot becomes community-owned once followed; it disappears when nobody follows it.
+- **Wind station** ("Measured now"): also a preference by vote. Each follower's choice counts; "Automatic" counts for the
+  current one; from 3 active followers the most-chosen wins, a tie keeps it. Christian's starting stations are in the
+  catalogue (`station`, `stationName`): Torkild (was Drøbaksundet) Fluid.no, Lysakerfjorden Rolfstangen, Larkollen and Møvik
+  Gullholmen (Kystverket). Votes count without an account, like the rules.
 - **Sharing** needs Sign in with Apple and is asked once (never on by default, never while signed out).
   Following, notifications and everything else work without an account.
 - **Weekend spots:** good only on days off (weekends + public holidays of the *phone's* country, from Nager.Date),

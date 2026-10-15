@@ -2570,6 +2570,46 @@
         }
       }
     },
+    "Most riders' choice: %@": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flest ryttere har valgt: %@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De flesta åkare har valt: %@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De fleste ryttere har valgt: %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Von den meisten Ridern gewählt: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choix de la plupart des riders : %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elegida por la mayoría: %@"
+          }
+        }
+      }
+    },
     "Move %@": {
       "localizations": {
         "nb": {

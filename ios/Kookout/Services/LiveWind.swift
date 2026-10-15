@@ -48,12 +48,14 @@ struct LiveWind: Decodable, Hashable {
         return (official + holfuy).sorted { $0.km < $1.km }
     }
 
-    /// What to show for a spot: the chosen station, or the nearest official one within 30 km with a reading from the
-    /// last 90 minutes. A chosen Holfuy station comes back without a reading (the app shows the widget).
+    /// What to show for a spot: the person's station, else the one most riders chose (the community's), else the
+    /// nearest official one within 30 km with a reading from the last 90 minutes. A Holfuy station comes back without a
+    /// reading (the app shows the widget).
     static func now(for spot: Spot) async -> Station? {
         let all = await stations(near: spot)
         let fresh = { (s: Station) in s.reading.map { Date.now.timeIntervalSince($0.time) < 90 * 60 } ?? false }
-        if let id = spot.station, let chosen = all.first(where: { $0.id == id }) { return chosen } // even if it's late
+        if let id = spot.station ?? spot.community?.station,
+           let chosen = all.first(where: { $0.id == id }) { return chosen } // even if it's late
         return all.first { !$0.isHolfuy && $0.km <= 30 && fresh($0) }
     }
 }

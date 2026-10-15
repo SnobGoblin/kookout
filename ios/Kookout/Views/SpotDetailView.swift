@@ -34,7 +34,7 @@ struct SpotDetailView: View {
             }
         }
         .overlay { if forecast == nil && !store.failed.contains(spot.id) { ProgressView() } }
-        .task(id: "\(spot.id) \(current.station ?? "")") { live = await LiveWind.now(for: current) }
+        .task(id: "\(spot.id) \(current.station ?? current.community?.station ?? "")") { live = await LiveWind.now(for: current) }
         .refreshable {
             await store.refresh(spot)
             live = await LiveWind.now(for: current)

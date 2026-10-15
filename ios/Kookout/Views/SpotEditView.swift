@@ -138,7 +138,10 @@ struct SpotEditView: View {
     }
 
     private var stationName: String {
-        guard let id = spot.station else { return String(localized: "Automatic") }
+        guard let id = spot.station else {
+            guard let community = spot.community?.station else { return String(localized: "Automatic") }
+            return String(localized: "Automatic (\(spot.community?.stationName ?? community))")
+        }
         return spot.stationName ?? id
     }
 

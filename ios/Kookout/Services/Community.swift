@@ -28,6 +28,9 @@ enum Community {
         var by: String?             // who first shared it
         var catalogue: Bool
         var lastEdit: Edit?
+        /// The station most followers chose for "Measured now" (nil: the nearest). Used while the person's is "Automatic".
+        var station: String?
+        var stationName: String?
         struct Edit: Codable, Hashable { let field: String; let at: Date; let by: String? }
     }
 
@@ -50,7 +53,9 @@ enum Community {
         let body: [String: Any] = ["key": SharedSpots.key, "spots": candidates.map { spot -> [String: Any] in
             // Their own version if it differs from the community's (and, the first time, whatever they have)
             let own = spot.community.map { Rules(spot) != $0.rules } ?? true
-            return ["id": spot.id, "rule": own ? (ruleJSON(spot) ?? NSNull()) : NSNull()]
+            // and their wind station ("Automatic": none), which counts as a vote for the community's
+            return ["id": spot.id, "rule": own ? (ruleJSON(spot) ?? NSNull()) : NSNull(),
+                    "station": spot.station ?? NSNull(), "stationName": spot.stationName ?? NSNull()]
         }]
         guard let answer = await call("PUT", "following", body: body) as? [String: Any],
               let rows = answer["spots"] as? [[String: Any]] else { return }
@@ -122,7 +127,8 @@ enum Community {
                let at = (e["at"] as? String).flatMap(Community.date) { edit = .init(field: field, at: at, by: e["by"] as? String) }
             self.id = id; self.name = name; self.tz = tz; self.sport = sport; self.lat = lat; self.lon = lon
             info = Info(rules: rules, followers: r["followers"] as? Int ?? 1, by: r["by"] as? String,
-                        catalogue: r["catalogue"] as? Bool ?? false, lastEdit: edit)
+                        catalogue: r["catalogue"] as? Bool ?? false, lastEdit: edit,
+                        station: r["station"] as? String, stationName: r["stationName"] as? String)
         }
     }
 

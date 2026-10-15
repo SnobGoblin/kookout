@@ -40,21 +40,25 @@ async function following(request, env, reply) {
   if (!Array.isArray(b.spots) || b.spots.length > 300) return reply({ error: "spots: a list" }, 400);
   const follower = await sha256(b.key);
   const now = new Date().toISOString();
+  const text = (v, max) => typeof v === "string" && v.length && v.length <= max ? v : null;
   const wanted = new Map(b.spots.filter(s => typeof s?.id === "string" && s.id.length <= 64)
-                                 .map(s => [s.id, s.rule && typeof s.rule === "object" ? JSON.stringify(s.rule) : null]));
+                                 .map(s => [s.id, { rule: s.rule && typeof s.rule === "object" ? JSON.stringify(s.rule) : null,
+                                                    station: text(s.station, 64), stationName: text(s.stationName, 100) }]));
   const ids = [...wanted.keys()];
   const known = ids.length ? (await env.DB.prepare(`SELECT * FROM spots WHERE status = 'active' AND id IN (${ids.map(() => "?").join(",")})`)
     .bind(...ids).all()).results : [];
-  const before = (await env.DB.prepare("SELECT spot_id, rule FROM followers WHERE follower = ?").bind(follower).all()).results;
-  const had = new Map(before.map(f => [f.spot_id, f.rule]));
+  const before = (await env.DB.prepare("SELECT spot_id, rule, station FROM followers WHERE follower = ?").bind(follower).all()).results;
+  const had = new Map(before.map(f => [f.spot_id, f]));
 
   const writes = [], touched = new Set();
   for (const spot of known) {
-    const rule = wanted.get(spot.id);
-    if (!had.has(spot.id) || had.get(spot.id) !== rule) touched.add(spot.id);
-    writes.push(env.DB.prepare(`INSERT INTO followers (spot_id, follower, rule, last_active) VALUES (?, ?, ?, ?)
-        ON CONFLICT(spot_id, follower) DO UPDATE SET rule = excluded.rule, last_active = excluded.last_active`)
-      .bind(spot.id, follower, rule, now));
+    const { rule, station, stationName } = wanted.get(spot.id);
+    const old = had.get(spot.id);
+    if (!old || old.rule !== rule || old.station !== station) touched.add(spot.id);
+    writes.push(env.DB.prepare(`INSERT INTO followers (spot_id, follower, rule, station, station_name, last_active) VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(spot_id, follower) DO UPDATE SET rule = excluded.rule, station = excluded.station,
+          station_name = excluded.station_name, last_active = excluded.last_active`)
+      .bind(spot.id, follower, rule, station, station ? stationName : null, now));
   }
   for (const f of before) if (!known.some(s => s.id === f.spot_id)) { // no longer in their list: unfollowed
     writes.push(env.DB.prepare("DELETE FROM followers WHERE spot_id = ? AND follower = ?").bind(f.spot_id, follower));
@@ -68,12 +72,13 @@ async function following(request, env, reply) {
   return reply({ spots: await Promise.all(fresh.map(s => describe(env, s))) });
 }
 
-/// After followers change: recount the community rules, and retire a spot nobody follows any more.
+/// After followers change: recount the community rules and wind station, and retire a spot nobody follows any more.
 async function settle(env, id) {
   const spot = await env.DB.prepare("SELECT * FROM spots WHERE id = ?").bind(id).first();
   if (!spot) return;
   const since = new Date(Date.now() - ACTIVE_DAYS * 86400e3).toISOString();
-  const { results } = await env.DB.prepare("SELECT rule FROM followers WHERE spot_id = ? AND last_active >= ?").bind(id, since).all();
+  const { results } = await env.DB.prepare("SELECT rule, station, station_name FROM followers WHERE spot_id = ? AND last_active >= ?")
+    .bind(id, since).all();
   if (!results.length && !spot.catalogue) {
     await env.DB.prepare("UPDATE spots SET status = 'gone', updated = ? WHERE id = ?").bind(new Date().toISOString(), id).run();
     return;
@@ -84,6 +89,22 @@ async function settle(env, id) {
   const majority = majorityRule(votes, current);
   if (JSON.stringify(majority) !== JSON.stringify(current))
     await env.DB.prepare("UPDATE spots SET rule = ?, updated = ? WHERE id = ?").bind(JSON.stringify(majority), new Date().toISOString(), id).run();
+
+  const station = majorityStation(results.map(r => r.station ?? spot.station), spot.station); // "Automatic": agrees with the current one
+  if (station !== spot.station) {
+    const name = station ? results.find(r => r.station === station)?.station_name ?? null : null;
+    await env.DB.prepare("UPDATE spots SET station = ?, station_name = ?, updated = ? WHERE id = ?")
+      .bind(station, name, new Date().toISOString(), id).run();
+  }
+}
+
+/// The station most followers chose (null: the nearest, "Automatic"). A tie keeps the current one. Exported for tests.
+export function majorityStation(votes, current) {
+  const count = new Map();
+  for (const v of votes) count.set(v ?? null, (count.get(v ?? null) ?? 0) + 1);
+  const most = Math.max(...count.values());
+  const leaders = [...count].filter(([, n]) => n === most).map(([v]) => v);
+  return leaders.length === 1 ? leaders[0] : current ?? null;
 }
 
 /// The majority's rule: compass points included by more than half, the median of each number, the majority's yes/no,
@@ -120,7 +141,7 @@ async function describe(env, s) {
       WHERE spot_id = ? AND field != 'created' ORDER BY edits.id DESC LIMIT 1`).bind(s.id).first();
   const by = s.created_by ? (await env.DB.prepare("SELECT name FROM users WHERE id = ?").bind(s.created_by).first())?.name : null;
   return { id: s.id, name: s.name, lat: s.lat, lon: s.lon, alt: s.alt, tz: s.tz, sport: s.sport, rule: JSON.parse(s.rule),
-           by: by || null, followers, catalogue: !!s.catalogue,
+           by: by || null, followers, catalogue: !!s.catalogue, station: s.station ?? null, stationName: s.station_name ?? null,
            lastEdit: last ? { field: last.field, at: last.at, by: last.name || null } : null };
 }
 

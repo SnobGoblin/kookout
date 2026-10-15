@@ -16,8 +16,10 @@ function rule(s) {
   return r;
 }
 
-const rows = catalogue.map(s => "INSERT OR IGNORE INTO spots (id, sport, tz, name, lat, lon, alt, rule, created_by, created, updated, status, catalogue) VALUES (" +
-  [s.id, s.sport, s.tz, s.name, s.lat, s.lon, s.altitude ?? null, JSON.stringify(rule(s)), null, now, now, "active", 1].map(q).join(", ") + ");");
+// A station in the catalogue is the starting choice until the followers vote for another (community.js).
+const rows = catalogue.map(s => "INSERT OR IGNORE INTO spots (id, sport, tz, name, lat, lon, alt, rule, created_by, created, updated, status, catalogue, station, station_name) VALUES (" +
+  [s.id, s.sport, s.tz, s.name, s.lat, s.lon, s.altitude ?? null, JSON.stringify(rule(s)), null, now, now, "active", 1,
+   s.station ?? null, s.stationName ?? null].map(q).join(", ") + ");");
 writeFileSync(new URL("seed-catalogue.sql", import.meta.url),
   "-- The app built-in spots (ios/Kookout/Catalogue.json) as community spots. Regenerate with seed-catalogue.mjs.\n" + rows.join("\n") + "\n");
 console.log(`${rows.length} spots`);
