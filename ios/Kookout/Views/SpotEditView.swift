@@ -203,7 +203,7 @@ struct SpotEditView: View {
             } footer: {
                 Text("Tap to choose. The wind comes from these directions.")
             }
-            Section("Good wind (\(Units.windUnit))") {
+            Section {
                 WindStepper(title: "Mean wind at least", value: windBinding(\.min))
                 WindStepper(title: "… with gusts at least", value: windBinding(\.gust))
                 WindStepper(title: "… or steady wind at least", value: windBinding(\.steady))
@@ -215,6 +215,10 @@ struct SpotEditView: View {
                     WindStepper(title: "… with gusts at least", value: sunnyLimit(\.gust))
                     WindStepper(title: "… or steady wind at least", value: sunnyLimit(\.steady))
                 }
+            } header: {
+                Text("Good wind (\(Units.windUnit))")
+            } footer: {
+                Text("Own limit on sunny days: at some spots the sun adds wind of its own (sea breeze), so a little less forecast wind is enough on mostly sunny days. Set the lower limits for those days here.")
             }
         }
     }

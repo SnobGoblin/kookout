@@ -120,9 +120,16 @@ struct AddSpotView: View {
                         }
                     } else if let selected {
                         Section {
-                            NearbyRow(item: selected)
+                            Button { addPopular(selected.spot) } label: {
+                                HStack {
+                                    NearbyRow(item: selected)
+                                    Spacer()
+                                    Image(systemName: "plus.circle")
+                                }
+                            }
+                            .foregroundStyle(.primary)
                         } footer: {
-                            Text("Tap Add to add this spot.")
+                            Text("Tap to add this spot.")
                         }
                     } else if pin == nil {
                         Text("Or tap the map where the spot is.")
@@ -224,6 +231,10 @@ struct AddSpotView: View {
             let placemark = try? await CLGeocoder()
                 .reverseGeocodeLocation(CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)).first
             timeZone = placemark?.timeZone
+            // A name to start with, so Add works at once (it can be changed): the place, else "New spot"
+            if pin?.latitude == coordinate.latitude, pin?.longitude == coordinate.longitude, name.isEmpty {
+                name = placemark?.name ?? placemark?.locality ?? placemark?.ocean ?? String(localized: "New spot")
+            }
         }
     }
 

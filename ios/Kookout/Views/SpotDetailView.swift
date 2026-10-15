@@ -4,7 +4,8 @@ import SwiftUI
 struct SpotDetailView: View {
     @Environment(SpotStore.self) private var store
     let spot: Spot
-    @State private var live: LiveWind.Station?
+    /// The latest reading near the spot: nil while the first one loads; .some(nil) when there's no station.
+    @State private var live: LiveWind.Station??
 
     private var forecast: SpotForecast? { store.forecasts[spot.id] }
     /// The latest saved version of the spot (it may have been edited since this screen opened).
@@ -15,7 +16,12 @@ struct SpotDetailView: View {
             if store.failed.contains(spot.id) && forecast == nil {
                 Text("Couldn't load the forecast.").foregroundStyle(.red)
             }
-            if let live { LiveWindRow(station: live) }
+            // Always the same place in the list, so nothing jumps when the reading arrives
+            switch live {
+            case .some(.some(let station)): LiveWindRow(station: station)
+            case .none: LiveWindRow.Loading(station: current.stationName ?? current.community?.stationName)
+            case .some(.none): LiveWindRow.Loading(station: nil, done: true)
+            }
             ForEach(days, id: \.day) { group in
                 Section {
                     ForEach(group.hours) { hour in
@@ -34,10 +40,17 @@ struct SpotDetailView: View {
             }
         }
         .overlay { if forecast == nil && !store.failed.contains(spot.id) { ProgressView() } }
-        .task(id: "\(spot.id) \(current.station ?? current.community?.station ?? "")") { live = await LiveWind.now(for: current) }
+        .task(id: "\(spot.id) \(current.station ?? current.community?.station ?? "")") {
+            if let known = LiveWind.latest[spot.id] { live = known } // last time's, until the new one comes
+            let fresh = await LiveWind.now(for: current)
+            LiveWind.latest[spot.id] = fresh
+            live = fresh
+        }
         .refreshable {
             await store.refresh(spot)
-            live = await LiveWind.now(for: current)
+            let fresh = await LiveWind.now(for: current)
+            LiveWind.latest[spot.id] = fresh
+            live = fresh
         }
     }
 
@@ -143,6 +156,26 @@ struct HourRow: View {
 struct LiveWindRow: View {
     let station: LiveWind.Station
     @State private var open = false
+
+    /// The same section while the first reading loads, so the forecast below doesn't move when it comes.
+    struct Loading: View {
+        /// The chosen station's name, when known before the answer (nil: "Automatic" picks one).
+        let station: String?
+        /// Looked, and found no station with a recent reading (kept, so the forecast below doesn't move).
+        var done = false
+        var body: some View {
+            Section {
+                Group {
+                    if done { Text("No recent wind reading nearby.") }
+                    else if let station { Text("Checking the wind at \(station)…") } else { Text("Checking the wind nearby…") }
+                }
+                .foregroundStyle(.secondary)
+                Text(verbatim: " ").font(.caption)
+            } header: {
+                Text("Measured now (\(Units.windUnit))")
+            }
+        }
+    }
 
     var body: some View {
         Section {

@@ -51,6 +51,9 @@ struct LiveWind: Decodable, Hashable {
     /// What to show for a spot: the person's station, else the one most riders chose (the community's), else the
     /// nearest official one within 30 km with a reading from the last 90 minutes. A Holfuy station comes back without a
     /// reading (the app shows the widget).
+    /// The last answer for each spot while the app runs, so its screen can show it at once and update it in place.
+    @MainActor static var latest: [String: Station?] = [:]
+
     static func now(for spot: Spot) async -> Station? {
         let all = await stations(near: spot)
         let fresh = { (s: Station) in s.reading.map { Date.now.timeIntervalSince($0.time) < 90 * 60 } ?? false }

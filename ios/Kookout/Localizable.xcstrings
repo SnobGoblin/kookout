@@ -687,6 +687,86 @@
         }
       }
     },
+    "Checking the wind at %@…": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sjekker vinden på %@ …"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kollar vinden vid %@ …"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tjekker vinden ved %@ …"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wind bei %@ wird geprüft …"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérification du vent à %@…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comprobando el viento en %@…"
+          }
+        }
+      }
+    },
+    "Checking the wind nearby…": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sjekker vinden i nærheten …"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kollar vinden i närheten …"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tjekker vinden i nærheden …"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wind in der Nähe wird geprüft …"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérification du vent à proximité…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comprobando el viento cerca…"
+          }
+        }
+      }
+    },
     "Clear": {
       "localizations": {
         "nb": {
@@ -3130,6 +3210,46 @@
         }
       }
     },
+    "No recent wind reading nearby.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen ferske vindmålinger i nærheten."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inga färska vindmätningar i närheten."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen nye vindmålinger i nærheden."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine aktuelle Windmessung in der Nähe."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune mesure de vent récente à proximité."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay mediciones de viento recientes cerca."
+          }
+        }
+      }
+    },
     "No spots here yet": {
       "localizations": {
         "nb": {
@@ -3606,6 +3726,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Egen gräns soliga dagar"
+          }
+        }
+      }
+    },
+    "Own limit on sunny days: at some spots the sun adds wind of its own (sea breeze), so a little less forecast wind is enough on mostly sunny days. Set the lower limits for those days here.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Egen grense på solrike dager: på noen spoter gir sola ekstra vind (sjøbris), så litt mindre vind i varselet holder på dager med mye sol. Sett de lavere grensene for slike dager her."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Egen gräns soliga dagar: på vissa spots ger solen extra vind (sjöbris), så lite mindre vind i prognosen räcker på mestadels soliga dagar. Ställ in de lägre gränserna för sådana dagar här."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Egen grænse på solrige dage: på nogle spots giver solen ekstra vind (søbrise), så lidt mindre vind i udsigten er nok på mest solrige dage. Indstil de lavere grænser for de dage her."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eigene Grenze an sonnigen Tagen: An manchen Spots bringt die Sonne zusätzlichen Wind (Seewind), daher reicht an überwiegend sonnigen Tagen etwas weniger vorhergesagter Wind. Lege hier die niedrigeren Grenzen für solche Tage fest."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limite propre les jours de soleil : sur certains spots, le soleil ajoute son propre vent (brise de mer), donc un peu moins de vent prévu suffit les jours bien ensoleillés. Réglez ici les limites plus basses pour ces jours-là."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Límite propio en días de sol: en algunos spots el sol añade viento propio (brisa marina), así que basta algo menos de viento previsto en días mayormente soleados. Ajusta aquí los límites más bajos para esos días."
           }
         }
       }
@@ -5530,42 +5690,42 @@
         }
       }
     },
-    "Tap Add to add this spot.": {
+    "Tap to add this spot.": {
       "localizations": {
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Trykk Legg til for å legge til denne spoten."
+            "value": "Trykk for å legge til spoten."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tryck Lägg till för att lägga till den här spoten."
+            "value": "Tryck för att lägga till spoten."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tryk Tilføj for at tilføje dette spot."
+            "value": "Tryk for at tilføje spottet."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tippe auf Hinzufügen, um diesen Spot hinzuzufügen."
+            "value": "Tippen, um den Spot hinzuzufügen."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Touchez Ajouter pour ajouter ce spot."
+            "value": "Touchez pour ajouter ce spot."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Toca Añadir para añadir este spot."
+            "value": "Toca para añadir este spot."
           }
         }
       }

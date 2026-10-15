@@ -52,9 +52,15 @@ struct SpotListView: View {
                 .onMove { store.spots.move(fromOffsets: $0, toOffset: $1) }
             }
             .environment(\.editMode, $editMode)
+            // An overlay on an empty List didn't always show (a tester saw only the empty list), so cover it fully.
             .overlay {
-                if store.spots.isEmpty { welcome }
+                if store.spots.isEmpty {
+                    welcome
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color(.systemGroupedBackground))
+                }
             }
+            .onChange(of: store.spots.isEmpty) { if store.spots.isEmpty { editMode = .inactive } }
             .navigationTitle("Kookout")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
