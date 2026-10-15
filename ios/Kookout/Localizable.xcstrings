@@ -87,6 +87,46 @@
         }
       }
     },
+    "About Kookout": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Om Kookout"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Om Kookout"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Om Kookout"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über Kookout"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À propos de Kookout"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acerca de Kookout"
+          }
+        }
+      }
+    },
     "Add": {
       "localizations": {
         "da": {
@@ -2089,6 +2129,46 @@
     },
     "Kookout": {
       "shouldTranslate": false
+    },
+    "Kookout is made by Christian Sternell, a wing foiler in Norway who got tired of checking five forecasts to find out if it was worth going. Kookout keeps an eye on your spots, so you don't have to. Ideas, bugs or a spot that's judged wrong? Write to me, I read everything.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout er laget av Christian Sternell, en wingfoiler i Norge som ble lei av å sjekke fem værvarsler for å finne ut om det var verdt å dra. Kookout holder øye med spotene dine, så du slipper. Ideer, feil eller en spot som blir vurdert feil? Skriv til meg, jeg leser alt."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout är gjord av Christian Sternell, en wingfoilare i Norge som tröttnade på att kolla fem prognoser för att se om det var värt att åka. Kookout håller koll på dina spots, så att du slipper. Idéer, buggar eller en spot som bedöms fel? Skriv till mig, jag läser allt."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout er lavet af Christian Sternell, en wingfoiler i Norge, der blev træt af at tjekke fem vejrudsigter for at finde ud af, om det var værd at tage afsted. Kookout holder øje med dine spots, så du slipper. Idéer, fejl eller en spot, der bliver vurderet forkert? Skriv til mig, jeg læser alt."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout wird von Christian Sternell gemacht, einem Wingfoiler in Norwegen, der es leid war, fünf Vorhersagen zu prüfen, um zu wissen, ob es sich lohnt. Kookout behält deine Spots im Blick, damit du es nicht musst. Ideen, Fehler oder ein Spot, der falsch bewertet wird? Schreib mir, ich lese alles."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout est créé par Christian Sternell, un wingfoiler en Norvège, lassé de consulter cinq prévisions pour savoir si ça valait le coup d'y aller. Kookout surveille vos spots à votre place. Des idées, un bug ou un spot mal évalué ? Écrivez-moi, je lis tout."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kookout lo hace Christian Sternell, un wingfoiler en Noruega que se cansó de mirar cinco previsiones para saber si merecía la pena ir. Kookout vigila tus spots por ti. ¿Ideas, errores o un spot mal valorado? Escríbeme, lo leo todo."
+          }
+        }
+      }
     },
     "Kookout reads every report. Thanks for helping keep the spots right.": {
       "localizations": {
@@ -6006,6 +6086,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Usar las reglas de la comunidad"
+          }
+        }
+      }
+    },
+    "Version %@ (%@)": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versjon %@ (%@)"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@ (%@)"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@ (%@)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@ (%@)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@ (%@)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión %@ (%@)"
           }
         }
       }

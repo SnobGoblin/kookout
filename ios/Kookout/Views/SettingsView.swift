@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Units, and starting over with the default spots.
+/// Units, notifications, sharing, starting over, and about the app.
 struct SettingsView: View {
     @Environment(SpotStore.self) private var store
     @Environment(\.dismiss) private var dismiss
@@ -22,6 +22,9 @@ struct SettingsView: View {
             }
         }
     }
+
+    private static let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+    private static let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"
 
     // What "Automatic" means on this phone, shown next to it.
     private var automaticWind: String { Settings.automaticWind == .ms ? "m/s" : String(localized: "knots") }
@@ -112,10 +115,17 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Link("Privacy and support", destination: URL(string: "https://kookout.no/privacy.html")!)
+                    Text("Kookout is made by Christian Sternell, a wing foiler in Norway who got tired of checking five forecasts to find out if it was worth going. Kookout keeps an eye on your spots, so you don't have to. Ideas, bugs or a spot that's judged wrong? Write to me, I read everything.")
                     Link("hi@kookout.no", destination: URL(string: "mailto:hi@kookout.no")!)
+                    Link("Privacy and support", destination: URL(string: "https://kookout.no/privacy.html")!)
+                } header: {
+                    Text("About Kookout")
                 } footer: {
-                    Text("Forecasts from MET Norway (yr.no), Kystverket, NOAA and Holfuy.")
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Forecasts from MET Norway (yr.no), Kystverket, NOAA and Holfuy.")
+                        // The build number tells which TestFlight build a tester is on.
+                        Text("Version \(Self.version) (\(Self.build))")
+                    }
                 }
             }
             .navigationTitle("Settings")

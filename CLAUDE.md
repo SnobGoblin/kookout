@@ -7,7 +7,7 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even. The web page is free.
-**Status (14 Oct 2026):** build 1 in TestFlight beta review, builds up to 8 uploaded or ready; testers
+**Status (14 Oct 2026):** build 1 in TestFlight beta review, builds up to 10 uploaded or ready; testers
 ("Family plus a couple guys") start when a build is approved. Not built yet: subscription/paywall.
 
 ## The parts
@@ -99,6 +99,14 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 | Web page broken | Revert the commit on GitHub; Actions redeploys |
 | Notifications stopped | Check secrets (`npx wrangler secret list`), the APNs key at developer.apple.com, and `npx wrangler tail` |
 | Report emails stopped | Resend dashboard → Emails / Domains (kookout.no must stay verified) |
+
+## Reminders for Christian (bring these up when the moment comes)
+
+- **When build 1 is approved for TestFlight:** make a new build from the latest code (build 10 or later, with the
+  About section), upload it, and expire build 6 (ask first; expiring can't be undone).
+- **When Kookout is live in the App Store:** update the web page. kookout.no becomes a landing page (logo, one
+  sentence, screenshots, App Store button, "free for the first 2,000"); the forecast tool moves to a subpage.
+  Keep `privacy.html` where it is (the App Store and the app link to it).
 
 ## Next up
 
