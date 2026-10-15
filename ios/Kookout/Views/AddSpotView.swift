@@ -10,8 +10,19 @@ struct AddSpotView: View {
     @Environment(\.dismiss) private var dismiss
     /// Called with the new spot, so the list can open its settings.
     var onAdd: (Spot) -> Void = { _ in }
+    /// Where the map starts (e.g. a place searched for on the welcome screen), instead of around the phone.
+    var startAt: CLLocation?
 
-    @State private var position: MapCameraPosition = .userLocation(fallback: .automatic)
+    // The map only takes its first position from here, so a searched place has to be set up front.
+    @State private var position: MapCameraPosition
+
+    init(onAdd: @escaping (Spot) -> Void = { _ in }, startAt: CLLocation? = nil) {
+        self.onAdd = onAdd
+        self.startAt = startAt
+        _position = State(initialValue: startAt.map {
+            .region(MKCoordinateRegion(center: $0.coordinate, latitudinalMeters: 80_000, longitudinalMeters: 80_000))
+        } ?? .userLocation(fallback: .automatic))
+    }
     @State private var pin: CLLocationCoordinate2D?
     @State private var name = ""
     @State private var sport: Sport = .wing
@@ -183,7 +194,7 @@ struct AddSpotView: View {
             .onAppear {
                 location.requestWhenInUseAuthorization()
                 // Start about 80 km across around the phone, so the spots nearby show as pins.
-                if let here = location.location {
+                if startAt == nil, let here = location.location {
                     position = .region(MKCoordinateRegion(center: here.coordinate, latitudinalMeters: 80_000, longitudinalMeters: 80_000))
                 }
             }

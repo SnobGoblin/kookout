@@ -22,6 +22,7 @@ struct SplashView: View {
                 }
         }
         .ignoresSafeArea()
+        .preferredColorScheme(.dark) // a white clock and battery on the dark background
         .accessibilityHidden(true)
         .task {
             if !reduceMotion {

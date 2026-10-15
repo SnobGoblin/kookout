@@ -24,6 +24,7 @@ targets:
           UIColorName: LaunchBackground
           UIImageName: SplashLaunch
           UIImageRespectsSafeAreaInsets: false
+        UIStatusBarStyle: UIStatusBarStyleLightContent  # white clock on the dark launch screen; the app sets its own after
     # Push notifications (Apple's sandbox for builds from Xcode; the App Store build switches to production)
     entitlements:
       path: Kookout/Kookout.entitlements

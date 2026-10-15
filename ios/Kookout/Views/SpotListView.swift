@@ -5,18 +5,23 @@ import MapKit
 struct SpotListView: View {
     @Environment(SpotStore.self) private var store
     @State private var showSettings = false
-    @State private var showAdd = false
+    /// The add-spot screen, when open; it carries where its map starts.
+    @State private var adding: Adding?
     @State private var path: [Route] = []
     @State private var locating = false
     @State private var editMode: EditMode = .inactive
-    @State private var pickNear: CLLocation?
-    /// The place searched for under "Spots near another place" (e.g. home, when away), shown in the picker.
-    @State private var pickNearName: String?
+    /// Where to list the popular spots: the phone, or a place searched for (e.g. home, when away).
+    @State private var pickNear: Place?
     @State private var searchPlace = false
     /// What to open once the picker has gone (one sheet at a time).
     @State private var afterPicker: AfterPicker?
-    @State private var searched: (location: CLLocation, name: String)?
-    enum AfterPicker { case add, search }
+    @State private var searched: Place?
+    enum AfterPicker { case add(CLLocation?), search }
+    /// Opening the add-spot screen, with the place its map starts at (nil: around the phone).
+    struct Adding: Identifiable {
+        let id = UUID()
+        var startAt: CLLocation? = nil
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -68,7 +73,7 @@ struct SpotListView: View {
                         .accessibilityLabel("Kookout")
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                    Button { adding = Adding() } label: { Image(systemName: "plus") }
                         .accessibilityLabel("Add spot")
                     Button { showSettings = true } label: { Image(systemName: "gearshape") }
                         .accessibilityLabel("Settings")
@@ -77,23 +82,26 @@ struct SpotListView: View {
             .sheet(isPresented: $showSettings) { SettingsView() }
             .sheet(item: $pickNear, onDismiss: {
                 switch afterPicker {
-                case .add: showAdd = true
+                case .add(let start): adding = Adding(startAt: start)
                 case .search: searchPlace = true
                 case nil: break
                 }
                 afterPicker = nil
-            }) { here in
-                NearbyPicker(location: here, placeName: pickNearName,
-                             addOwn: { afterPicker = .add }, searchElsewhere: { afterPicker = .search })
+            }) { place in
+                NearbyPicker(location: place.location, placeName: place.name,
+                             addOwn: { afterPicker = .add(place.name == nil ? nil : place.location) },
+                             searchElsewhere: { afterPicker = .search })
             }
             .sheet(isPresented: $searchPlace, onDismiss: {
-                if let searched { pickNearName = searched.name; pickNear = searched.location }
+                if let searched { pickNear = searched }
                 searched = nil
             }) {
-                PlaceSearchView { searched = ($0, $1) }
+                PlaceSearchView { searched = Place(location: $0, name: $1) }
             }
             // A new spot opens straight in its settings (directions and limits); Back goes to its forecast.
-            .sheet(isPresented: $showAdd) { AddSpotView { spot in path = [.detail(spot), .edit(spot)] } }
+            .sheet(item: $adding) { adding in
+                AddSpotView(onAdd: { spot in path = [.detail(spot), .edit(spot)] }, startAt: adding.startAt)
+            }
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .detail(let spot): SpotDetailView(spot: spot)
@@ -124,20 +132,23 @@ extension SpotListView {
             Button("Spots near me") {
                 Task {
                     locating = true
-                    if let here = await Locator.current() { pickNearName = nil; pickNear = here } else { showAdd = true }
+                    if let here = await Locator.current() { pickNear = Place(location: here, name: nil) } else { adding = Adding() }
                     locating = false
                 }
             }
             .buttonStyle(.borderedProminent)
             .disabled(locating)
             Button("Spots near another place") { searchPlace = true }
-            Button("Add a spot on the map") { showAdd = true }
+            Button("Add a spot on the map") { adding = Adding() }
         }
     }
 }
 
-extension CLLocation: @retroactive Identifiable {
-    public var id: String { "\(coordinate.latitude),\(coordinate.longitude)" }
+/// A place to list the popular spots around, with its name when it was searched for (nil: where the phone is).
+struct Place: Identifiable {
+    let location: CLLocation
+    let name: String?
+    var id: String { "\(location.coordinate.latitude),\(location.coordinate.longitude)" }
 }
 
 /// The popular spots within 200 km, to pick from (for the welcome screen).
