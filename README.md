@@ -66,11 +66,17 @@ Bundle ID `com.sternell.kookout`, iOS 17+, English as the base language.
 
 ### Popular spots
 
-`ios/Kookout/Catalogue.json` holds about 70 well-known spots (Oslofjord, Saltstein, Halland, Øresund, Stockholm, Lanzarote, New Zealand,
-Jæren, Hvide Sande, Montpellier, Biarritz, Fuerteventura, San Francisco, Cape Cod, Hatteras), each with the
-wind directions that usually work. A new install starts with a welcome screen: "Spots near me" lists all
-of them within 200 km to pick from; the add-spot screen lists the five nearest you don't have yet. "Start over" in Settings removes all
-spots and settings and goes back to the welcome screen.
+`ios/Kookout/Catalogue.json` holds about 150 well-known spots (Scandinavia, Lofoten, Germany, the Netherlands, the UK
+and Ireland, France, Spain, Portugal, Sardinia, the Alps, the Canaries, San Francisco, Cape Cod, Hatteras, New
+Zealand), each with the wind directions that usually work. Positions are checked against OpenStreetMap; spots that
+depend mainly on thermal winds (e.g. Lake Garda) are left out, since forecasts handle thermals poorly. A new
+install starts with a welcome screen: "Spots near me" lists all of them within 200 km to pick from, and "Spots near
+another place" does the same for a searched town (for someone setting up while away from home). The add-spot
+screen lists the five nearest you don't have yet. "Start over" in Settings removes all spots and settings and goes
+back to the welcome screen.
+
+The relay keeps the same spots as community spots. After changing the catalogue, from `relay/`:
+`node seed-catalogue.mjs && npx wrangler d1 execute kookout --remote --file seed-catalogue.sql` (only adds new ones).
 
 ### Weekend spots and powder
 

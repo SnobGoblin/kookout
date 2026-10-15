@@ -327,46 +327,6 @@
         }
       }
     },
-    "Add your own spot on the map instead.": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Legg heller til din egen spot på kartet."
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lägg till din egen spot på kartan i stället."
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tilføj i stedet dit eget spot på kortet."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Füge stattdessen deinen eigenen Spot auf der Karte hinzu."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajoutez plutôt votre propre spot sur la carte."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Añade tu propio spot en el mapa."
-          }
-        }
-      }
-    },
     "Added by %@": {
       "localizations": {
         "nb": {
@@ -563,6 +523,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "Automatiskt (%@)"
+          }
+        }
+      }
+    },
+    "Away from home? Look for the spots where you usually ride.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borte fra hjemme? Finn spotene der du pleier å kjøre."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borta hemifrån? Leta upp spotsen där du brukar åka."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Væk hjemmefra? Find de spots, hvor du plejer at køre."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht zu Hause? Such die Spots, an denen du sonst fährst."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loin de chez vous ? Cherchez les spots où vous ridez d'habitude."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Fuera de casa? Busca los spots donde sueles ir."
+          }
+        }
+      }
+    },
+    "Be the first: add your own spot on the map. Or look near another place, like home.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bli den første: legg til din egen spot på kartet. Eller se et annet sted, for eksempel hjemme."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bli först: lägg till din egen spot på kartan. Eller titta på en annan plats, till exempel hemma."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vær den første: tilføj dit eget spot på kortet. Eller kig et andet sted, for eksempel derhjemme."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sei der Erste: Füge deinen eigenen Spot auf der Karte hinzu. Oder schau an einem anderen Ort, zum Beispiel zu Hause."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soyez le premier : ajoutez votre propre spot sur la carte. Ou regardez ailleurs, chez vous par exemple."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sé el primero: añade tu propio spot en el mapa. O mira en otro lugar, como tu casa."
           }
         }
       }
@@ -1643,6 +1683,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Till exempel frånlandsvind. Tryck för att välja."
+          }
+        }
+      }
+    },
+    "For example where you live, to see the popular spots there.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For eksempel der du bor, for å se de populære spotene der."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Till exempel där du bor, för att se de populära spotsen där."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For eksempel hvor du bor, for at se de populære spots der."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zum Beispiel, wo du wohnst, um die beliebten Spots dort zu sehen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par exemple là où vous habitez, pour voir les spots populaires du coin."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Por ejemplo, donde vives, para ver los spots populares de allí."
           }
         }
       }
@@ -2970,46 +3050,6 @@
         }
       }
     },
-    "No popular spots within 200 km": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ingen populære spoter innen 200 km"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inga populära spots inom 200 km"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ingen populære spots inden for 200 km"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine beliebten Spots im Umkreis von 200 km"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aucun spot populaire à moins de 200 km"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No hay spots populares a menos de 200 km"
-          }
-        }
-      }
-    },
     "No recent reading from %@.": {
       "localizations": {
         "nb": {
@@ -3046,6 +3086,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "No hay medición reciente de %@."
+          }
+        }
+      }
+    },
+    "No spots here yet": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen spoter her ennå"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inga spots här än"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen spots her endnu"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hier noch keine Spots"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore de spots ici"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún no hay spots aquí"
           }
         }
       }
@@ -4890,6 +4970,86 @@
         }
       }
     },
+    "Spots near %@": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spoter nær %@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots nära %@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots nær %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots bei %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots près de %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots cerca de %@"
+          }
+        }
+      }
+    },
+    "Spots near another place": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spoter et annet sted"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots på en annan plats"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots et andet sted"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots an einem anderen Ort"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots ailleurs"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spots en otro lugar"
+          }
+        }
+      }
+    },
     "Spots near me": {
       "localizations": {
         "nb": {
@@ -5886,6 +6046,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Para compartir spots, inicia sesión con Apple en Ajustes."
+          }
+        }
+      }
+    },
+    "Town or area": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sted eller område"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ort eller område"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "By eller område"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ort oder Gegend"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ville ou région"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ciudad o zona"
           }
         }
       }

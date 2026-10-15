@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreLocation
+import MapKit
 
 struct SpotListView: View {
     @Environment(SpotStore.self) private var store
@@ -9,6 +10,13 @@ struct SpotListView: View {
     @State private var locating = false
     @State private var editMode: EditMode = .inactive
     @State private var pickNear: CLLocation?
+    /// The place searched for under "Spots near another place" (e.g. home, when away), shown in the picker.
+    @State private var pickNearName: String?
+    @State private var searchPlace = false
+    /// What to open once the picker has gone (one sheet at a time).
+    @State private var afterPicker: AfterPicker?
+    @State private var searched: (location: CLLocation, name: String)?
+    enum AfterPicker { case add, search }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -67,8 +75,22 @@ struct SpotListView: View {
                 }
             }
             .sheet(isPresented: $showSettings) { SettingsView() }
-            .sheet(item: $pickNear) { here in
-                NearbyPicker(location: here) { showAdd = true }
+            .sheet(item: $pickNear, onDismiss: {
+                switch afterPicker {
+                case .add: showAdd = true
+                case .search: searchPlace = true
+                case nil: break
+                }
+                afterPicker = nil
+            }) { here in
+                NearbyPicker(location: here, placeName: pickNearName,
+                             addOwn: { afterPicker = .add }, searchElsewhere: { afterPicker = .search })
+            }
+            .sheet(isPresented: $searchPlace, onDismiss: {
+                if let searched { pickNearName = searched.name; pickNear = searched.location }
+                searched = nil
+            }) {
+                PlaceSearchView { searched = ($0, $1) }
             }
             // A new spot opens straight in its settings (directions and limits); Back goes to its forecast.
             .sheet(isPresented: $showAdd) { AddSpotView { spot in path = [.detail(spot), .edit(spot)] } }
@@ -102,12 +124,13 @@ extension SpotListView {
             Button("Spots near me") {
                 Task {
                     locating = true
-                    if let here = await Locator.current() { pickNear = here } else { showAdd = true }
+                    if let here = await Locator.current() { pickNearName = nil; pickNear = here } else { showAdd = true }
                     locating = false
                 }
             }
             .buttonStyle(.borderedProminent)
             .disabled(locating)
+            Button("Spots near another place") { searchPlace = true }
             Button("Add a spot on the map") { showAdd = true }
         }
     }
@@ -122,8 +145,12 @@ struct NearbyPicker: View {
     @Environment(SpotStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let location: CLLocation
+    /// The searched place, or nil for where the phone is.
+    var placeName: String?
     /// "Add a spot on the map", for when there's nothing nearby.
     var addOwn: () -> Void
+    /// "Spots near another place": e.g. home, for someone setting up while away.
+    var searchElsewhere: () -> Void
     @State private var picked: Set<String> = []
 
     private var nearby: [(entry: Catalogue.Entry, meters: Double)] {
@@ -132,7 +159,8 @@ struct NearbyPicker: View {
 
     var body: some View {
         NavigationStack {
-            List(nearby, id: \.entry.spot.id) { item in
+            List {
+              ForEach(nearby, id: \.entry.spot.id) { item in
                 let spot = item.entry.spot
                 Button {
                     if picked.contains(spot.id) { picked.remove(spot.id) } else { picked.insert(spot.id) }
@@ -151,19 +179,29 @@ struct NearbyPicker: View {
                 }
                 .foregroundStyle(.primary)
                 .accessibilityAddTraits(picked.contains(spot.id) ? .isSelected : [])
+              }
+              if !nearby.isEmpty {
+                  Section {
+                      Button("Spots near another place") { searchElsewhere(); dismiss() }
+                  } footer: {
+                      Text("Away from home? Look for the spots where you usually ride.")
+                  }
+              }
             }
             .overlay {
                 if nearby.isEmpty {
                     ContentUnavailableView {
-                        Label("No popular spots within 200 km", systemImage: "mappin.slash")
+                        Label("No spots here yet", systemImage: "mappin.slash")
                     } description: {
-                        Text("Add your own spot on the map instead.")
+                        Text("Be the first: add your own spot on the map. Or look near another place, like home.")
                     } actions: {
-                        Button("Add a spot on the map") { dismiss(); addOwn() }
+                        Button("Add a spot on the map") { addOwn(); dismiss() }
+                            .buttonStyle(.borderedProminent)
+                        Button("Spots near another place") { searchElsewhere(); dismiss() }
                     }
                 }
             }
-            .navigationTitle("Spots near you")
+            .navigationTitle(placeName.map { String(localized: "Spots near \($0)") } ?? String(localized: "Spots near you"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
@@ -183,6 +221,58 @@ struct NearbyPicker: View {
                 }
             }
         }
+    }
+}
+
+/// Search for a town or area, to pick from the popular spots there instead of near the phone.
+struct PlaceSearchView: View {
+    @Environment(\.dismiss) private var dismiss
+    var picked: (CLLocation, String) -> Void
+    @State private var query = ""
+    @State private var results: [MKMapItem] = []
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    TextField("Town or area", text: $query)
+                        .focused($focused)
+                        .autocorrectionDisabled()
+                } footer: {
+                    Text("For example where you live, to see the popular spots there.")
+                }
+                ForEach(results, id: \.self) { item in
+                    Button {
+                        guard let location = item.placemark.location else { return }
+                        picked(location, item.name ?? query)
+                        dismiss()
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text(item.name ?? "")
+                            Text(item.placemark.title ?? "").font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                    .foregroundStyle(.primary)
+                }
+            }
+            .task(id: query) { await search() }
+            .onAppear { focused = true }
+            .navigationTitle("Spots near another place")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+        }
+    }
+
+    private func search() async {
+        let text = query.trimmingCharacters(in: .whitespaces)
+        guard text.count >= 2 else { results = []; return }
+        try? await Task.sleep(for: .milliseconds(300)) // wait until the user stops typing
+        guard !Task.isCancelled else { return }
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = text
+        request.resultTypes = .address
+        results = (try? await MKLocalSearch(request: request).start().mapItems.prefix(8).map { $0 }) ?? []
     }
 }
 
