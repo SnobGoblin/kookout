@@ -7,9 +7,9 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even. The web page is free.
-**Status (16 Oct 2026):** build 14 out to TestFlight testers ("Family plus a couple guys"; public link
-https://testflight.apple.com/join/4wm11wAG). Build 17 uploaded (processing, not yet given to testers): Sea breeze
-limits wording, notification tap scrolls to its day, 12-hour header fix. Builds 15 and 16 were never given out.
+**Status (16 Oct 2026):** build 17 out to TestFlight testers ("Family plus a couple guys"; public link
+https://testflight.apple.com/join/4wm11wAG): Sea breeze limits wording, notification tap scrolls to its day,
+12-hour header fix. Build 14 expired; 15 and 16 were never given out.
 App Store texts in all 7 languages, privacy label answers and review notes are in `appstore/`; EU status set to
 non-trader. Not built yet: subscription/paywall.
 
@@ -123,7 +123,7 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 
 ## Next up
 
-Open from 16 Oct: give build 17 to testers (then expire 14); Christian to read listing-nb/-sv; enter the listing,
+Open from 16 Oct: Christian to read listing-nb/-sv; enter the listing,
 privacy labels (`appstore/privacy-labels.md`) and review notes in App Store Connect; framed screenshots are in
 `appstore/framed` (`swift appstore/frame.swift`).
 
