@@ -80,16 +80,28 @@ private struct DayHeader: View {
     let spot: Spot
 
     var body: some View {
-        HStack {
-            Text(title)
-            Spacer()
-            if let first = good.first, let last = good.last {
-                Label("\(spot.sport == .surf ? String(localized: "Good surf") : String(localized: "Good wind")) " +
-                      Units.hours(first.time, last.end, zone: spot.timeZone),
-                      systemImage: spot.sport.symbol)
-                    .foregroundStyle(.green)
-                    .textCase(nil)
+        // Side by side when it fits on one line; otherwise the good hours go under the date, so a range like
+        // "7 AM–6 PM" never breaks in the middle (12-hour clocks, large text).
+        ViewThatFits(in: .horizontal) {
+            HStack {
+                Text(title).fixedSize()
+                Spacer()
+                goodLabel.fixedSize()
             }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                goodLabel
+            }
+        }
+    }
+
+    @ViewBuilder private var goodLabel: some View {
+        if let first = good.first, let last = good.last {
+            Label("\(spot.sport == .surf ? String(localized: "Good surf") : String(localized: "Good wind")) " +
+                  Units.hours(first.time, last.end, zone: spot.timeZone),
+                  systemImage: spot.sport.symbol)
+                .foregroundStyle(.green)
+                .textCase(nil)
         }
     }
 }

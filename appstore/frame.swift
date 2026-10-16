@@ -2,17 +2,19 @@
 //   swift appstore/frame.swift
 // Reads appstore/screenshots/*.png (plain Simulator screenshots, 6.9-inch: 1320 × 2868) and writes the
 // framed versions, the same size, to appstore/framed/. Captions are the ones in appstore/listing-en.md.
+// A `zoom` (in the screenshot's pixels, from the top left) is drawn again, larger, on top of the phone: used to make
+// the notification readable at App Store thumbnail size.
 
 import AppKit
 import CoreText
 import Foundation
 
-let captions: [(file: String, caption: String)] = [
-    ("1-list", "Know when your spots are good"),
-    ("2-notification", "Get told when it's on"),
-    ("3-forecast", "See why, hour by hour"),
-    ("4-rules", "Your spot, your rules"),
-    ("5-add-spot", "Popular spots, or any spot in the world"),
+let captions: [(file: String, caption: String, zoom: CGRect?)] = [
+    ("1-list", "Know when your spots are good", nil),
+    ("2-notification", "Get told when it's on", CGRect(x: 62, y: 2052, width: 1196, height: 188)),
+    ("3-forecast", "See why, hour by hour", nil),
+    ("4-rules", "Your spot, your rules", nil),
+    ("5-add-spot", "Popular spots, or any spot in the world", nil),
 ]
 
 let width = 1320, height = 2868
@@ -38,7 +40,7 @@ let border: CGFloat = 20
 let screenRadius: CGFloat = 186 * scale
 let phoneTop: CGFloat = 560   // from the top; the caption sits in the space above
 
-func frame(_ name: String, _ caption: String) throws {
+func frame(_ name: String, _ caption: String, zoom: CGRect?) throws {
     let input = URL(fileURLWithPath: "appstore/screenshots/\(name).png")
     guard let source = CGImageSourceCreateWithURL(input as CFURL, nil),
           let shot = CGImageSourceCreateImageAtIndex(source, 0, nil) else { fatalError("Can't read \(input.path)") }
@@ -87,6 +89,22 @@ func frame(_ name: String, _ caption: String) throws {
     ctx.draw(shot, in: screenRect)
     ctx.restoreGState()
 
+    // Zoom: the part again at 92 % of full size (wider than the phone), centred where it sits on the phone.
+    if let zoom, let part = shot.cropping(to: zoom) {
+        let size = CGSize(width: zoom.width * 0.92, height: zoom.height * 0.92)
+        let centre = CGPoint(x: screenRect.minX + zoom.midX * scale, y: screenRect.maxY - zoom.midY * scale)
+        let rect = CGRect(x: W / 2 - size.width / 2, y: centre.y - size.height / 2, width: size.width, height: size.height)
+        let card = CGPath(roundedRect: rect, cornerWidth: 58, cornerHeight: 58, transform: nil)
+        ctx.saveGState()
+        ctx.setShadow(offset: CGSize(width: 0, height: -20), blur: 60, color: CGColor(red: 0, green: 0, blue: 0, alpha: 0.5))
+        ctx.addPath(card); ctx.setFillColor(bezel); ctx.fillPath()
+        ctx.restoreGState()
+        ctx.saveGState()
+        ctx.addPath(card); ctx.clip()
+        ctx.draw(part, in: rect)
+        ctx.restoreGState()
+    }
+
     let output = URL(fileURLWithPath: "appstore/framed/\(name).png")
     let dest = CGImageDestinationCreateWithURL(output as CFURL, "public.png" as CFString, 1, nil)!
     CGImageDestinationAddImage(dest, ctx.makeImage()!, nil)
@@ -95,4 +113,4 @@ func frame(_ name: String, _ caption: String) throws {
 }
 
 try FileManager.default.createDirectory(atPath: "appstore/framed", withIntermediateDirectories: true)
-for (file, caption) in captions { try frame(file, caption) }
+for (file, caption, zoom) in captions { try frame(file, caption, zoom: zoom) }
