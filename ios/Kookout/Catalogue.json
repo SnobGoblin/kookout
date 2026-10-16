@@ -2,7 +2,7 @@
   {"id": "drobak", "name": "Torkild", "area": "Drøbak", "lat": 59.6732, "lon": 10.6161, "tz": "Europe/Oslo", "sport": "wing", "dirs": ["SE", "SSE", "S", "SSW", "SW"], "sunny": [4, 8, 5], "station": "holfuy:1815", "stationName": "Drøbak Fluid.no"},
   {"id": "brattesto", "name": "Brattestø", "area": "Hvaler", "lat": 59.0561, "lon": 10.9193, "tz": "Europe/Oslo", "sport": "wing", "dirs": ["S", "SSW", "SW", "WSW", "W"]},
   {"id": "larkollen", "name": "Larkollen", "area": "Rygge", "lat": 59.3232, "lon": 10.6678, "tz": "Europe/Oslo", "sport": "wing", "dirs": ["S", "SSW", "SW", "WSW"], "station": "KV:12045059", "stationName": "Gullholmen (Kystverket)"},
-  {"id": "lysaker", "name": "Lysakerfjorden", "area": "Oslo", "lat": 59.9029, "lon": 10.6466, "tz": "Europe/Oslo", "sport": "wing", "dirs": [], "station": "holfuy:1542", "stationName": "Rolfstangen LBK"},
+  {"id": "lysaker", "name": "Lysakerfjorden", "area": "Oslo", "lat": 59.9029, "lon": 10.6466, "tz": "Europe/Oslo", "sport": "wing", "station": "holfuy:1542", "stationName": "Rolfstangen LBK"},
   {"id": "orekroken", "name": "Ørekroken", "area": "Hvaler", "lat": 59.0304, "lon": 11.0105, "tz": "Europe/Oslo", "sport": "wing", "dirs": ["SW"]},
   {"id": "hemsedal", "name": "Hemsedal 690 MOH", "area": "Hemsedal", "lat": 60.8598, "lon": 8.5189, "tz": "Europe/Oslo", "sport": "powder", "altitude": 690},
   {"id": "movik", "name": "Møvik", "area": "Rygge", "lat": 59.3331, "lon": 10.7185, "tz": "Europe/Oslo", "sport": "wing", "dirs": ["SSW", "SW"], "station": "KV:12045059", "stationName": "Gullholmen (Kystverket)"},
