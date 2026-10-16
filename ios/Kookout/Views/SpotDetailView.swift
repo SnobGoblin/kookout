@@ -217,12 +217,13 @@ struct LiveWindRow: View {
         var done = false
         var body: some View {
             Section {
-                Group {
-                    if done { Text("No recent wind reading nearby.") }
-                    else if let station { Text("Checking the wind at \(station)…") } else { Text("Checking the wind nearby…") }
+                TwoLines(caption: " ") {
+                    Group {
+                        if done { Text("No recent wind reading nearby.") }
+                        else if let station { Text("Checking the wind at \(station)…") } else { Text("Checking the wind nearby…") }
+                    }
+                    .foregroundStyle(.secondary)
                 }
-                .foregroundStyle(.secondary)
-                Text(verbatim: " ").font(.caption)
             } header: {
                 Text("Measured now (\(Units.windUnit))")
             }
@@ -232,30 +233,51 @@ struct LiveWindRow: View {
     var body: some View {
         Section {
             if let live = station.reading {
-                HStack(spacing: 8) {
-                    Text("Now").bold()
-                    Text(live.gust.map { "\(Units.wind(live.wind)) (\(Units.wind($0)))" } ?? Units.wind(live.wind))
-                        .monospacedDigit()
-                    if let dir = live.dir {
-                        Image(systemName: "arrow.up").rotationEffect(.degrees(dir + 180))
-                        Text(Compass.points[Int((dir / 22.5).rounded()) % 16])
+                TwoLines(caption: "\(station.name), \(Measurement.distance(station.km * 1000)) · \(live.time.formatted(.relative(presentation: .named)))") {
+                    HStack(spacing: 8) {
+                        Text("Now").bold()
+                        Text(live.gust.map { "\(Units.wind(live.wind)) (\(Units.wind($0)))" } ?? Units.wind(live.wind))
+                            .monospacedDigit()
+                        if let dir = live.dir {
+                            Image(systemName: "arrow.up").rotationEffect(.degrees(dir + 180))
+                            Text(Compass.points[Int((dir / 22.5).rounded()) % 16])
+                        }
+                        Spacer()
                     }
-                    Spacer()
                 }
-                Text("\(station.name), \(Measurement.distance(station.km * 1000)) · \(live.time.formatted(.relative(presentation: .named)))")
-                    .font(.caption).foregroundStyle(.secondary)
             } else if let number = station.holfuyNumber {
                 // Holfuy's own live widget (they only share their readings with station owners), folded away until opened
-                DisclosureGroup("See wind now at \(station.name)", isExpanded: $open) {
+                DisclosureGroup(isExpanded: $open) {
                     HolfuyWidget.Embedded(number: number)
                         .frame(height: 175)
                         .listRowInsets(EdgeInsets())
+                } label: {
+                    TwoLines(caption: "Holfuy, \(Measurement.distance(station.km * 1000))") {
+                        Text("See wind now at \(station.name)")
+                    }
                 }
             } else {
-                Text("No recent reading from \(station.name).").foregroundStyle(.secondary)
+                TwoLines(caption: " ") {
+                    Text("No recent reading from \(station.name).").foregroundStyle(.secondary)
+                }
             }
         } header: {
             Text("Measured now (\(Units.windUnit))")
+        }
+    }
+}
+
+/// The one shape of "Measured now", whatever it shows (loading, a reading, Holfuy, none): a line and a small line
+/// under it, neither wrapping, so the forecast below doesn't move when the answer comes.
+private struct TwoLines<Top: View>: View {
+    let caption: String
+    @ViewBuilder let top: Top
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            top.lineLimit(1).minimumScaleFactor(0.8)
+            Text(verbatim: caption)
+                .font(.caption).foregroundStyle(.secondary)
+                .lineLimit(1).minimumScaleFactor(0.8)
         }
     }
 }
