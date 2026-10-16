@@ -55,6 +55,8 @@ emailed through Resend). Tests: `node relay/test-notify.mjs`, `node relay/test-c
   taster (e.g. 10 good-condition notifications, not a time-based trial, since the sports are seasonal). Planned
   price: about $10/year, perhaps also a lifetime option. Family stays free via Family Sharing or offer codes
   (no homemade free-account lists; Apple's rules). Never take a promised free period away early.
+- **EU trader status (decided 16 Oct 2026):** non-trader while the app is free and earns nothing. Switch to
+  trader before the paywall goes live (see Reminders).
 - **Privacy page** (English only) must match what the app actually does. Update it with every data change.
 
 ## How we work
@@ -114,6 +116,9 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 - **When Kookout is live in the App Store:** update the web page. kookout.no becomes a landing page (logo, one
   sentence, screenshots, App Store button, "free for the first 2,000"); the forecast tool moves to a subpage.
   Keep `privacy.html` where it is (the App Store and the app link to it).
+- **Before the subscription/paywall goes live:** switch EU trader status to *trader* in App Store Connect (Apple
+  then shows an address, phone and email on EU App Store pages). Sort out first: a phone number and postal address
+  he's happy to show publicly (PO box or office), and probably an enkeltpersonforetak for tax.
 
 ## Next up
 
