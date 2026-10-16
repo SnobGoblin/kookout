@@ -112,6 +112,8 @@ struct SettingsView: View {
 
                 Section {
                     Button("Start over", role: .destructive) { confirmReset = true }
+                } footer: {
+                    Text("Removes all your spots and settings. You stay signed in.")
                 }
 
                 Section {
@@ -136,8 +138,14 @@ struct SettingsView: View {
             } message: {
                 Text("Your spots stay on this phone. Spots you shared stay for the people who use them, without your name.")
             }
-            .confirmationDialog("Remove all your spots and settings, and start over?", isPresented: $confirmReset, titleVisibility: .visible) {
-                Button("Start over", role: .destructive) { store.removeAll(); settings.reset(); dismiss() }
+            // An alert, not a menu: it can't be undone, so it should stop the person and say what goes.
+            .alert("Start over?", isPresented: $confirmReset) {
+                Button("Cancel", role: .cancel) {}
+                Button("Remove everything", role: .destructive) {
+                    store.removeAll(); settings.reset(); LiveWind.latest = [:]; dismiss()
+                }
+            } message: {
+                Text("This removes all your spots (\(store.spots.count)) with your own rules and wind stations, and sets units, notifications and sharing back to how they were at the start. You stay signed in with Apple. This can't be undone.")
             }
             // The rules round in the chosen units, so work everything out again when they change.
             .onChange(of: settings.wind) { Task { await store.refreshAll() } }

@@ -4050,42 +4050,82 @@
         }
       }
     },
-    "Remove all your spots and settings, and start over?": {
+    "Remove everything": {
       "localizations": {
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fjerne alle spotene og innstillingene dine og begynne på nytt?"
+            "value": "Fjern alt"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ta bort alla dina spots och inställningar och börja om?"
+            "value": "Ta bort allt"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fjern alle dine spots og indstillinger, og start forfra?"
+            "value": "Fjern alt"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Alle Spots und Einstellungen entfernen und neu anfangen?"
+            "value": "Alles entfernen"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Supprimer tous vos spots et réglages, et recommencer ?"
+            "value": "Tout supprimer"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "¿Eliminar todos tus spots y ajustes y empezar de nuevo?"
+            "value": "Borrar todo"
+          }
+        }
+      }
+    },
+    "Removes all your spots and settings. You stay signed in.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjerner alle spotene og innstillingene dine. Du forblir logget inn."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tar bort alla dina spots och inställningar. Du förblir inloggad."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjerner alle dine spots og indstillinger. Du forbliver logget ind."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernt alle deine Spots und Einstellungen. Du bleibst angemeldet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprime tous vos spots et réglages. Vous restez connecté."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borra todos tus spots y ajustes. Sigues con la sesión iniciada."
           }
         }
       }
@@ -5450,6 +5490,46 @@
         }
       }
     },
+    "Start over?": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Begynne på nytt?"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Börja om?"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start forfra?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neu anfangen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout recommencer ?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Empezar de nuevo?"
+          }
+        }
+      }
+    },
     "Start with popular spots near you, or add your own.": {
       "localizations": {
         "nb": {
@@ -6086,6 +6166,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Este iPhone aún no ha dado a Kookout una dirección de notificaciones. Comprueba que estén permitidas y vuelve a abrir Kookout."
+          }
+        }
+      }
+    },
+    "This removes all your spots (%lld) with your own rules and wind stations, and sets units, notifications and sharing back to how they were at the start. You stay signed in with Apple. This can't be undone.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dette fjerner alle spotene dine (%lld) med dine egne regler og vindstasjoner, og setter enheter, varsler og deling tilbake til slik de var i starten. Du forblir logget inn med Apple. Dette kan ikke angres."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detta tar bort alla dina spots (%lld) med dina egna regler och vindstationer, och återställer enheter, notiser och delning till hur de var från början. Du förblir inloggad med Apple. Det går inte att ångra."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dette fjerner alle dine spots (%lld) med dine egne regler og vindstationer og sætter enheder, notifikationer og deling tilbage til, som de var fra start. Du forbliver logget ind med Apple. Det kan ikke fortrydes."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Damit werden alle deine Spots (%lld) mit deinen eigenen Regeln und Windstationen entfernt, und Einheiten, Mitteilungen und Teilen werden auf den Anfangszustand zurückgesetzt. Du bleibst mit Apple angemeldet. Das kann nicht rückgängig gemacht werden."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cela supprime tous vos spots (%lld) avec vos propres règles et stations de vent, et remet les unités, les notifications et le partage comme au départ. Vous restez connecté avec Apple. Action irréversible."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esto borra todos tus spots (%lld) con tus propias reglas y estaciones de viento, y devuelve las unidades, las notificaciones y el uso compartido a como estaban al principio. Sigues con la sesión de Apple iniciada. No se puede deshacer."
           }
         }
       }
