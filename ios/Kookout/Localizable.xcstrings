@@ -4130,6 +4130,46 @@
         }
       }
     },
+    "Removes all your spots and settings.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjerner alle spotene og innstillingene dine."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tar bort alla dina spots och inställningar."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjerner alle dine spots og indstillinger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernt alle deine Spots und Einstellungen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprime tous vos spots et réglages."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borra todos tus spots y ajustes."
+          }
+        }
+      }
+    },
     "Removes all your spots and settings. You stay signed in.": {
       "localizations": {
         "nb": {
@@ -6206,6 +6246,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Este iPhone aún no ha dado a Kookout una dirección de notificaciones. Comprueba que estén permitidas y vuelve a abrir Kookout."
+          }
+        }
+      }
+    },
+    "This removes all your spots (%lld) with your own rules and wind stations, and sets units, notifications and sharing back to how they were at the start. This can't be undone.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dette fjerner alle spotene dine (%lld) med dine egne regler og vindstasjoner, og setter enheter, varsler og deling tilbake til slik de var i starten. Dette kan ikke angres."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detta tar bort alla dina spots (%lld) med dina egna regler och vindstationer, och återställer enheter, notiser och delning till hur de var från början. Det går inte att ångra."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dette fjerner alle dine spots (%lld) med dine egne regler og vindstationer og sætter enheder, notifikationer og deling tilbage til, som de var fra start. Det kan ikke fortrydes."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Damit werden alle deine Spots (%lld) mit deinen eigenen Regeln und Windstationen entfernt, und Einheiten, Mitteilungen und Teilen werden auf den Anfangszustand zurückgesetzt. Das kann nicht rückgängig gemacht werden."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cela supprime tous vos spots (%lld) avec vos propres règles et stations de vent, et remet les unités, les notifications et le partage comme au départ. Action irréversible."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esto borra todos tus spots (%lld) con tus propias reglas y estaciones de viento, y devuelve las unidades, las notificaciones y el uso compartido a como estaban al principio. No se puede deshacer."
           }
         }
       }
