@@ -14,6 +14,9 @@ final class Notifications {
     private(set) var token: String?
     /// The spot to open, when a notification is tapped.
     var openSpotID: String?
+    /// When a tapped notification opens a spot: the start of the period it was about (nil: the first good hour),
+    /// for the forecast to scroll to. Taken (and cleared) by that spot's forecast screen.
+    var focus: (spotID: String, at: Date?)?
 
     private var spots: [Spot] = []
     private var pendingSync: Task<Void, Never>?
@@ -160,8 +163,11 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
                                             withCompletionHandler completionHandler: @escaping @Sendable () -> Void) {
-        let spotID = response.notification.request.content.userInfo["spot"] as? String
+        let info = response.notification.request.content.userInfo
+        let spotID = info["spot"] as? String
+        let at = (info["at"] as? NSNumber).map { Date(timeIntervalSince1970: $0.doubleValue) }
         Task { @MainActor in
+            if let spotID { Notifications.shared.focus = (spotID, at) }
             Notifications.shared.openSpotID = spotID
             completionHandler()
         }

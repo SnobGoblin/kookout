@@ -6,32 +6,44 @@ struct SpotDetailView: View {
     let spot: Spot
     /// The latest reading near the spot: nil while the first one loads; .some(nil) when there's no station.
     @State private var live: LiveWind.Station??
+    /// Opened from a notification: scroll to this hour once the forecast is there (.some(nil): the first good hour).
+    @State private var focus: Date??
 
     private var forecast: SpotForecast? { store.forecasts[spot.id] }
     /// The latest saved version of the spot (it may have been edited since this screen opened).
     private var current: Spot { store.spots.first { $0.id == spot.id } ?? spot }
 
     var body: some View {
-        List {
-            if store.failed.contains(spot.id) && forecast == nil {
-                Text("Couldn't load the forecast.").foregroundStyle(.red)
-            }
-            // Always the same place in the list, so nothing jumps when the reading arrives
-            switch live {
-            case .some(.some(let station)): LiveWindRow(station: station)
-            case .none: LiveWindRow.Loading(station: current.stationName ?? current.community?.stationName)
-            case .some(.none): LiveWindRow.Loading(station: nil, done: true)
-            }
-            ForEach(days, id: \.day) { group in
-                Section {
-                    ForEach(group.hours) { hour in
-                        HourRow(hour: hour, spot: current)
-                            .listRowBackground(hour.good ? Color.goodRow : nil)
+        ScrollViewReader { proxy in
+            List {
+                if store.failed.contains(spot.id) && forecast == nil {
+                    Text("Couldn't load the forecast.").foregroundStyle(.red)
+                }
+                // Always the same place in the list, so nothing jumps when the reading arrives
+                switch live {
+                case .some(.some(let station)): LiveWindRow(station: station)
+                case .none: LiveWindRow.Loading(station: current.stationName ?? current.community?.stationName)
+                case .some(.none): LiveWindRow.Loading(station: nil, done: true)
+                }
+                ForEach(days, id: \.day) { group in
+                    Section {
+                        ForEach(group.hours) { hour in
+                            HourRow(hour: hour, spot: current)
+                                .listRowBackground(hour.good ? Color.goodRow : nil)
+                        }
+                    } header: {
+                        DayHeader(title: group.title, good: group.hours.filter(\.good), spot: current)
                     }
-                } header: {
-                    DayHeader(title: group.title, good: group.hours.filter(\.good), spot: current)
                 }
             }
+            .onAppear {
+                if let f = Notifications.shared.focus, f.spotID == spot.id {
+                    focus = .some(f.at)
+                    Notifications.shared.focus = nil
+                    scrollToFocus(proxy) // if the forecast is already here; otherwise when it comes
+                }
+            }
+            .onChange(of: forecast?.upcomingRows.first?.time, initial: true) { scrollToFocus(proxy) }
         }
         .navigationTitle(current.name)
         .toolbar {
@@ -51,6 +63,26 @@ struct SpotDetailView: View {
             let fresh = await LiveWind.now(for: current)
             LiveWind.latest[spot.id] = fresh
             live = fresh
+        }
+    }
+
+    /// To the day of the notification's period (or of the first good hour), its header just below the top: the date
+    /// and "Good wind …" say why. Only once: after that the screen scrolls as the person likes.
+    private func scrollToFocus(_ proxy: ScrollViewProxy) {
+        guard let wanted = focus, let rows = forecast?.upcomingRows, !rows.isEmpty else { return }
+        let target = wanted.flatMap { at in rows.first { $0.time.addingTimeInterval(Double($0.hours) * 3600) > at } }
+            ?? rows.first(where: \.good)
+        focus = nil
+        let days = days
+        guard let target, let i = days.firstIndex(where: { $0.hours.contains(target) }), i > 0,
+              let above = days[i - 1].hours.last else { return } // today: already at the top
+        // The list scrolls a row to the very top, under the title bar, so aim at the hour just above the day's header.
+        // Twice: it only guesses the height of rows it hasn't drawn yet, so the first jump lands near and the second,
+        // once those rows are drawn, lands on it.
+        Task {
+            proxy.scrollTo(above.id, anchor: .top)
+            try? await Task.sleep(for: .milliseconds(150))
+            withAnimation { proxy.scrollTo(above.id, anchor: .top) }
         }
     }
 

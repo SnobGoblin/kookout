@@ -169,6 +169,7 @@ async function notifyDevice(device, env, forecast) {
       aps: { alert: { title: spot.name, body: lines.join("\n") }, "thread-id": spot.id,
              sound: events[0].type === "gone" ? BAD_NEWS_SOUND : SOUND }, // the top line (nearest in time) decides
       spot: spot.id,
+      at: Math.round(events[0].period.start / 1000), // seconds since 1970: the app scrolls to the top line's period
     });
     if (result === "gone") { // the app was deleted or the token is no longer valid
       await env.DB.prepare("DELETE FROM devices WHERE id = ?").bind(device.id).run();
