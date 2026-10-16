@@ -133,6 +133,11 @@ Toward the App Store launch:
 2. Watch for Apple's email. If rejected over guideline 1.2 (no in-app block): add "hide this person's spots".
 3. When approved: Christian presses Release on the day he wants; then the landing page (see Reminders).
 
+**Shipping fixes after launch:** relay, `rules.js` and web-page fixes need no Apple review (deploy/push and it's
+live in minutes), so put fixes there when you can. App changes need a new build and a full review (updates
+usually pass within a day); for a serious bug (crash, notifications down) ask Apple for an expedited review
+(App Store Connect form; use sparingly). Consider a phased release (7 days, pausable) for bigger updates.
+
 Founding users: numbers come only from App Store installs (TestFlight/Xcode have no real download); the
 `founders` table must start empty at launch (it is). Founding = number ≤ 2,000 (`FOUNDERS` in `relay/src/founders.js`).
 
