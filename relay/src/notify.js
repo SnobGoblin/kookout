@@ -17,6 +17,7 @@ const HOUR = 3600e3;
 const LANGS = ["en", "nb", "sv", "da", "de", "fr", "es"];
 const MAX_SPOTS = 30;
 const MAX_PUSHES = 5; // per phone per hour, so a big forecast change doesn't flood it
+const PARALLEL = 6;   // phones checked at the same time in the hourly run
 // Sounds in the app: a wind swoosh for good news, a kung-fu gong when good conditions are gone (brand/).
 const SOUND = "kookout.caf", BAD_NEWS_SOUND = "gong.caf";
 
@@ -130,10 +131,18 @@ export async function notifyAll(env, analyseSpot) {
       .catch(e => { console.log("Forecast failed:", spot.name, e.message); return null; }));
     return forecasts.get(key);
   };
-  for (const device of results) {
-    try { await notifyDevice(device, env, forecast); }
-    catch (e) { console.log("Notifications failed for a device:", e.message); }
-  }
+  // Several phones at a time, so the run stays well inside Cloudflare's 15 minutes as phones are added. (Cloudflare
+  // keeps at most 6 connections open per run and queues the rest, so more than this gains little.)
+  const queue = [...results];
+  const worker = async () => {
+    for (let device; (device = queue.shift()); ) {
+      try { await notifyDevice(device, env, forecast); }
+      catch (e) { console.log("Notifications failed for a device:", e.message); }
+    }
+  };
+  const started = Date.now();
+  await Promise.all(Array.from({ length: PARALLEL }, worker));
+  console.log(`Notifications: ${results.length} phones, ${forecasts.size} forecasts, ${Math.round((Date.now() - started) / 1000)} s`);
 }
 
 async function notifyDevice(device, env, forecast) {
