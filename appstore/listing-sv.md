@@ -49,7 +49,7 @@ ENKEL MED FLIT
 Inga dyningskartor att tyda. Kookout ger dig svaret: åk, eller låt bli.
 
 GRATIS FÖR DE FÖRSTA
-Kookout är gratis medan vi startar. De första 2 000 användarna får minst 12 månader gratis.
+De första 2 000 användarna använder Kookout gratis. Om det någon gång måste ändras får de veta det i god tid.
 
 Gjord i Norge av en wingfoilare. Väderdata från norska Meteorologisk institutt (yr.no), Kystverket, NOAA och Holfuy.
 

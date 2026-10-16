@@ -49,7 +49,7 @@ ENKELT MED VILJE
 Ingen dønningskart å tolke. Kookout gir deg svaret: dra, eller la være.
 
 GRATIS FOR DE FØRSTE
-Kookout er gratis mens vi starter opp. De første 2 000 brukerne får minst 12 måneder gratis.
+De første 2 000 brukerne bruker Kookout gratis. Skulle det noen gang måtte endres, får de vite det i god tid.
 
 Laget i Norge av en wingfoiler. Værdata fra Meteorologisk institutt (yr.no), Kystverket, NOAA og Holfuy.
 

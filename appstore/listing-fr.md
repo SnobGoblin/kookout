@@ -49,7 +49,7 @@ SIMPLE, EXPRÈS
 Pas de cartes de houle à décoder. Kookout vous donne la réponse : on y va, ou pas.
 
 GRATUIT POUR LES PREMIERS
-Kookout est gratuit pendant le lancement. Les 2 000 premiers utilisateurs ont au moins 12 mois gratuits.
+Les 2 000 premiers utilisateurs utilisent Kookout gratuitement. Si cela devait un jour changer, ils seraient prévenus longtemps à l'avance.
 
 Fait en Norvège par un wingfoiler. Données météo de l'Institut météorologique norvégien (yr.no), Kystverket, NOAA et Holfuy.
 

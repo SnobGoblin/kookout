@@ -49,7 +49,7 @@ SIMPLE ON PURPOSE
 No swell charts to decode. Kookout gives you the answer: go, or don't.
 
 FREE FOR FOUNDING USERS
-Kookout is free while we launch. The first 2,000 users get at least 12 months free.
+The first 2,000 users use Kookout for free. If that ever has to change, they'll hear about it well in advance.
 
 Made in Norway by a wing foiler. Forecasts from MET Norway (yr.no), Kystverket, NOAA and Holfuy.
 

@@ -49,7 +49,7 @@ SENCILLO A PROPÓSITO
 Nada de mapas de mar de fondo que descifrar. Kookout te da la respuesta: ve, o no vayas.
 
 GRATIS PARA LOS PRIMEROS
-Kookout es gratis durante el lanzamiento. Los primeros 2000 usuarios tienen al menos 12 meses gratis.
+Los primeros 2000 usuarios usan Kookout gratis. Si algún día eso tuviera que cambiar, se les avisará con mucha antelación.
 
 Hecho en Noruega por un wingfoiler. Datos meteorológicos del Instituto Meteorológico de Noruega (yr.no), Kystverket, NOAA y Holfuy.
 

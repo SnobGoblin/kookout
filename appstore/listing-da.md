@@ -49,7 +49,7 @@ ENKELT MED VILJE
 Ingen dønningskort at tyde. Kookout giver dig svaret: tag afsted, eller lad være.
 
 GRATIS FOR DE FØRSTE
-Kookout er gratis, mens vi starter op. De første 2.000 brugere får mindst 12 måneder gratis.
+De første 2.000 brugere bruger Kookout gratis. Skulle det nogensinde blive nødvendigt at ændre det, får de besked i god tid.
 
 Lavet i Norge af en wingfoiler. Vejrdata fra det norske Meteorologisk institutt (yr.no), Kystverket, NOAA og Holfuy.
 

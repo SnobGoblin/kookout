@@ -49,7 +49,7 @@ BEWUSST EINFACH
 Keine Swell-Karten zum Entziffern. Kookout gibt dir die Antwort: los, oder lieber nicht.
 
 GRATIS FÜR DIE ERSTEN
-Kookout ist zum Start gratis. Die ersten 2.000 Nutzer bekommen mindestens 12 Monate gratis.
+Die ersten 2.000 Nutzer nutzen Kookout gratis. Sollte sich das je ändern müssen, erfahren sie es rechtzeitig vorher.
 
 Gemacht in Norwegen von einem Wingfoiler. Wetterdaten vom Norwegischen Meteorologischen Institut (yr.no), Kystverket, NOAA und Holfuy.
 
