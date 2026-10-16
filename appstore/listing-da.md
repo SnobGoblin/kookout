@@ -4,7 +4,7 @@ Translated from listing-en.md. Limits are Apple's.
 
 ## Name (max 30)
 
-Kookout: Vind- og surfvarsler
+Kookout: Vind, bølger og sne
 
 ## Subtitle (max 30)
 
