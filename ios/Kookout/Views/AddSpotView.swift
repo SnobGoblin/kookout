@@ -365,7 +365,9 @@ struct NearbyRow: View {
 struct ShareQuestion: View {
     let answer: (Bool) -> Void
     private let account = Account.shared
-    @State private var share = true
+    /// Starts on "Share" only when signed in; signed out, picking "Share" asks to sign in with Apple first.
+    @State private var share = Account.shared.signedIn
+    @State private var signingIn = false
 
     var body: some View {
         NavigationStack {
@@ -374,24 +376,34 @@ struct ShareQuestion: View {
                     Text("Share your spots with other Kookout users?").font(.headline)
                     Text("Others can then find them on the map, with their name, place and rules. Spots you keep private stay on your phone, and you can change this for each spot under Edit.")
                         .foregroundStyle(.secondary)
-                    Picker("Share", selection: $share) {
+                    Picker("Share", selection: Binding(get: { share }, set: { on in
+                        if !on || account.signedIn { share = on; return }
+                        signingIn = true
+                        Task { share = await account.signIn(); signingIn = false }
+                    })) {
                         Text("Share").tag(true)
                         Text("Keep private").tag(false)
                     }
                     .pickerStyle(.segmented)
+                    .disabled(signingIn)
+                } footer: {
+                    if !account.signedIn {
+                        Text("Sharing needs Sign in with Apple, so changes to spots show who made them. Kookout gets your name, not your email.")
+                    }
                 }
-                if share {
+                if share && account.signedIn {
                     Section {
                         AccountRows()
                     } footer: {
-                        Text(account.signedIn ? "Shown as “Added by …” on the spots you share, and next to changes you make."
-                                              : "Sharing needs Sign in with Apple, so changes to spots show who made them. Kookout gets your name, not your email.")
+                        Text("Shown as “Added by …” on the spots you share, and next to changes you make.")
                     }
+                } else if let problem = account.problem {
+                    Text(problem).font(.footnote).foregroundStyle(.red)
                 }
                 Section {
                     Button(share ? "Share and add the spot" : "Add the spot") { answer(share) }
                         .bold()
-                        .disabled(share && !account.signedIn)
+                        .disabled(signingIn)
                 }
             }
             .navigationTitle("Sharing")

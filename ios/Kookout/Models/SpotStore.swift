@@ -138,7 +138,11 @@ final class Settings {
     var clock: Clock { didSet { save(clock.rawValue, "clock") } }
     /// Whether spots the user creates are shared with others: asked the first time they add one (nil until then).
     var shareNewSpots: Bool? {
-        didSet { UserDefaults.standard.set(shareNewSpots.map { $0 ? "yes" : "no" }, forKey: "shareNewSpots") }
+        didSet {
+            // nil (not asked yet) must remove the stored answer; set(nil) didn't always (a reset kept "no")
+            if let shareNewSpots { UserDefaults.standard.set(shareNewSpots ? "yes" : "no", forKey: "shareNewSpots") }
+            else { UserDefaults.standard.removeObject(forKey: "shareNewSpots") }
+        }
     }
     /// How far ahead notifications look, in hours.
     var notifyHours: Int { didSet { save(notifyHours, "notifyHours") } }
