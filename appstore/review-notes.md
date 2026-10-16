@@ -24,7 +24,7 @@ How to try it:
 User-generated content (guideline 1.2):
 - Users can share spots (a name and a map position) and fix the name or position of shared spots. Every change is logged with the user's public name and can be undone by anyone signed in.
 - Every spot, and every change in its history, has "Report a problem" (reasons: wrong, private, offensive, other).
-- Reports are emailed to us and reviewed by hand within 24 hours. We remove offending content and can block an account, which stops it from signing in and editing.
+- Reports are emailed to us and normally handled by hand within 24 hours. We remove offending content and can block an account, which stops it from signing in and editing.
 - Contact for users: hi@kookout.no, also on https://kookout.no/privacy.html.
 
 The app is free; there are no in-app purchases in this version.
