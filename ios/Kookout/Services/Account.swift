@@ -1,5 +1,6 @@
 import Foundation
 import AuthenticationServices
+import UIKit
 import Security
 
 /// The person's Kookout account: Sign in with Apple, only needed to share and edit spots. The app keeps Kookout's
@@ -42,7 +43,12 @@ final class Account {
         problem = nil
         switch result {
         case .failure(let error):
-            if (error as? ASAuthorizationError)?.code != .canceled { problem = error.localizedDescription }
+            switch (error as? ASAuthorizationError)?.code {
+            case .canceled: break
+            // Apple's "unknown" (1000): usually no Apple Account on the phone, or the sheet was closed
+            case .unknown: problem = String(localized: "Couldn't sign in. Check that the iPhone is signed in to an Apple Account (Settings, at the top), then try again.")
+            default: problem = error.localizedDescription
+            }
         case .success(let authorization):
             guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
                   let identity = credential.identityToken.flatMap({ String(data: $0, encoding: .utf8) }) else {
@@ -59,6 +65,23 @@ final class Account {
             self.user = user
             SharedSpots.resync() // spots they chose to share go up now that they can
         }
+    }
+
+    /// Sign in with Apple without its button (e.g. from the "Share new spots" switch). True when signed in afterwards.
+    func signIn() async -> Bool {
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        configure(request)
+        let result: Result<ASAuthorization, Error> = await withCheckedContinuation { done in
+            let asker = AppleSignIn(done: { done.resume(returning: $0) })
+            let controller = ASAuthorizationController(authorizationRequests: [request])
+            controller.delegate = asker
+            controller.presentationContextProvider = asker
+            AppleSignIn.current = asker // kept alive until Apple answers
+            controller.performRequests()
+        }
+        AppleSignIn.current = nil
+        await finish(result)
+        return signedIn
     }
 
     /// The public name, shown on shared spots and in the edit log.
@@ -147,5 +170,25 @@ enum Keychain {
     }
     static func delete(_ key: String) {
         SecItemDelete(query(key) as CFDictionary)
+    }
+}
+
+/// Hands Apple's answer back to `Account.signIn()`, and tells Apple which window to show its sheet over.
+private final class AppleSignIn: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    @MainActor static var current: AppleSignIn?
+    let done: (Result<ASAuthorization, Error>) -> Void
+    init(done: @escaping (Result<ASAuthorization, Error>) -> Void) { self.done = done }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        done(.success(authorization))
+    }
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        done(.failure(error))
+    }
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        MainActor.assumeIsolated {
+            let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            return scenes.flatMap(\.windows).first { $0.isKeyWindow } ?? ASPresentationAnchor()
+        }
     }
 }

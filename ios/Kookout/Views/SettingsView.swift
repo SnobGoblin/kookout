@@ -95,9 +95,22 @@ struct SettingsView: View {
 
                 Section {
                     AccountRows()
-                    Toggle("Share new spots", isOn: Binding(get: { settings.shareNewSpots == true && account.signedIn },
-                                                            set: { settings.shareNewSpots = $0 }))
-                        .disabled(!account.signedIn)
+                    if account.signedIn {
+                        Toggle("Share new spots", isOn: Binding(get: { settings.shareNewSpots == true },
+                                                                set: { settings.shareNewSpots = $0 }))
+                    } else {
+                        // Signed out, a tap anywhere on the row asks to sign in with Apple first (sharing needs an account)
+                        Button {
+                            Task { if await account.signIn() { settings.shareNewSpots = true } }
+                        } label: {
+                            HStack {
+                                Text("Share new spots")
+                                Spacer()
+                                Toggle("Share new spots", isOn: .constant(false)).labelsHidden().allowsHitTesting(false)
+                            }
+                        }
+                        .foregroundStyle(.primary)
+                    }
                     if account.signedIn {
                         Button("Sign out") { account.signOut() }
                         Button("Delete account", role: .destructive) { confirmDelete = true }

@@ -1127,6 +1127,46 @@
         }
       }
     },
+    "Couldn't sign in. Check that the iPhone is signed in to an Apple Account (Settings, at the top), then try again.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke logge inn. Sjekk at iPhonen er logget inn på en Apple-konto (Innstillinger, øverst), og prøv igjen."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunde inte logga in. Kontrollera att iPhonen är inloggad på ett Apple-konto (Inställningar, högst upp) och försök igen."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke logge ind. Tjek, at iPhonen er logget ind på en Apple-konto (Indstillinger, øverst), og prøv igen."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anmeldung nicht möglich. Prüfe, ob das iPhone mit einem Apple Account angemeldet ist (Einstellungen, ganz oben), und versuche es erneut."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connexion impossible. Vérifiez que l'iPhone est connecté à un compte Apple (Réglages, tout en haut), puis réessayez."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo iniciar sesión. Comprueba que el iPhone tiene una cuenta de Apple (Ajustes, arriba del todo) y vuelve a intentarlo."
+          }
+        }
+      }
+    },
     "Counted on the day itself": {
       "localizations": {
         "nb": {
