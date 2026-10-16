@@ -8,6 +8,7 @@
 
 Your first and last name, a phone number Apple can call during review, and an email (hi@kookout.no).
 Apple uses these only to reach you about the review; they aren't shown to users.
+Christian's name and phone number are in his private `~/.claude/CLAUDE.md` (not in this public repo); no address is needed here.
 
 ## Notes (paste this; max 4000 characters)
 
