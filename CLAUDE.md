@@ -7,9 +7,9 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
-**Status (16 Oct 2026):** build 17 out to TestFlight testers ("Family plus a couple guys"; public link
-https://testflight.apple.com/join/4wm11wAG). Committed since build 17, not in a build yet: "N other riders follow
-this spot" at the end of a forecast, and the founding-user number. Plan: get on the App Store (testing has slowed;
+**Status (16 Oct 2026):** build 18 out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
+https://testflight.apple.com/join/4wm11wAG), with the "N other riders follow this spot" line and the founding-user
+number (shows only in App Store installs); older builds expired. Plan: get on the App Store (testing has slowed;
 more users needed). App Store texts (7 languages), privacy label answers and review notes are in `appstore/`;
 framed screenshots in `appstore/framed`. EU status: non-trader. Not built yet: subscription/paywall.
 
@@ -125,13 +125,10 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 ## Next up
 
 Toward the App Store launch, in order:
-1. Check an hourly notification run since the Workers Paid upgrade (16 Oct, ~09:30) and the 6-at-a-time change:
-   `npx wrangler tail` around :07, look for "Notifications: … phones, … forecasts, … s" and no errors/exceeded limits.
-2. Build 18 (bump `CURRENT_PROJECT_VERSION`) with the follower line and founding-user number; give it to testers.
-3. Christian reads `appstore/listing-nb.md` and `-sv.md`; review notes promise reports handled within 24 h (keep?).
-4. Enter in App Store Connect: listing (7 languages), screenshots (`appstore/framed`), privacy labels
+1. Christian reads `appstore/listing-nb.md` and `-sv.md`; review notes promise reports handled within 24 h (keep?).
+2. Enter in App Store Connect: listing (7 languages), screenshots (`appstore/framed`), privacy labels
    (`appstore/privacy-labels.md`), review notes (`appstore/review-notes.md`); submit for review, manual release.
-5. If Apple rejects over guideline 1.2 (no in-app block): add "hide this person's spots".
+3. If Apple rejects over guideline 1.2 (no in-app block): add "hide this person's spots".
 
 Founding users: numbers come only from App Store installs (TestFlight/Xcode have no real download); the
 `founders` table must start empty at launch (it is). Founding = number ≤ 2,000 (`FOUNDERS` in `relay/src/founders.js`).
