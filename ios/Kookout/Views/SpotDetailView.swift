@@ -35,6 +35,14 @@ struct SpotDetailView: View {
                         DayHeader(title: group.title, good: group.hours.filter(\.good), spot: current)
                     }
                 }
+                // At the very end: that real people use this spot (nothing when they're the only one)
+                if forecast != nil, let others = current.community.map({ $0.followers - 1 }), others > 0 {
+                    Section {} footer: {
+                        Text(others == 1 ? String(localized: "1 other rider follows this spot.")
+                                         : String(localized: "\(others) other riders follow this spot."))
+                            .frame(maxWidth: .infinity)
+                    }
+                }
             }
             .onAppear {
                 if let f = Notifications.shared.focus, f.spotID == spot.id {
