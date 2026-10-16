@@ -7,8 +7,8 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even. The web page is free.
-**Status (15 Oct 2026):** build 11 out to TestFlight testers ("Family plus a couple guys", 5 people); builds 2, 6 and 10
-expired; build 1 still live (expire once its tester has moved on). Not built yet: subscription/paywall.
+**Status (16 Oct 2026):** build 14 out to TestFlight testers ("Family plus a couple guys"; public link
+https://testflight.apple.com/join/4wm11wAG); older builds expired. Not built yet: subscription/paywall.
 
 ## The parts
 
