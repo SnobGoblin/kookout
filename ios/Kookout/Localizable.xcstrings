@@ -3730,86 +3730,6 @@
         }
       }
     },
-    "Own limit on sunny days": {
-      "localizations": {
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Egen grænse på solskinsdage"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eigene Grenze an sonnigen Tagen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Límite propio en días soleados"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seuil spécial par temps ensoleillé"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Egen grense på soldager"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Egen gräns soliga dagar"
-          }
-        }
-      }
-    },
-    "Own limit on sunny days: at some spots the sun adds wind of its own (sea breeze), so a little less forecast wind is enough on mostly sunny days. Set the lower limits for those days here.": {
-      "localizations": {
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Egen grense på solrike dager: på noen spoter gir sola ekstra vind (sjøbris), så litt mindre vind i varselet holder på dager med mye sol. Sett de lavere grensene for slike dager her."
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Egen gräns soliga dagar: på vissa spots ger solen extra vind (sjöbris), så lite mindre vind i prognosen räcker på mestadels soliga dagar. Ställ in de lägre gränserna för sådana dagar här."
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Egen grænse på solrige dage: på nogle spots giver solen ekstra vind (søbrise), så lidt mindre vind i udsigten er nok på mest solrige dage. Indstil de lavere grænser for de dage her."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eigene Grenze an sonnigen Tagen: An manchen Spots bringt die Sonne zusätzlichen Wind (Seewind), daher reicht an überwiegend sonnigen Tagen etwas weniger vorhergesagter Wind. Lege hier die niedrigeren Grenzen für solche Tage fest."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Limite propre les jours de soleil : sur certains spots, le soleil ajoute son propre vent (brise de mer), donc un peu moins de vent prévu suffit les jours bien ensoleillés. Réglez ici les limites plus basses pour ces jours-là."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Límite propio en días de sol: en algunos spots el sol añade viento propio (brisa marina), así que basta algo menos de viento previsto en días mayormente soleados. Ajusta aquí los límites más bajos para esos días."
-          }
-        }
-      }
-    },
     "Period at least": {
       "localizations": {
         "da": {
@@ -4406,6 +4326,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "Guardar posición"
+          }
+        }
+      }
+    },
+    "Sea breeze limits": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sjøbrisgrenser"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sjöbrisgränser"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Søbrisegrænser"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seewind-Grenzen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seuils brise de mer"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Límites de brisa marina"
+          }
+        }
+      }
+    },
+    "Sea breeze limits: at some spots the sun makes wind of its own (sea breeze), so a little less forecast wind is enough on mostly sunny days. These lower limits are used on those days.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sjøbrisgrenser: på noen spoter lager sola egen vind (sjøbris), så litt mindre vind i varselet holder på dager med mye sol. Da brukes disse lavere grensene."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sjöbrisgränser: på vissa spots skapar solen egen vind (sjöbris), så lite mindre vind i prognosen räcker på mestadels soliga dagar. Då används de här lägre gränserna."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Søbrisegrænser: på nogle spots skaber solen sin egen vind (søbrise), så lidt mindre vind i udsigten er nok på mest solrige dage. Så bruges disse lavere grænser."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seewind-Grenzen: An manchen Spots macht die Sonne eigenen Wind (Seewind), daher reicht an überwiegend sonnigen Tagen etwas weniger vorhergesagter Wind. An solchen Tagen gelten diese niedrigeren Grenzen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seuils brise de mer : sur certains spots, le soleil crée son propre vent (brise de mer), donc un peu moins de vent prévu suffit les jours bien ensoleillés. Ces seuils plus bas s'appliquent alors."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Límites de brisa marina: en algunos spots el sol crea viento propio (brisa marina), así que basta algo menos de viento previsto en días mayormente soleados. Esos días se usan estos límites más bajos."
           }
         }
       }

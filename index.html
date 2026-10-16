@@ -686,7 +686,7 @@ function editView(p) {
       ${stepper("… eller jevn vind minst", p, "wind.steady", "wind")}
       ${stepper("Timer på rad", p, "wind.hours")}
       ${toggle("Bare i dagslys", "daylight", p.wind.daylight)}
-      ${toggle("Egen grense på soldager", "sunny", !!p.wind.sunny)}
+      ${toggle("Sjøbrisgrenser", "sunny", !!p.wind.sunny)}
       ${p.wind.sunny ? `
         ${stepper("Soldager: middelvind minst", p, "wind.sunny.min", "wind")}
         ${stepper("… med kast minst", p, "wind.sunny.gust", "wind")}

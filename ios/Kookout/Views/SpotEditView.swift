@@ -209,7 +209,7 @@ struct SpotEditView: View {
                 WindStepper(title: "… or steady wind at least", value: windBinding(\.steady))
                 Stepper("Hours in a row: \(spot.wind!.hours)", value: windIntBinding(\.hours), in: 1...6)
                 Toggle("Daylight only", isOn: windBoolBinding(\.daylight))
-                Toggle("Own limit on sunny days", isOn: sunnyBinding)
+                Toggle("Sea breeze limits", isOn: sunnyBinding)
                 if spot.wind?.sunny != nil {
                     WindStepper(title: "Sunny days: mean wind at least", value: sunnyLimit(\.min))
                     WindStepper(title: "… with gusts at least", value: sunnyLimit(\.gust))
@@ -218,7 +218,7 @@ struct SpotEditView: View {
             } header: {
                 Text("Good wind (\(Units.windUnit))")
             } footer: {
-                Text("Own limit on sunny days: at some spots the sun adds wind of its own (sea breeze), so a little less forecast wind is enough on mostly sunny days. Set the lower limits for those days here.")
+                Text("Sea breeze limits: at some spots the sun makes wind of its own (sea breeze), so a little less forecast wind is enough on mostly sunny days. These lower limits are used on those days.")
             }
         }
     }
