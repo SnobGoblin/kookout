@@ -2007,6 +2007,46 @@
         }
       }
     },
+    "Founding user #%lld · Kookout is free for you.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pionerbruker #%lld · Kookout er gratis for deg."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pionjäranvändare #%lld · Kookout är gratis för dig."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pionerbruger #%lld · Kookout er gratis for dig."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gründungsnutzer #%lld · Kookout ist für dich gratis."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisateur fondateur n° %lld · Kookout est gratuit pour vous."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usuario fundador n.º %lld · Kookout es gratis para ti."
+          }
+        }
+      }
+    },
     "Good %@ %@": {
       "localizations": {
         "da": {

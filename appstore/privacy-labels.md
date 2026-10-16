@@ -20,7 +20,8 @@ For every type below, Apple asks:
 |---|---|---|---|
 | Contact Info → **Name** | Yes | Yes | The first name from Sign in with Apple, shown on shared spots and edits (only if signed in) |
 | Identifiers → **User ID** | Yes | Yes | Apple's id for the account (only if signed in) |
-| Identifiers → **Device ID** | Yes | No | The app's random key and the push token, for notifications and following community spots |
+| Identifiers → **Device ID** | Yes | No | The app's random key and the push token, for notifications and following community spots; a hash of Apple's app transaction id, for the founding-user number |
+| Purchases → **Purchase History** | Yes | No | Apple's first-download date, for the founding-user number (Kookout itself is free) |
 | User Content → **Other User Content** | Yes | Yes | Shared spots, fixes to names and positions, reports and their notes |
 
 ## Data types NOT to tick
@@ -30,17 +31,17 @@ For every type below, Apple asks:
   User Content, not Location.
 - **Contact Info → Email: No.** Kookout never asks for the email (Apple's sign-in can share a relay address, but
   the app doesn't request the email scope).
-- **Usage Data, Diagnostics, Health, Financial Info, Purchases, Browsing/Search History, Contacts, Sensitive Info,
+- **Usage Data, Diagnostics, Health, Financial Info, Browsing/Search History, Contacts, Sensitive Info,
   Other Data: No.** No analytics, no crash-reporting tool of our own, no purchases yet. (Apple's own crash reports,
   which users opt into, don't count.)
 
 ## Result on the App Store page
 
 - *Data Linked to You:* Contact Info, Identifiers, User Content
-- *Data Not Linked to You:* Identifiers
+- *Data Not Linked to You:* Identifiers, Purchases
 - *Data Used to Track You:* none
 
 ## Change these when…
 
-- the subscription arrives: add **Purchases → Purchase History** (App Functionality, linked) if the relay stores it;
+- the subscription arrives: Purchase History may become **linked** if the relay ties it to an account;
 - any analytics or crash tool is added: add **Usage Data / Diagnostics**.

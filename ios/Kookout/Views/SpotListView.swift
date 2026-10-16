@@ -50,6 +50,9 @@ struct SpotListView: View {
                 }
                 .onDelete { store.spots.remove(atOffsets: $0) }
                 .onMove { store.spots.move(fromOffsets: $0, toOffset: $1) }
+                if let line = Founder.shared.line, !store.spots.isEmpty {
+                    Section {} footer: { Text(line).frame(maxWidth: .infinity) }
+                }
             }
             .environment(\.editMode, $editMode)
             // An overlay on an empty List didn't always show (a tester saw only the empty list), so cover it fully.

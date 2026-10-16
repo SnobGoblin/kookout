@@ -111,3 +111,11 @@ CREATE TABLE IF NOT EXISTS reports (
   at TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'open'
 );
+
+-- Founding users (src/founders.js): one row per App Store install that reported, numbered in the order they came.
+CREATE TABLE IF NOT EXISTS founders (
+  n INTEGER PRIMARY KEY,         -- the founding-user number (the next free one; rows are never deleted)
+  who TEXT NOT NULL UNIQUE,      -- SHA-256 of Apple's app transaction id, or of the app's random key on older iOS
+  first TEXT NOT NULL,           -- Apple's first-download date
+  at TEXT NOT NULL               -- when it first reported
+);

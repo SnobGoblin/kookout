@@ -138,6 +138,7 @@ struct SettingsView: View {
                     Text("About Kookout")
                 } footer: {
                     VStack(alignment: .leading, spacing: 6) {
+                        if let line = Founder.shared.line { Text(line) }
                         Text("Forecasts from MET Norway (yr.no), Kystverket, NOAA and Holfuy.")
                         // The build number tells which TestFlight build a tester is on.
                         Text("Version \(Self.version) (\(Self.build))")
