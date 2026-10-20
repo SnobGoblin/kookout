@@ -241,11 +241,14 @@ struct SpotsWidgetView: View {
         }
     }
 
+    /// Like the app's list: green when something good is coming, the accent colour when nothing is.
+    private func iconColor(_ s: WidgetStatus) -> Color { s.period != nil ? .green : .kookout }
+
     // Home screen, small: the soonest spot.
     private var small: some View {
         let s = entry.statuses[0]
         return VStack(alignment: .leading, spacing: 2) {
-            Image(systemName: symbol(s)).font(.title3).foregroundStyle(s.goodNow ? AnyShapeStyle(.green) : AnyShapeStyle(Color.kookout))
+            Image(systemName: symbol(s)).font(.title3).foregroundStyle(iconColor(s))
             Text(s.spot.name).font(.headline).lineLimit(2).minimumScaleFactor(0.8)
             Spacer(minLength: 4)
             Text(words.title(s)).font(.subheadline.weight(.semibold))
@@ -274,9 +277,9 @@ struct SpotsWidgetView: View {
                 Spacer(minLength: 0)
                 Link(destination: WidgetData.link(s.spot.id)) {
                     HStack(spacing: 8) {
-                        Image(systemName: symbol(s)).foregroundStyle(s.goodNow ? AnyShapeStyle(.green) : AnyShapeStyle(Color.kookout))
+                        Image(systemName: symbol(s)).foregroundStyle(iconColor(s))
                             .frame(width: 22)
-                        Text(s.spot.name).lineLimit(1)
+                        Text(s.spot.name).lineLimit(1).minimumScaleFactor(0.8)
                         Spacer(minLength: 4)
                         Text(words.line(s)).lineLimit(1).minimumScaleFactor(0.7)
                             .foregroundStyle(s.goodNow ? AnyShapeStyle(.green) : AnyShapeStyle(.secondary))
