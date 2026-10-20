@@ -16,6 +16,7 @@
 //   POST /auth/apple, GET/PUT/DELETE /me              -> accounts, Sign in with Apple (see auth.js)
 //   POST /reports                                      -> report a spot or a change (see reports.js)
 //   POST /founders                                     -> a founding user's number in line (see founders.js)
+//   POST /widget  {spots, units?, waveUnit?, country?}  -> the good periods of the widget's spots (see widget.js)
 //   GET /waves?lat=58.80&lon=5.55   -> wave forecast (total height in m, period, direction) about a week ahead:
 //                                     MET's Oceanforecast in Scandinavian waters, NOAA WaveWatch III elsewhere
 //
@@ -28,6 +29,7 @@ import { handleCommunity } from "./community.js";
 import { handleAuth } from "./auth.js";
 import { handleReports } from "./reports.js";
 import { handleFounders } from "./founders.js";
+import { handleWidget } from "./widget.js";
 import catalogue from "../../ios/Kookout/Catalogue.json"; // the app's built-in spots
 
 const FROST = "https://frost.met.no";
@@ -103,6 +105,7 @@ export default {
       if (url.pathname === "/auth/apple" || url.pathname === "/me") return handleAuth(request, env, url, reply);
       if (url.pathname === "/reports") return handleReports(request, env, url, reply);
       if (url.pathname === "/founders") return handleFounders(request, env, url, reply);
+      if (url.pathname === "/widget") return handleWidget(request, env, ctx, reply, analyseSpot);
       if (/^\/(shared|spots|following|edits)(\/|$)/.test(url.pathname)) return handleCommunity(request, env, url, reply);
 
       if (url.pathname === "/analyse" && request.method === "POST") {

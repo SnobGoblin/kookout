@@ -25,7 +25,8 @@ framed screenshots in `appstore/framed`. EU status: non-trader. Not built yet: s
 
 Relay files: `index.js` (forecasts, live wind, waves, holidays), `notify.js` (push via APNs), `auth.js` (Sign in
 with Apple, sessions), `community.js` (community spots, edits/history, majority vote), `reports.js` (reports,
-emailed through Resend), `founders.js` (founding-user numbers). Tests: `node relay/test-notify.mjs`, `node relay/test-community.mjs`.
+emailed through Resend), `founders.js` (founding-user numbers), `widget.js` (the widget's good periods). Tests: `node relay/test-notify.mjs`,
+`node relay/test-community.mjs`, `node relay/test-widget.mjs`.
 
 ## Decisions already made (don't relitigate without asking)
 

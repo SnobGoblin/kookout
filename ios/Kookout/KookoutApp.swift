@@ -17,7 +17,12 @@ struct KookoutApp: App {
                             .transition(.opacity)
                     }
                 }
+                // A spot tapped in the widget (kookout://spot/<id>) opens that spot, like a tapped notification.
+                .onOpenURL { url in
+                    if let id = WidgetData.spotID(from: url) { Notifications.shared.openSpotID = id }
+                }
                 .task {
+                    WidgetBridge.update(spots: store.spots) // the widget's copy, in case the app was updated
                     await Account.shared.checkStillSignedIn()
                     SharedSpots.sync(old: [], new: store.spots) // re-share at launch, in case a share failed (offline)
                     Community.syncSoon(store) // the community's latest names, positions and rules

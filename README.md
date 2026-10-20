@@ -125,6 +125,17 @@ conditions come into the window, or change there (moved by 2+ hours, or no longe
 between 22 and 07 on the phone's clock; those changes come in the morning. `node relay/test-notify.mjs`
 checks the change detection.
 
+### Widget (version 1.1)
+
+A home screen widget (small: the soonest spot; medium: three) and Lock Screen widgets (three lines, a circle, one
+line above the clock) show the spots that are good soonest: good now first, then by when the next good period
+starts; ties keep the user's own order. The app writes its spots, settings and the good periods it worked out into
+an App Group (`group.com.sternell.kookout`, see `ios/Shared/WidgetData.swift` and `Services/WidgetBridge.swift`).
+About once an hour, and whenever the spots change, the widget asks the relay (`POST /widget`, see
+`relay/src/widget.js`; nothing is stored) and falls back on the last known periods offline. Tapping a spot opens
+it in the app (`kookout://spot/<id>`). The widget's texts are in `ios/KookoutWidget/Localizable.xcstrings`.
+`node relay/test-widget.mjs` checks the relay's side.
+
 Push needs an APNs key from the Apple Developer site (Certificates, Identifiers & Profiles → Keys → +, with
 Apple Push Notifications service). Put the key id and team id in `relay/wrangler.toml` (`APNS_KEY_ID`,
 `APNS_TEAM_ID`) and the key itself in a secret:

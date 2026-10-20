@@ -193,7 +193,7 @@ async function notifyDevice(device, env, forecast) {
 }
 
 // The good periods as [{start, end}] in ms. Powder: the whole powder day.
-function goodPeriods(spot, f) {
+export function goodPeriods(spot, f) {
   if (spot.wind || spot.surf) return f.good.map(p => ({ start: Date.parse(p.start), end: Date.parse(p.end) }));
   return f.powderDays.map(day => {
     const rows = f.rows.filter(r => dayKey(new Date(r.time), f.tz) === day);
