@@ -137,12 +137,13 @@ struct Words {
         return String(localized: "until \(hour(p.end, s))")
     }
 
-    /// Shortest, for the Lock Screen: "now", "Thu 12", "Sat" (powder). Always the weekday, which is shorter than
-    /// "tomorrow" in most languages, so the spot's name keeps its room.
-    func short(_ s: WidgetStatus) -> String? {
-        guard let p = s.period else { return nil }
+    /// Shortest, for the Lock Screen: "now", today's hours ("14–18"), or just the weekday ("Thu"; a weekday with an
+    /// hour, "Thu 07", read like a date). "–" when nothing is good.
+    func short(_ s: WidgetStatus) -> String {
+        guard let p = s.period else { return "–" }
         if s.goodNow { return String(localized: "now") }
-        return powder(s) ? weekday(p.start, s) : "\(weekday(p.start, s)) \(hour(p.start, s))"
+        if isToday(p.start, s) && !powder(s) { return hours(p, s) }
+        return weekday(p.start, s)
     }
 
     /// One line beside the clock: "Torkild good 14–18", "Torkild good Sat 10–15", "Hemsedal powder Sat".
@@ -288,28 +289,42 @@ struct SpotsWidgetView: View {
         }
     }
 
-    // Lock Screen, rectangular: three short lines. One colour only there, so the marks say it:
-    // ● good now, ○ good later, – nothing good.
+    // Lock Screen, rectangular: three short lines, the name and when. One colour only there, so "now" is in bold.
     private var rectangular: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if !anyGood { Text("Nothing good in sight").font(.headline).lineLimit(1).minimumScaleFactor(0.7) }
-            ForEach(entry.statuses.prefix(anyGood ? 3 : 2), id: \.spot.id) { s in
-                // The status always shows in full; a long name shrinks a little, then is shortened ("Lysakerfjor…").
-                HStack(spacing: 0) {
-                    Text(verbatim: "\(s.goodNow ? "●" : s.period != nil ? "○" : "–") \(s.spot.name)")
-                        .lineLimit(1).minimumScaleFactor(0.85)
-                    if let short = words.short(s) { Text(verbatim: " · \(short)").lineLimit(1).fixedSize() }
-                }
-                    .fontWeight(s.goodNow ? .semibold : .regular)
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel(Text(verbatim: "\(s.spot.name), \(words.title(s)) \(words.short(s) ?? "")"))
-            }
+        // All lines at one size: the largest where every line fits, and only then shortened names
+        // ("Hvide Sande, fjo… now"); the time always shows in full.
+        ViewThatFits(in: .horizontal) {
+            lockLines(font: .body, fit: true)
+            lockLines(font: .footnote, fit: true)
+            lockLines(font: .footnote, fit: false)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .widgetURL(WidgetData.link(entry.statuses[0].spot.id))
     }
 
-    // Lock Screen, circular: the soonest spot; a tick when it's good now, otherwise the day and hour.
+    private func lockLines(font: Font, fit: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if !anyGood { Text("Nothing good in sight").font(.headline).lineLimit(1).minimumScaleFactor(0.7) }
+            ForEach(entry.statuses.prefix(anyGood ? 3 : 2), id: \.spot.id) { s in
+                lockLine(s, font: font, fit: fit)
+                    .fontWeight(s.goodNow ? .semibold : .regular)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(verbatim: "\(s.spot.name), \(words.title(s)) \(words.detail(s) ?? "")"))
+            }
+        }
+    }
+
+    private func lockLine(_ s: WidgetStatus, font: Font, fit: Bool) -> some View {
+        HStack(spacing: 6) {
+            Text(verbatim: s.spot.name)
+                .lineLimit(1)
+                .fixedSize(horizontal: fit, vertical: false)
+            Text(verbatim: words.short(s)).lineLimit(1).fixedSize()
+        }
+        .font(font)
+    }
+
+    // Lock Screen, circular: the soonest spot; a tick when it's good now, otherwise today's hours or the weekday.
     private var circular: some View {
         let s = entry.statuses[0]
         return ZStack {
@@ -319,10 +334,8 @@ struct SpotsWidgetView: View {
                 if s.goodNow {
                     Image(systemName: "checkmark").font(.title3.bold())
                 } else if let p = s.period {
-                    Text(words.weekday(p.start, s)).font(.caption2).lineLimit(1).minimumScaleFactor(0.6)
-                    if s.spot.sport != "powder" {
-                        Text(words.hour(p.start, s)).font(.headline).lineLimit(1).minimumScaleFactor(0.6)
-                    }
+                    // Today: the hours ("14–18"); another day: just the weekday, like the rectangular one.
+                    Text(words.short(s)).font(.headline).lineLimit(1).minimumScaleFactor(0.5)
                 } else {
                     Text(verbatim: "–").font(.title3.bold())
                 }
