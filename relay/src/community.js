@@ -5,8 +5,9 @@
 // A phone follows the spots in its list that are community spots. Followers are known by a hash of a random key the
 // app makes (not their account), so following works without signing in. See schema.sql for the tables.
 //
-//   PUT  /following            {key, spots: [{id, rule|null}]}  the community spots this phone has (rule: its own
-//                              version, or null when it follows the community's). Returns their community versions.
+//   PUT  /following            {key, spots: [{id, rule|null, station?, season?}]}  the community spots this phone has
+//                              (rule: its own version, or null when it follows the community's; season: its own dates,
+//                              or null for the community's, see season.js). Returns their community versions.
 //   GET  /spots?lat&lon        community spots within ~300 km (not the built-in ones, which the app has itself)
 //   POST /spots/<id>           {name?, lat?, lon?}  fix the name or position for everyone (signed in)
 //   GET  /spots/<id>/history   the log
@@ -14,6 +15,7 @@
 //   PUT/DELETE /shared/<id>, GET /shared   the same for apps from before community spots (build 1-4)
 
 import { currentUser, sha256 } from "./auth.js";
+import { ALL_YEAR, cleanSeason, defaultSeason, majoritySeason } from "./season.js";
 
 const SPORTS = ["wing", "surf", "powder"];
 const MAX_MOVE_KM = 2;          // further than this it's a different spot
@@ -41,24 +43,27 @@ async function following(request, env, reply) {
   const follower = await sha256(b.key);
   const now = new Date().toISOString();
   const text = (v, max) => typeof v === "string" && v.length && v.length <= max ? v : null;
+  // Their own season (all year counts as their own too), or null when they go with the community's
+  const own = v => v && typeof v === "object" ? JSON.stringify(cleanSeason(v) ?? ALL_YEAR) : null;
   const wanted = new Map(b.spots.filter(s => typeof s?.id === "string" && s.id.length <= 64)
                                  .map(s => [s.id, { rule: s.rule && typeof s.rule === "object" ? JSON.stringify(s.rule) : null,
-                                                    station: text(s.station, 64), stationName: text(s.stationName, 100) }]));
+                                                    station: text(s.station, 64), stationName: text(s.stationName, 100),
+                                                    season: own(s.season) }]));
   const ids = [...wanted.keys()];
   const known = ids.length ? (await env.DB.prepare(`SELECT * FROM spots WHERE status = 'active' AND id IN (${ids.map(() => "?").join(",")})`)
     .bind(...ids).all()).results : [];
-  const before = (await env.DB.prepare("SELECT spot_id, rule, station FROM followers WHERE follower = ?").bind(follower).all()).results;
+  const before = (await env.DB.prepare("SELECT spot_id, rule, station, season FROM followers WHERE follower = ?").bind(follower).all()).results;
   const had = new Map(before.map(f => [f.spot_id, f]));
 
   const writes = [], touched = new Set();
   for (const spot of known) {
-    const { rule, station, stationName } = wanted.get(spot.id);
+    const { rule, station, stationName, season } = wanted.get(spot.id);
     const old = had.get(spot.id);
-    if (!old || old.rule !== rule || old.station !== station) touched.add(spot.id);
-    writes.push(env.DB.prepare(`INSERT INTO followers (spot_id, follower, rule, station, station_name, last_active) VALUES (?, ?, ?, ?, ?, ?)
+    if (!old || old.rule !== rule || old.station !== station || old.season !== season) touched.add(spot.id);
+    writes.push(env.DB.prepare(`INSERT INTO followers (spot_id, follower, rule, station, station_name, season, last_active) VALUES (?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(spot_id, follower) DO UPDATE SET rule = excluded.rule, station = excluded.station,
-          station_name = excluded.station_name, last_active = excluded.last_active`)
-      .bind(spot.id, follower, rule, station, station ? stationName : null, now));
+          station_name = excluded.station_name, season = excluded.season, last_active = excluded.last_active`)
+      .bind(spot.id, follower, rule, station, station ? stationName : null, season, now));
   }
   for (const f of before) if (!known.some(s => s.id === f.spot_id)) { // no longer in their list: unfollowed
     writes.push(env.DB.prepare("DELETE FROM followers WHERE spot_id = ? AND follower = ?").bind(f.spot_id, follower));
@@ -72,12 +77,12 @@ async function following(request, env, reply) {
   return reply({ spots: await Promise.all(fresh.map(s => describe(env, s))) });
 }
 
-/// After followers change: recount the community rules and wind station, and retire a spot nobody follows any more.
+/// After followers change: recount the community rules, wind station and season, and retire a spot nobody follows any more.
 async function settle(env, id) {
   const spot = await env.DB.prepare("SELECT * FROM spots WHERE id = ?").bind(id).first();
   if (!spot) return;
   const since = new Date(Date.now() - ACTIVE_DAYS * 86400e3).toISOString();
-  const { results } = await env.DB.prepare("SELECT rule, station, station_name FROM followers WHERE spot_id = ? AND last_active >= ?")
+  const { results } = await env.DB.prepare("SELECT rule, station, station_name, season FROM followers WHERE spot_id = ? AND last_active >= ?")
     .bind(id, since).all();
   if (!results.length && !spot.catalogue) {
     await env.DB.prepare("UPDATE spots SET status = 'gone', updated = ? WHERE id = ?").bind(new Date().toISOString(), id).run();
@@ -96,6 +101,12 @@ async function settle(env, id) {
     await env.DB.prepare("UPDATE spots SET station = ?, station_name = ?, updated = ? WHERE id = ?")
       .bind(station, name, new Date().toISOString(), id).run();
   }
+
+  const currentSeason = spot.season ? JSON.parse(spot.season) : null; // null: all year
+  const season = majoritySeason(results.map(r => r.season ? cleanSeason(JSON.parse(r.season)) : currentSeason), currentSeason);
+  if (JSON.stringify(season) !== JSON.stringify(currentSeason))
+    await env.DB.prepare("UPDATE spots SET season = ?, updated = ? WHERE id = ?")
+      .bind(season ? JSON.stringify(season) : null, new Date().toISOString(), id).run();
 }
 
 /// The station most followers chose (null: the nearest, "Automatic"). A tie keeps the current one. Exported for tests.
@@ -142,6 +153,7 @@ async function describe(env, s) {
   const by = s.created_by ? (await env.DB.prepare("SELECT name FROM users WHERE id = ?").bind(s.created_by).first())?.name : null;
   return { id: s.id, name: s.name, lat: s.lat, lon: s.lon, alt: s.alt, tz: s.tz, sport: s.sport, rule: JSON.parse(s.rule),
            by: by || null, followers, catalogue: !!s.catalogue, station: s.station ?? null, stationName: s.station_name ?? null,
+           season: s.season ? JSON.parse(s.season) : ALL_YEAR,
            lastEdit: last ? { field: last.field, at: last.at, by: last.name || null } : null };
 }
 
@@ -249,12 +261,13 @@ async function legacyShared(request, env, id, url, reply) {
       const { n } = await env.DB.prepare("SELECT count(*) AS n FROM spots WHERE created_by = ? AND status = 'active'").bind(user.id).first();
       if (n >= 100) return reply({ error: "too many shared spots" }, 429);
       await env.DB.batch([
-        env.DB.prepare(`INSERT INTO spots (id, sport, tz, name, lat, lon, alt, rule, created_by, created, updated, status, catalogue)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 0)
+        env.DB.prepare(`INSERT INTO spots (id, sport, tz, name, lat, lon, alt, rule, created_by, created, updated, status, catalogue, season)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 0, ?)
             ON CONFLICT(id) DO UPDATE SET sport = excluded.sport, tz = excluded.tz, name = excluded.name, lat = excluded.lat,
               lon = excluded.lon, alt = excluded.alt, rule = excluded.rule, created_by = excluded.created_by,
-              updated = excluded.updated, status = 'active'`)
-          .bind(id, b.sport, b.tz, name, lat, lon, Number.isFinite(b.alt) ? b.alt : null, JSON.stringify(b.rule), user.id, now, now),
+              updated = excluded.updated, status = 'active', season = excluded.season`)
+          .bind(id, b.sport, b.tz, name, lat, lon, Number.isFinite(b.alt) ? b.alt : null, JSON.stringify(b.rule), user.id, now, now,
+                (season => season ? JSON.stringify(season) : null)(defaultSeason(lat, b.sport))),
         env.DB.prepare(`INSERT INTO edits (spot_id, user_id, at, field, old, new) VALUES (?, ?, ?, 'created', NULL, ?)`)
           .bind(id, user.id, now, JSON.stringify({ name, lat, lon })),
         env.DB.prepare(`INSERT INTO followers (spot_id, follower, rule, last_active) VALUES (?, ?, NULL, ?)

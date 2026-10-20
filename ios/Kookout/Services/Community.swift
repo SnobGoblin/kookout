@@ -31,6 +31,8 @@ enum Community {
         /// The station most followers chose for "Measured now" (nil: the nearest). Used while the person's is "Automatic".
         var station: String?
         var stationName: String?
+        /// The community's season (nil: not heard yet, e.g. saved before seasons existed).
+        var season: Season?
         struct Edit: Codable, Hashable { let field: String; let at: Date; let by: String? }
     }
 
@@ -54,8 +56,10 @@ enum Community {
             // Their own version if it differs from the community's (and, the first time, whatever they have)
             let own = spot.community.map { Rules(spot) != $0.rules } ?? true
             // and their wind station ("Automatic": none), which counts as a vote for the community's
+            // and their own season (none: they go with the community's)
             return ["id": spot.id, "rule": own ? (ruleJSON(spot) ?? NSNull()) : NSNull(),
-                    "station": spot.station ?? NSNull(), "stationName": spot.stationName ?? NSNull()]
+                    "station": spot.station ?? NSNull(), "stationName": spot.stationName ?? NSNull(),
+                    "season": spot.season.map { ["from": $0.from, "to": $0.to] as Any } ?? NSNull()]
         }]
         guard let answer = await call("PUT", "following", body: body) as? [String: Any],
               let rows = answer["spots"] as? [[String: Any]] else { return }
@@ -128,7 +132,9 @@ enum Community {
             self.id = id; self.name = name; self.tz = tz; self.sport = sport; self.lat = lat; self.lon = lon
             info = Info(rules: rules, followers: r["followers"] as? Int ?? 1, by: r["by"] as? String,
                         catalogue: r["catalogue"] as? Bool ?? false, lastEdit: edit,
-                        station: r["station"] as? String, stationName: r["stationName"] as? String)
+                        station: r["station"] as? String, stationName: r["stationName"] as? String,
+                        season: (r["season"] as? [String: String]).flatMap { s in
+                            s["from"].flatMap { from in s["to"].map { Season(from: from, to: $0) } } })
         }
     }
 

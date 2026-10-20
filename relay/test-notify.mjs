@@ -18,3 +18,11 @@ check("24h", hours(at(5), at(8), "Europe/Oslo", "nb", false), "17–20");
 check("12h same half", hours(at(5), at(8), "America/New_York", "en", true), "11–2 PM".replace("11–2 PM", hours(at(5), at(8), "America/New_York", "en", true)));
 console.log(hours(at(5), at(8), "America/New_York", "en", true), "|", hours(at(9), at(11), "America/New_York", "en", true));
 console.log(dayLabel(at(5), "Europe/Oslo", "nb", at(0)), "|", dayLabel(at(20), "Europe/Oslo", "nb", at(0)), "|", dayLabel(at(50), "Europe/Oslo", "de", at(0)), "|", dayLabel(at(50), "Europe/Oslo", "fr", at(0)));
+
+// Seasons: out-of-season periods don't count, and leaving the season isn't "no longer good"
+import { inSeason } from "./src/season.js";
+const season = { from: "03-15", to: "12-24" }, dec = Date.parse("2026-12-24T10:00:00Z");
+const D = (a, b) => ({ start: dec + a * H, end: dec + b * H });
+const inside = ps => ps.filter(p => inSeason(season, p.start, "Europe/Oslo"));
+const told = { periods: inside([D(0, 4), D(24, 28)]), horizon: dec + 48 * H };
+check("season ends: nothing to say", show(compare(told, inside([D(0, 4), D(24, 28)]), dec - H, dec + 47 * H)), []);

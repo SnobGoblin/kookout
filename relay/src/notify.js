@@ -4,14 +4,17 @@
 // through Apple's push service (APNs) when:
 //   - good conditions come into the window (new forecast, or the window moving forward), or
 //   - good conditions in the window change (start or end moved by 2+ hours, or no longer good).
+// Only good conditions inside the spot's season count (season.js); leaving the season isn't "no longer good".
 // Nothing is sent between 22 and 07 on the phone's clock: the changes wait until the morning.
 //
 //   PUT    /devices/<id>       {token, sandbox, lang, country, units, waveUnit, h12, tz, windowHours, spots}
-//                              (a spot may set its own windowHours, e.g. weekend spots looking further ahead)
+//                              (a spot may set its own windowHours, e.g. weekend spots looking further ahead,
+//                              and a season {from: "MM-DD", to: "MM-DD"}; none: all year)
 //   DELETE /devices/<id>       stop all notifications for this phone
 //   POST   /devices/<id>/test  send a test notification
 
 import { dayKey, hourOf } from "../../rules.js";
+import { cleanSeason, inSeason } from "./season.js";
 
 const HOUR = 3600e3;
 const LANGS = ["en", "nb", "sv", "da", "de", "fr", "es"];
@@ -101,7 +104,7 @@ function cleanDevice(b) {
         !Number.isFinite(s.lat) || !Number.isFinite(s.lon) || !(s.wind || s.surf || s.powder)) return "spot with id, name, lat, lon and a rule required";
     spots.push({ id: s.id, name: s.name.slice(0, 80), lat: s.lat, lon: s.lon, alt: Number.isFinite(s.alt) ? s.alt : undefined,
                  tz: validZone(s.tz) ? s.tz : undefined, wind: s.wind ?? undefined, surf: s.surf ?? undefined, powder: s.powder ?? undefined,
-                 weekend: s.weekend === true || undefined,
+                 weekend: s.weekend === true || undefined, season: cleanSeason(s.season) ?? undefined,
                  windowHours: Number.isFinite(s.windowHours) ? Math.min(240, Math.max(1, Math.round(s.windowHours))) : undefined });
   }
   return {
@@ -153,11 +156,13 @@ async function notifyDevice(device, env, forecast) {
   let pushes = 0;
 
   for (const spot of spots) {
-    const prev = old[spot.id];
     const horizon = now + (spot.windowHours ?? device.window_hours) * HOUR;
     const f = await forecast(spot, device.units, device.wave_unit, device.country);
-    if (!f) { if (prev) state[spot.id] = prev; continue; }
-    const periods = goodPeriods(spot, f).filter(p => p.end > now && p.start < horizon);
+    if (!f) { if (old[spot.id]) state[spot.id] = old[spot.id]; continue; }
+    // Out of season: as if it weren't good, and what we told before quietly drops out (no "no longer good")
+    const seasonal = p => inSeason(spot.season, p.start, f.tz);
+    const prev = old[spot.id] && { ...old[spot.id], periods: old[spot.id].periods.filter(seasonal) };
+    const periods = goodPeriods(spot, f).filter(p => p.end > now && p.start < horizon).filter(seasonal);
     // A spot we haven't seen before (just turned on): remember what's good now without notifying.
     if (!prev) { state[spot.id] = { periods, horizon }; continue; }
 

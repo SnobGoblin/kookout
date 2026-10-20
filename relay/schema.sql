@@ -73,7 +73,8 @@ CREATE TABLE IF NOT EXISTS spots (
   status TEXT NOT NULL DEFAULT 'active', -- 'gone' when nobody follows it any more
   catalogue INTEGER NOT NULL DEFAULT 0,  -- 1 for the app's built-in spots (they never go away)
   station TEXT,                  -- the community's wind station for "Measured now" (null: the nearest); majority of followers
-  station_name TEXT
+  station_name TEXT,
+  season TEXT                    -- JSON {from: "MM-DD", to: "MM-DD"}: when it gives notifications (null: all year); majority of followers
 );
 CREATE INDEX IF NOT EXISTS spots_lat ON spots (lat);
 CREATE TABLE IF NOT EXISTS followers (
@@ -82,6 +83,7 @@ CREATE TABLE IF NOT EXISTS followers (
   rule TEXT,                     -- JSON: their own version, or null when they follow the community's
   station TEXT,                  -- the wind station they chose, or null for "Automatic"
   station_name TEXT,
+  season TEXT,                   -- JSON: their own season, or null when they go with the community's
   last_active TEXT NOT NULL,
   PRIMARY KEY (spot_id, follower)
 );

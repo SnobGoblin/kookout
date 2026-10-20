@@ -2,6 +2,7 @@
 // same standard rules the app gives them (Catalogue.swift). INSERT OR IGNORE, so running it again only adds new ones.
 //   node seed-catalogue.mjs && npx wrangler d1 execute kookout --remote --file seed-catalogue.sql
 import { readFileSync, writeFileSync } from "node:fs";
+import { defaultSeason } from "./src/season.js";
 
 const catalogue = JSON.parse(readFileSync(new URL("../ios/Kookout/Catalogue.json", import.meta.url)));
 const all = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
@@ -17,9 +18,9 @@ function rule(s) {
 }
 
 // A station in the catalogue is the starting choice until the followers vote for another (community.js).
-const rows = catalogue.map(s => "INSERT OR IGNORE INTO spots (id, sport, tz, name, lat, lon, alt, rule, created_by, created, updated, status, catalogue, station, station_name) VALUES (" +
+const rows = catalogue.map(s => "INSERT OR IGNORE INTO spots (id, sport, tz, name, lat, lon, alt, rule, created_by, created, updated, status, catalogue, station, station_name, season) VALUES (" +
   [s.id, s.sport, s.tz, s.name, s.lat, s.lon, s.altitude ?? null, JSON.stringify(rule(s)), null, now, now, "active", 1,
-   s.station ?? null, s.stationName ?? null].map(q).join(", ") + ");");
+   s.station ?? null, s.stationName ?? null, (d => d && JSON.stringify(d))(defaultSeason(s.lat, s.sport))].map(q).join(", ") + ");");
 writeFileSync(new URL("seed-catalogue.sql", import.meta.url),
   "-- The app built-in spots (ios/Kookout/Catalogue.json) as community spots. Regenerate with seed-catalogue.mjs.\n" + rows.join("\n") + "\n");
 console.log(`${rows.length} spots`);

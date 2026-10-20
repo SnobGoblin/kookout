@@ -33,7 +33,8 @@ enum WidgetBridge {
         let request = Request(spots: spots.map(KookoutAPI.RelaySpot.init), units: settings.wind.rawValue,
                               waveUnit: settings.wave.rawValue, country: Locale.current.region?.identifier)
         guard let body = try? JSONEncoder().encode(request) else { return }
-        WidgetData.save(WidgetSpots(spots: spots.map { .init(id: $0.id, name: $0.name, sport: $0.sport.rawValue, tz: $0.timeZoneID) },
+        WidgetData.save(WidgetSpots(spots: spots.map { .init(id: $0.id, name: $0.name, sport: $0.sport.rawValue, tz: $0.timeZoneID,
+                                                                       season: $0.seasonInUse.isAllYear ? nil : $0.seasonInUse) },
                                     units: settings.wind.rawValue, waveUnit: settings.wave.rawValue,
                                     h12: settings.uses12Hour, request: body), WidgetSpots.file)
     }

@@ -58,6 +58,8 @@ struct WidgetSpots: Codable {
         let name: String
         let sport: String   // wing, surf or powder
         let tz: String
+        /// Only good periods in the season count (nil: all year).
+        var season: Season?
     }
     var spots: [Spot]
     var units: String       // "ms" or "kn"
@@ -98,7 +100,8 @@ struct WidgetStatus: Hashable {
     /// nothing good) keep the user's own order. With nothing good anywhere, simply the first spots in their order.
     static func soonest(_ spots: [WidgetSpots.Spot], _ known: WidgetPeriods, at now: Date, count: Int = WidgetData.maxSpots) -> [WidgetStatus] {
         let statuses = spots.map { spot -> WidgetStatus in
-            let periods = known.periods[spot.id]
+            let zone = TimeZone(identifier: spot.tz) ?? .current
+            let periods = known.periods[spot.id]?.filter { spot.season?.contains($0.start, zone: zone) ?? true }
             let next = periods?.filter { $0.end > now }.min { $0.start < $1.start }
             return WidgetStatus(spot: spot, period: next, goodNow: next.map { $0.start <= now } ?? false, known: periods != nil)
         }

@@ -40,6 +40,11 @@ emailed through Resend), `founders.js` (founding-user numbers), `widget.js` (the
   Gullholmen (Kystverket). Votes count without an account, like the rules.
 - **Sharing** needs Sign in with Apple and is asked once (never on by default, never while signed out).
   Following, notifications and everything else work without an account.
+- **Seasons (decided 20 Oct 2026, for 1.1):** each spot has a season; outside it, good conditions don't count for
+  notifications or the widget (the forecast still shows), and leaving the season sends nothing. Default per spot:
+  wing and surf from 50° N 15 Mar–24 Dec, elsewhere (Fuerteventura, Brazil…) and powder all year. A vote like the
+  wind station: "Automatic" follows the community's (majority by day, from 3 active followers); each follower can
+  pick "All year" or own dates. Apps before 1.1 get notifications all year.
 - **Weekend spots:** good only on days off (weekends + public holidays of the *phone's* country, from Nager.Date),
   5 hours in a row, notifications look 5 days ahead by default.
 - **Powder:** snow counted over the day and the one before (`days`, default 2), optional "sunny days only".

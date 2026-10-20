@@ -93,7 +93,11 @@ can fix them, every change is logged and can be undone (History on the spot's Ed
 2 km are refused. Wind directions and limits are preferences: each follower has their own, and the
 community version is the majority's from 3 active followers (`node relay/test-community.mjs`). The wind station for
 "Measured now" works the same way: the station most followers chose ("Automatic" counts for the current one; a tie
-keeps it), starting from the catalogue's `station` where there is one (`relay/migrate-station.sql`). The app
+keeps it), starting from the catalogue's `station` where there is one (`relay/migrate-station.sql`). The season
+(when a spot gives notifications and counts in the widget; `relay/src/season.js`) too: each spot starts with a
+default (wing and surf from 50° N: 15 March–24 December; elsewhere and powder: all year), from 3 active followers
+it's the majority's (a day counts if more than half have it), and each follower can set "All year" or their own
+dates (`relay/migrate-season.sql`). The app
 follows the community spots in its list with a random key, so following works without an account.
 Moving a spot is deliberate (Edit → Move pin, a full map with a crosshair). When most riders' rules differ from
 yours, Edit suggests switching ("Most riders here use E–S"). Adding a spot within 500 m of one for the same
