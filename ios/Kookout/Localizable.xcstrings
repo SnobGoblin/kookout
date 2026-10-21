@@ -3695,7 +3695,7 @@
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Varsler og widgeten teller bare gode forhold i sesongen; varselet vises alltid. Automatisk: det de fleste her velger (fra 3 brukere), til da det som passer stedet."
+            "value": "Varsler og widgeten teller bare gode forhold i sesongen; værvarselet vises alltid. Automatisk: det de fleste her velger (fra 3 brukere), til da det som passer stedet."
           }
         },
         "sv": {
@@ -3735,7 +3735,7 @@
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Varsler og widgeten teller bare gode forhold i sesongen; varselet vises alltid. Automatisk: det som passer stedet."
+            "value": "Varsler og widgeten teller bare gode forhold i sesongen; værvarselet vises alltid. Automatisk: det som passer stedet."
           }
         },
         "sv": {
