@@ -89,12 +89,17 @@ struct HolfuyWidget: View {
         let url: URL
         var scrolls = true
         func makeUIView(context: Context) -> WKWebView {
-            // The widget is made for a wider screen: shrink it to the phone's width once it has loaded
+            // The widget is made for a wider screen: lay it out at its own width and let the phone scale it down
+            // like a picture. (CSS zoom kept iOS's minimum text size, so on small phones the text overflowed its boxes.)
             let fit = WKUserScript(source: """
-                setTimeout(function () {
+                function fit() {
                   var w = document.documentElement.scrollWidth;
-                  if (w > window.innerWidth) document.body.style.zoom = window.innerWidth / w;
-                }, 300);
+                  if (w <= window.innerWidth) return;
+                  var meta = document.querySelector('meta[name=viewport]') || document.head.appendChild(document.createElement('meta'));
+                  meta.name = 'viewport';
+                  meta.content = 'width=' + w + ', user-scalable=no';
+                }
+                fit(); setTimeout(fit, 300);
                 """, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
             let config = WKWebViewConfiguration()
             config.userContentController.addUserScript(fit)
