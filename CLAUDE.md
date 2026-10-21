@@ -147,5 +147,13 @@ usually pass within a day); for a serious bug (crash, notifications down) ask Ap
 Founding users: numbers come only from App Store installs (TestFlight/Xcode have no real download); the
 `founders` table must start empty at launch (it is). Founding = number ≤ 2,000 (`FOUNDERS` in `relay/src/founders.js`).
 
+**Version 1.1** (branch `claude/mystifying-pike-35db35`, not merged; merge to main only with the 1.1 release, since
+`privacy.html` already describes the widget and seasons and deploys on push): the home screen / Lock Screen widget
+(the 3 spots good soonest; tested on Christian's iPhone 16 Pro, hourly refresh confirmed 20 Oct) and seasons (see
+Decisions). The relay side of both is already live (`POST /widget`, seasons in D1 via `relay/migrate-season.sql`).
+Left: "What's New" in 7 languages; a screen check in another language, 12-hour clock and knots/feet; bump
+MARKETING_VERSION to 1.1 and the build number, archive, TestFlight (ask first); submit after 1.0 is approved. It
+should be out well before 24 Dec (apps on 1.0 get notifications all winter).
+
 Later: the landing page (see Reminders), the subscription and paywall (StoreKit, App Store Connect, tax/bank;
 switch EU status to trader first), a test copy of the relay, a pre-release checklist.
