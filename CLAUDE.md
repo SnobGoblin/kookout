@@ -7,7 +7,7 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
-**Status (16 Oct 2026):** version 1.0 was submitted with build 18, then withdrawn from review (Measured now made the forecast jump); build 19 with the fix uploaded 18:58, to be resubmitted (manual release). Build 18 is also out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
+**Status (30 Oct 2026):** version 1.0 with build 19 submitted for App Review 19 Oct 2026 (Christian, by hand), still "Waiting for Review" on 30 Oct (manual release). The first submission (build 18, 16 Oct) was withdrawn the same day because Measured now made the forecast jump. Build 18 is also out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
 https://testflight.apple.com/join/4wm11wAG), with the "N other riders follow this spot" line and the founding-user
 number (shows only in App Store installs); older builds expired. Plan: get on the App Store (testing has slowed;
 more users needed). App Store texts (7 languages), privacy label answers and review notes are in `appstore/`;
@@ -125,7 +125,7 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 ## Next up
 
 Toward the App Store launch:
-1. **Submitted for App Review 16 Oct 2026 ~12:40** (version 1.0, build 18; manual release); withdrawn the same afternoon, build 19 to be submitted instead. Everything is entered in
+1. **Submitted for App Review 19 Oct 2026** (version 1.0, build 19; manual release). First tried 16 Oct with build 18, withdrawn the same afternoon. Still waiting on 30 Oct: check the App Review page for a message from Apple; if none, Contact Us → App Review → status. Everything is entered in
    App Store Connect: 7 languages (nb name "Kookout: Vind- og surfvarsling", da "Kookout: Vind, bølger og sne";
    Apple said the first choices were taken), screenshots from `appstore/framed-6.3` (Apple's required size is now
    6.1–6.3", 1206×2622), privacy labels published, free in 174 countries (not mainland China, needs an ICP licence),
