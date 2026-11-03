@@ -4,6 +4,11 @@
 // through Apple's push service (APNs) when:
 //   - good conditions come into the window (new forecast, or the window moving forward), or
 //   - good conditions in the window change (start or end moved by 2+ hours, or no longer good).
+// Changes within the next 12 hours are sent at once. Changes further ahead wait for a digest at 07, 12 or 18 on the
+// phone's clock, compared with what the phone was last told, so a forecast that flips back and forth in between says
+// nothing, and changes that arrive in different hours go out together.
+// All changes in one run go into one notification; spots with the same news (same kind, day, overlapping times) share
+// a line: "14–18: Møvik, Larkollen".
 // Nothing is sent between 22 and 07 on the phone's clock: the changes wait until the morning.
 //
 //   PUT    /devices/<id>       {token, sandbox, lang, country, units, waveUnit, h12, tz, windowHours, spots}
@@ -16,32 +21,34 @@ import { dayKey, hourOf } from "../../rules.js";
 const HOUR = 3600e3;
 const LANGS = ["en", "nb", "sv", "da", "de", "fr", "es"];
 const MAX_SPOTS = 30;
-const MAX_PUSHES = 5; // per phone per hour, so a big forecast change doesn't flood it
+const NEAR = 12 * HOUR;            // changes starting sooner than this are sent at once
+const DIGEST_HOURS = [7, 12, 18];  // on the phone's clock: when changes further ahead are sent
+const MAX_LINES = 4;               // in a notification for several spots, then "+2 more"
 const PARALLEL = 6;   // phones checked at the same time in the hourly run
 // Sounds in the app: a wind swoosh for good news, a kung-fu gong when good conditions are gone (brand/).
 const SOUND = "kookout.caf", BAD_NEWS_SOUND = "gong.caf";
 
 // The texts, in the app's languages ({when}: e.g. "Thu 15–18", {was}: what it said before).
 const TEXT = {
-  en: { new: "Good {when}", changed: "Now good {when} (was {was})", gone: "No longer good {when}",
+  en: { more: "+{n} more", new: "Good {when}", changed: "Now good {when} (was {was})", gone: "No longer good {when}",
         powder: "Powder {when}", powderGone: "No more powder {when}",
         test: "Notifications are on. Kookout will tell you when your spots look good." },
-  nb: { new: "Bra {when}", changed: "Nå bra {when} (var {was})", gone: "Ikke lenger bra {when}",
+  nb: { more: "+{n} til", new: "Bra {when}", changed: "Nå bra {when} (var {was})", gone: "Ikke lenger bra {when}",
         powder: "Pudder {when}", powderGone: "Ikke lenger pudder {when}",
         test: "Varsler er på. Kookout sier fra når spotene dine ser bra ut." },
-  sv: { new: "Bra {when}", changed: "Nu bra {when} (var {was})", gone: "Inte längre bra {when}",
+  sv: { more: "+{n} till", new: "Bra {when}", changed: "Nu bra {when} (var {was})", gone: "Inte längre bra {when}",
         powder: "Puder {when}", powderGone: "Inte längre puder {when}",
         test: "Notiser är på. Kookout säger till när dina spots ser bra ut." },
-  da: { new: "Godt {when}", changed: "Nu godt {when} (var {was})", gone: "Ikke længere godt {when}",
+  da: { more: "+{n} mere", new: "Godt {when}", changed: "Nu godt {when} (var {was})", gone: "Ikke længere godt {when}",
         powder: "Pulver {when}", powderGone: "Ikke længere pulver {when}",
         test: "Notifikationer er slået til. Kookout siger til, når dine spots ser gode ud." },
-  de: { new: "Gut {when}", changed: "Jetzt gut {when} (vorher {was})", gone: "Nicht mehr gut {when}",
+  de: { more: "+{n} weitere", new: "Gut {when}", changed: "Jetzt gut {when} (vorher {was})", gone: "Nicht mehr gut {when}",
         powder: "Powder {when}", powderGone: "Kein Powder mehr {when}",
         test: "Mitteilungen sind an. Kookout sagt dir, wenn deine Spots gut aussehen." },
-  fr: { new: "Bon {when}", changed: "Bon maintenant {when} (avant {was})", gone: "Plus bon {when}",
+  fr: { more: "+{n} autres", new: "Bon {when}", changed: "Bon maintenant {when} (avant {was})", gone: "Plus bon {when}",
         powder: "Poudreuse {when}", powderGone: "Plus de poudreuse {when}",
         test: "Les notifications sont activées. Kookout vous préviendra quand vos spots seront bons." },
-  es: { new: "Bueno {when}", changed: "Ahora bueno {when} (antes {was})", gone: "Ya no es bueno {when}",
+  es: { more: "+{n} más", new: "Bueno {when}", changed: "Ahora bueno {when} (antes {was})", gone: "Ya no es bueno {when}",
         powder: "Nieve polvo {when}", powderGone: "Ya no hay nieve polvo {when}",
         test: "Las notificaciones están activadas. Kookout te avisará cuando tus spots estén buenos." },
 };
@@ -134,62 +141,124 @@ export async function notifyAll(env, analyseSpot) {
   // Several phones at a time, so the run stays well inside Cloudflare's 15 minutes as phones are added. (Cloudflare
   // keeps at most 6 connections open per run and queues the rest, so more than this gains little.)
   const queue = [...results];
+  let sent = 0;
   const worker = async () => {
     for (let device; (device = queue.shift()); ) {
-      try { await notifyDevice(device, env, forecast); }
+      try { if (await notifyDevice(device, env, forecast)) sent++; }
       catch (e) { console.log("Notifications failed for a device:", e.message); }
     }
   };
   const started = Date.now();
   await Promise.all(Array.from({ length: PARALLEL }, worker));
-  console.log(`Notifications: ${results.length} phones, ${forecasts.size} forecasts, ${Math.round((Date.now() - started) / 1000)} s`);
+  console.log(`Notifications: ${results.length} phones, ${sent} sent, ${forecasts.size} forecasts, ${Math.round((Date.now() - started) / 1000)} s`);
 }
 
 async function notifyDevice(device, env, forecast) {
-  const now = Date.now();
   const spots = JSON.parse(device.spots), old = JSON.parse(device.state || "{}");
-  const quiet = (h => h >= 22 || h < 7)(hourOf(new Date(now), device.tz));
-  const state = {};
-  let pushes = 0;
-
+  const items = [];
   for (const spot of spots) {
-    const prev = old[spot.id];
-    const horizon = now + (spot.windowHours ?? device.window_hours) * HOUR;
     const f = await forecast(spot, device.units, device.wave_unit, device.country);
-    if (!f) { if (prev) state[spot.id] = prev; continue; }
-    const periods = goodPeriods(spot, f).filter(p => p.end > now && p.start < horizon);
-    // A spot we haven't seen before (just turned on): remember what's good now without notifying.
-    if (!prev) { state[spot.id] = { periods, horizon }; continue; }
-
-    const events = compare(prev, periods, now, horizon);
-    if (!events.length) { state[spot.id] = samePeriods(prev.periods, periods) ? prev : { periods, horizon }; continue; }
-    if (quiet || pushes >= MAX_PUSHES) { state[spot.id] = prev; continue; } // tell them later
-
-    const zone = f.tz;
-    const t = TEXT[device.lang] ?? TEXT.en;
-    const powder = !!spot.powder && !spot.wind && !spot.surf;
-    const when = p => powder ? dayLabel(p.start, zone, device.lang, now)
-                             : `${dayLabel(p.start, zone, device.lang, now)} ${hours(p.start, p.end, zone, device.lang, device.h12)}`;
-    const lines = events.map(e =>
-      e.type === "new" ? (powder ? t.powder : t.new).replace("{when}", when(e.period)) :
-      e.type === "gone" ? (powder ? t.powderGone : t.gone).replace("{when}", when(e.period)) :
-      t.changed.replace("{when}", when(e.period)).replace("{was}", when(e.was)));
-    const result = await push(env, device, {
-      aps: { alert: { title: spot.name, body: lines.join("\n") }, "thread-id": spot.id,
-             sound: events[0].type === "gone" ? BAD_NEWS_SOUND : SOUND }, // the top line (nearest in time) decides
-      spot: spot.id,
-      at: Math.round(events[0].period.start / 1000), // seconds since 1970: the app scrolls to the top line's period
-    });
+    items.push({ spot, zone: f?.tz, periods: f ? goodPeriods(spot, f) : null });
+  }
+  const run = plan(device, items, old, Date.now());
+  let state = run.sent;
+  if (run.payload) {
+    const result = await push(env, device, run.payload);
     if (result === "gone") { // the app was deleted or the token is no longer valid
       await env.DB.prepare("DELETE FROM devices WHERE id = ?").bind(device.id).run();
       return;
     }
-    pushes++;
-    state[spot.id] = result === "sent" ? { periods, horizon } : prev; // try again next hour if it failed
+    if (result !== "sent") state = run.kept; // try again next hour
   }
-
   const json = JSON.stringify(state);
   if (json !== device.state) await env.DB.prepare("UPDATE devices SET state = ? WHERE id = ?").bind(json, device.id).run();
+  return state === run.sent && !!run.payload; // true when a notification went out
+}
+
+// One run for one phone, without sending anything: the notification (or null), the state to keep if it is sent,
+// and the state to keep if it isn't. items: [{spot, zone, periods}] (periods null when the forecast failed).
+function plan(device, items, old, now) {
+  const hour = hourOf(new Date(now), device.tz);
+  const quiet = hour >= 22 || hour < 7, digest = DIGEST_HOURS.includes(hour);
+  const sent = {}, kept = {}, out = [];
+  for (const { spot, zone, periods: all } of items) {
+    const prev = old[spot.id];
+    if (!all) { if (prev) sent[spot.id] = kept[spot.id] = prev; continue; }
+    const horizon = now + (spot.windowHours ?? device.window_hours) * HOUR;
+    const periods = all.filter(p => p.end > now && p.start < horizon);
+    // A spot we haven't seen before (just turned on): remember what's good now without notifying.
+    if (!prev) { sent[spot.id] = kept[spot.id] = { periods, horizon }; continue; }
+    const events = compare(prev, periods, now, horizon);
+    if (!events.length) { sent[spot.id] = kept[spot.id] = samePeriods(prev.periods, periods) ? prev : { periods, horizon }; continue; }
+    const near = e => Math.min(e.period.start, e.was?.start ?? Infinity) < now + NEAR;
+    const go = quiet ? [] : digest ? events : events.filter(near);
+    kept[spot.id] = prev;
+    if (!go.length) { sent[spot.id] = prev; continue; } // tell them later
+    // Changes further ahead that wait for the digest stay as they were told; the rest is now told.
+    sent[spot.id] = go.length === events.length ? { periods, horizon } : { periods: told(prev, go, now), horizon: prev.horizon };
+    out.push(...go.map(e => ({ ...e, spot, zone })));
+  }
+  return { payload: out.length ? render(out, device, now) : null, sent, kept };
+}
+
+// What the phone has been told after the given events were sent (the others still as before).
+function told(prev, events, now) {
+  const dropped = new Set(events.flatMap(e => e.type === "gone" ? [e.period] : e.before ?? []));
+  const added = events.filter(e => e.type !== "gone").map(e => e.period);
+  return [...prev.periods.filter(p => p.end > now && !dropped.has(p)), ...added].sort((a, b) => a.start - b.start);
+}
+
+// The notification for a run's events (from one or more spots).
+function render(events, device, now) {
+  const t = TEXT[device.lang] ?? TEXT.en;
+  events.sort((a, b) => a.period.start - b.period.start || a.period.end - b.period.end);
+  const isPowder = e => !!e.spot.powder && !e.spot.wind && !e.spot.surf;
+  const day = (time, zone) => dayLabel(time, zone, device.lang, now);
+  const span = (p, zone) => hours(p.start, p.end, zone, device.lang, device.h12);
+  const when = (p, e) => isPowder(e) ? day(p.start, e.zone) : `${day(p.start, e.zone)} ${span(p, e.zone)}`;
+  const template = e => e.type === "new" ? (isPowder(e) ? t.powder : t.new) :
+                        e.type === "gone" ? (isPowder(e) ? t.powderGone : t.gone) : t.changed;
+  const sound = events[0].type === "gone" ? BAD_NEWS_SOUND : SOUND; // the top line (nearest in time) decides
+  const at = Math.round(events[0].period.start / 1000); // seconds since 1970: the app scrolls to the top line's period
+  const ids = [...new Set(events.map(e => e.spot.id))];
+
+  if (ids.length === 1) { // one spot: as before, one line per change
+    const spot = events[0].spot;
+    const body = events.map(e => template(e).replace("{when}", when(e.period, e)).replace("{was}", e.was ? when(e.was, e) : "")).join("\n");
+    return { aps: { alert: { title: spot.name, body }, "thread-id": spot.id, sound }, spot: spot.id, at };
+  }
+
+  // Several spots: news of the same kind on the same day with overlapping times is one cluster; inside it,
+  // spots with exactly the same times share a line.
+  const clusters = [];
+  for (const e of events) {
+    const key = `${e.type} ${isPowder(e)} ${dayKey(new Date(e.period.start), e.zone)}`;
+    const c = clusters.findLast(c => c.key === key && e.period.start < c.end);
+    if (c) { c.events.push(e); c.end = Math.max(c.end, e.period.end); }
+    else clusters.push({ key, end: e.period.end, events: [e] });
+  }
+  const one = clusters.length === 1;
+  const lines = [];
+  for (const c of clusters) {
+    const groups = new Map();
+    for (const e of c.events) {
+      const sameDay = e.was && dayKey(new Date(e.was.start), e.zone) === dayKey(new Date(e.period.start), e.zone);
+      const was = e.was ? (sameDay && !isPowder(e) ? span(e.was, e.zone) : when(e.was, e)) : "";
+      // In a notification about one cluster the day is in the title, so the lines only need the times.
+      const label = one ? (isPowder(e) ? "" : e.type === "changed" ? t.changed.replace("{when}", span(e.period, e.zone)).replace("{was}", was)
+                                                                    : span(e.period, e.zone))
+                        : template(e).replace("{when}", when(e.period, e)).replace("{was}", was);
+      if (!groups.has(label)) groups.set(label, []);
+      if (!groups.get(label).includes(e.spot.name)) groups.get(label).push(e.spot.name);
+    }
+    for (const [label, names] of groups) lines.push(label ? `${label}: ${names.join(", ")}` : names.join(", "));
+  }
+  const first = clusters[0].events[0];
+  const headline = (first.type === "gone" ? (isPowder(first) ? t.powderGone : t.gone) : (isPowder(first) ? t.powder : t.new))
+    .replace("{when}", day(first.period.start, first.zone));
+  const shown = lines.length > MAX_LINES ? [...lines.slice(0, MAX_LINES - 1), t.more.replace("{n}", lines.length - MAX_LINES + 1)] : lines;
+  return { aps: { alert: { title: one ? headline : "Kookout", body: shown.join("\n") }, "thread-id": "kookout", sound },
+           spots: ids, at };
 }
 
 // The good periods as [{start, end}] in ms. Powder: the whole powder day.
@@ -215,7 +284,7 @@ function compare(prev, periods, now, horizon) {
     if (!before.length) { events.push({ type: "new", period: p }); continue; }
     const was = { start: Math.min(...before.map(o => o.start)), end: Math.max(...before.map(o => o.end)) };
     const a = clip(p), b = clip(was);
-    if (Math.abs(a.start - b.start) + Math.abs(a.end - b.end) >= 2 * HOUR) events.push({ type: "changed", period: p, was });
+    if (Math.abs(a.start - b.start) + Math.abs(a.end - b.end) >= 2 * HOUR) events.push({ type: "changed", period: p, was, before });
   }
   for (const o of told) {
     if (o.start < cut && !periods.some(p => overlaps(o, p))) events.push({ type: "gone", period: o });
@@ -279,4 +348,4 @@ async function push(env, device, payload) {
 }
 
 // For tests (test-notify.mjs).
-export const _test = { compare, hours, dayLabel };
+export const _test = { compare, hours, dayLabel, plan };

@@ -18,3 +18,68 @@ check("24h", hours(at(5), at(8), "Europe/Oslo", "nb", false), "17–20");
 check("12h same half", hours(at(5), at(8), "America/New_York", "en", true), "11–2 PM".replace("11–2 PM", hours(at(5), at(8), "America/New_York", "en", true)));
 console.log(hours(at(5), at(8), "America/New_York", "en", true), "|", hours(at(9), at(11), "America/New_York", "en", true));
 console.log(dayLabel(at(5), "Europe/Oslo", "nb", at(0)), "|", dayLabel(at(20), "Europe/Oslo", "nb", at(0)), "|", dayLabel(at(50), "Europe/Oslo", "de", at(0)), "|", dayLabel(at(50), "Europe/Oslo", "fr", at(0)));
+
+// ---- Digests and several spots in one notification (plan) ----
+const { plan } = _test;
+const Z = "Europe/Oslo", dev = { tz: Z, window_hours: 120, lang: "en", h12: 0 };
+const L = s => Date.parse(s + "+01:00"); // Oslo local time in November
+const spot = (id, name) => ({ id, name, wind: {} });
+const M = spot("movik", "Møvik"), K = spot("larkollen", "Larkollen"), B = spot("brattesto", "Brattestø"), T = spot("torkild", "Torkild");
+const fri = (a, b) => ({ start: L(`2026-11-06T${a}:00`), end: L(`2026-11-06T${b}:00`) });
+const thu = (a, b) => ({ start: L(`2026-11-05T${a}:00`), end: L(`2026-11-05T${b}:00`) });
+const empty = now => ({ periods: [], horizon: now + 120 * H });
+const run = (now, old, list) => plan(dev, list.map(([s, periods]) => ({ spot: s, zone: Z, periods })), old, now);
+const text = r => r.payload ? `${r.payload.aps.alert.title} | ${r.payload.aps.alert.body}` : null;
+
+let now = L("2026-11-05T18:07"), old = { movik: empty(now), larkollen: empty(now), brattesto: empty(now) };
+let r = run(now, old, [[M, [fri("14", "18")]], [K, [fri("14", "18")]], [B, [fri("14", "20")]]]);
+check("2a: three spots, one notification", text(r), "Good tomorrow | 14–18: Møvik, Larkollen\n14–20: Brattestø");
+check("2a: opens the list (no single spot)", [r.payload.spot, r.payload.spots], [undefined, ["movik", "larkollen", "brattesto"]]);
+
+// 4.1: changes arriving at 13, 14 and 16 wait and go out together at 18
+let state = { movik: empty(L("2026-11-05T12:07")), larkollen: empty(L("2026-11-05T12:07")), brattesto: empty(L("2026-11-05T12:07")) };
+const steps = [["13", [[B, [fri("14", "20")]], [M, []], [K, []]]], ["14", [[B, [fri("14", "20")]], [M, [fri("14", "18")]], [K, []]]],
+               ["16", [[B, [fri("14", "20")]], [M, [fri("14", "18")]], [K, [fri("14", "18")]]]], ["18", [[B, [fri("14", "20")]], [M, [fri("14", "18")]], [K, [fri("14", "18")]]]]];
+const sentAt = [];
+for (const [h, list] of steps) { const x = run(L(`2026-11-05T${h}:07`), state, list); if (x.payload) sentAt.push(`${h}: ${text(x)}`); state = x.sent; }
+check("4.1: one notification at the 18:00 digest", sentAt, ["18: Good tomorrow | 14–18: Møvik, Larkollen\n14–20: Brattestø"]);
+
+// 4.2.3: flapping between digests says nothing
+state = { movik: { periods: [fri("14", "18")], horizon: L("2026-11-10T12:00") } };
+const flaps = [];
+for (const [h, p] of [["13", []], ["14", []], ["15", [fri("14", "18")]], ["18", [fri("14", "18")]]]) {
+  const x = run(L(`2026-11-05T${h}:07`), state, [[M, p]]); if (x.payload) flaps.push(h); state = x.sent;
+}
+check("4.2.3: gone and back between digests: nothing", flaps, []);
+
+// 4.2.1: near news (within 12 h) goes out at once, not waiting for a digest
+now = L("2026-11-05T10:07");
+r = run(now, { torkild: { periods: [thu("14", "18")], horizon: now + 100 * H } }, [[T, []]]);
+check("4.2.1: today's session gone, sent at once", [text(r), r.payload?.aps.sound], ["Torkild | No longer good today 14–18", "gong.caf"]);
+
+// near sent now, far held for the digest, in the same spot
+now = L("2026-11-05T10:07");
+r = run(now, { torkild: { periods: [thu("14", "18")], horizon: now + 100 * H } }, [[T, [fri("14", "18")]]]);
+check("near sent, far held", text(r), "Torkild | No longer good today 14–18");
+const x2 = run(L("2026-11-05T12:07"), r.sent, [[T, [fri("14", "18")]]]);
+check("held one comes at 12:00", text(x2), "Torkild | Good tomorrow 14–18");
+check("and isn't repeated", text(run(L("2026-11-05T13:07"), x2.sent, [[T, [fri("14", "18")]]])), null);
+
+// Night: nothing, then at 07 (a digest) everything
+now = L("2026-11-06T03:07");
+r = run(now, { torkild: { periods: [fri("14", "18")], horizon: now + 100 * H } }, [[T, []]]);
+check("night: nothing", text(r), null);
+check("07: sent", text(run(L("2026-11-06T07:07"), r.sent, [[T, []]])), "Torkild | No longer good today 14–18");
+
+// A failed push keeps the old state, so it is tried again
+now = L("2026-11-05T18:07");
+r = run(now, { movik: empty(now), torkild: empty(now) }, [[M, [fri("14", "18")]], [T, [thu("20", "23")]]]);
+check("different news: one notification, one line each", text(r), "Kookout | Good today 20–23: Torkild\nGood tomorrow 14–18: Møvik");
+check("failed push keeps old state", JSON.stringify(r.kept.movik.periods), "[]");
+
+// Many lines: the rest as "+N more"
+now = L("2026-11-05T18:07");
+const many = ["a", "b", "c", "d", "e"].map((id, i) => [spot(id, id.toUpperCase()), [{ start: L(`2026-11-${String(6 + i).padStart(2, "0")}T10:00`), end: L(`2026-11-${String(6 + i).padStart(2, "0")}T12:00`) }]]);
+r = run(now, Object.fromEntries(many.map(([s]) => [s.id, empty(now)])), many);
+check("+N more", text(r).split("\n").at(-1), "+2 more");
+console.log(text(r));

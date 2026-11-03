@@ -122,8 +122,11 @@ Each spot has notifications on unless switched off (Edit), and Settings has how 
 see `relay/src/notify.js`); the relay keeps them in a Cloudflare D1 database (`relay/schema.sql`). Every hour
 it works out those spots with the same rules and pushes through Apple's push service (APNs) when good
 conditions come into the window, or change there (moved by 2+ hours, or no longer good). Nothing is sent
-between 22 and 07 on the phone's clock; those changes come in the morning. `node relay/test-notify.mjs`
-checks the change detection.
+between 22 and 07 on the phone's clock; those changes come in the morning. Changes within the next 12 hours go
+out at once; changes further ahead wait for a digest at 07, 12 or 18 (compared with what the phone was last told,
+so a forecast that flips back and forth in between says nothing). Each run sends at most one notification per
+phone; spots with the same news share a line ("14–18: Møvik, Larkollen"), and a notification about several
+spots carries `spots` instead of `spot`. `node relay/test-notify.mjs` checks the change detection and the digests.
 
 Push needs an APNs key from the Apple Developer site (Certificates, Identifiers & Profiles → Keys → +, with
 Apple Push Notifications service). Put the key id and team id in `relay/wrangler.toml` (`APNS_KEY_ID`,
