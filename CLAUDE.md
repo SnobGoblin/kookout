@@ -7,7 +7,7 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
-**Status (3 Nov 2026):** version 1.0 (build 19, submitted 19 Oct) came back 3 Nov with Guideline 2.1(b) "Information Needed": Apple read "free for the first 2,000 users" as a free trial with a paywall. Replied the same day (no IAP, no trial, everything free) and removed that wording from the listing in all 7 languages; resubmit once Christian has accepted Apple's updated Developer Program License Agreement (manual release). Build 18 is also out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
+**Status (3 Nov 2026):** version 1.0 (build 19, submitted 19 Oct) came back 3 Nov with Guideline 2.1(b) "Information Needed": Apple read "free for the first 2,000 users" as a free trial with a paywall. Replied the same day (no IAP, no trial, everything free) and removed that wording from the listing in all 7 languages; resubmitted 3 Nov 11:07, "Waiting for Review" (manual release). Build 18 is also out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
 https://testflight.apple.com/join/4wm11wAG), with the "N other riders follow this spot" line and the founding-user
 number (shows only in App Store installs); older builds expired. Plan: get on the App Store (testing has slowed;
 more users needed). App Store texts (7 languages), privacy label answers and review notes are in `appstore/`;
@@ -125,7 +125,7 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 ## Next up
 
 Toward the App Store launch:
-1. **In App Review, round 2:** 1.0 (build 19) was asked about the "first 2,000" wording on 3 Nov; answered and listing fixed the same day; resubmit after the license agreement is accepted. Never mention planned pricing in the listing until it exists in the app (Apple asks for a demo of the paywall). Everything is entered in
+1. **In App Review, round 2:** 1.0 (build 19) was asked about the "first 2,000" wording on 3 Nov; answered, listing fixed and resubmitted the same day (11:07). To resubmit after a rejection: version page → "Update Review", then "Resubmit to App Review" on the submission. Never mention planned pricing in the listing until it exists in the app (Apple asks for a demo of the paywall). Everything is entered in
    App Store Connect: 7 languages (nb name "Kookout: Vind- og surfvarsling", da "Kookout: Vind, bølger og sne";
    Apple said the first choices were taken), screenshots from `appstore/framed-6.3` (Apple's required size is now
    6.1–6.3", 1206×2622), privacy labels published, free in 174 countries (not mainland China, needs an ICP licence),
