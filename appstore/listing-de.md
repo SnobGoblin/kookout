@@ -12,7 +12,7 @@ Wann deine Spots gut sind
 
 ## Promotional text (max 170)
 
-Gratis für die ersten 2.000 Nutzer. Wähle deine Spots, leg fest, was dort passt, und Kookout sagt dir, wann und wo es gut ist. Nie wieder ständig die Vorhersage prüfen.
+Gratis, kein Konto nötig. Wähle deine Spots, leg fest, was dort passt, und Kookout sagt dir, wann und wo es gut ist. Nie wieder ständig die Vorhersage prüfen.
 
 ## Keywords (max 100)
 
@@ -48,8 +48,8 @@ GEMACHT MIT ANDEREN RIDERN
 BEWUSST EINFACH
 Keine Swell-Karten zum Entziffern. Kookout gibt dir die Antwort: los, oder lieber nicht.
 
-GRATIS FÜR DIE ERSTEN
-Die ersten 2.000 Nutzer nutzen Kookout gratis. Sollte sich das je ändern müssen, erfahren sie es rechtzeitig vorher.
+GRATIS
+Kookout ist gratis: keine Werbung, keine In-App-Käufe, kein Konto nötig.
 
 Gemacht in Norwegen von einem Wingfoiler. Wetterdaten vom Norwegischen Meteorologischen Institut (yr.no), Kystverket, NOAA und Holfuy.
 

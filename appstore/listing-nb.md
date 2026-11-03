@@ -12,7 +12,7 @@ Vet når spotene dine er bra
 
 ## Promotional text (max 170)
 
-Gratis for de første 2 000 brukerne. Velg spotene dine, sett hva som funker der, og Kookout sier fra når og hvor det er bra. Slutt å sjekke varselet igjen og igjen.
+Gratis, ingen konto nødvendig. Velg spotene dine, sett hva som funker der, og Kookout sier fra når og hvor det er bra. Slutt å sjekke varselet igjen og igjen.
 
 ## Keywords (max 100)
 
@@ -48,8 +48,8 @@ LAGET SAMMEN MED ANDRE UTØVERE
 ENKELT MED VILJE
 Ingen dønningskart å tolke. Kookout gir deg svaret: dra, eller la være.
 
-GRATIS FOR DE FØRSTE
-De første 2 000 brukerne bruker Kookout gratis. Skulle det noen gang måtte endres, får de vite det i god tid.
+GRATIS
+Kookout er gratis: ingen reklame, ingen kjøp i appen, ingen konto nødvendig.
 
 Laget i Norge av en wingfoiler. Værdata fra Meteorologisk institutt (yr.no), Kystverket, NOAA og Holfuy.
 

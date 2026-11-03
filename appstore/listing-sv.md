@@ -12,7 +12,7 @@ Vet när dina spots är bra
 
 ## Promotional text (max 170)
 
-Gratis för de första 2 000 användarna. Välj dina spots, ställ in vad som funkar där, så säger Kookout till när och var det är bra. Sluta kolla prognosen om och om igen.
+Gratis, inget konto behövs. Välj dina spots, ställ in vad som funkar där, så säger Kookout till när och var det är bra. Sluta kolla prognosen om och om igen.
 
 ## Keywords (max 100)
 
@@ -48,8 +48,8 @@ BYGGD TILLSAMMANS MED ANDRA ÅKARE
 ENKEL MED FLIT
 Inga dyningskartor att tyda. Kookout ger dig svaret: åk, eller låt bli.
 
-GRATIS FÖR DE FÖRSTA
-De första 2 000 användarna använder Kookout gratis. Om det någon gång måste ändras får de veta det i god tid.
+GRATIS
+Kookout är gratis: ingen reklam, inga köp i appen, inget konto behövs.
 
 Gjord i Norge av en wingfoilare. Väderdata från norska Meteorologisk institutt (yr.no), Kystverket, NOAA och Holfuy.
 

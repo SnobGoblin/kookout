@@ -12,7 +12,7 @@ Cuándo hay buenas condiciones
 
 ## Promotional text (max 170)
 
-Gratis para los primeros 2000 usuarios. Elige tus spots, indica qué funciona en cada uno y Kookout te avisa cuándo y dónde está bueno. Sin mirar la previsión a cada rato.
+Gratis, sin cuenta. Elige tus spots, indica qué funciona en cada uno y Kookout te avisa cuándo y dónde está bueno. Sin mirar la previsión a cada rato.
 
 ## Keywords (max 100)
 
@@ -48,8 +48,8 @@ HECHO CON OTROS RIDERS
 SENCILLO A PROPÓSITO
 Nada de mapas de mar de fondo que descifrar. Kookout te da la respuesta: ve, o no vayas.
 
-GRATIS PARA LOS PRIMEROS
-Los primeros 2000 usuarios usan Kookout gratis. Si algún día eso tuviera que cambiar, se les avisará con mucha antelación.
+GRATIS
+Kookout es gratis: sin anuncios, sin compras dentro de la app y sin necesidad de cuenta.
 
 Hecho en Noruega por un wingfoiler. Datos meteorológicos del Instituto Meteorológico de Noruega (yr.no), Kystverket, NOAA y Holfuy.
 

@@ -12,7 +12,7 @@ Quand vos spots sont bons
 
 ## Promotional text (max 170)
 
-Gratuit pour les 2 000 premiers utilisateurs. Choisissez vos spots, réglez ce qui marche, et Kookout vous dit quand et où c'est bon. Fini de vérifier la météo sans arrêt.
+Gratuit, sans compte. Choisissez vos spots, réglez ce qui marche, et Kookout vous dit quand et où c'est bon. Fini de vérifier la météo sans arrêt.
 
 ## Keywords (max 100)
 
@@ -48,8 +48,8 @@ FAIT AVEC D'AUTRES RIDERS
 SIMPLE, EXPRÈS
 Pas de cartes de houle à décoder. Kookout vous donne la réponse : on y va, ou pas.
 
-GRATUIT POUR LES PREMIERS
-Les 2 000 premiers utilisateurs utilisent Kookout gratuitement. Si cela devait un jour changer, ils seraient prévenus longtemps à l'avance.
+GRATUIT
+Kookout est gratuit : pas de pub, pas d'achats intégrés, pas de compte nécessaire.
 
 Fait en Norvège par un wingfoiler. Données météo de l'Institut météorologique norvégien (yr.no), Kystverket, NOAA et Holfuy.
 

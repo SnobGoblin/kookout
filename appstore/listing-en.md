@@ -12,7 +12,7 @@ Know when your spots are good
 
 ## Promotional text (max 170, can be changed any time without a review)
 
-Free for the first 2,000 users. Pick your spots, set what works there, and Kookout tells you when and where it's good. No more checking the forecast again and again.
+Free, no account needed. Pick your spots, set what works there, and Kookout tells you when and where it's good. No more checking the forecast again and again.
 
 ## Keywords (max 100, comma-separated, no spaces; words in the name count already)
 
@@ -48,8 +48,8 @@ BUILT WITH OTHER RIDERS
 SIMPLE ON PURPOSE
 No swell charts to decode. Kookout gives you the answer: go, or don't.
 
-FREE FOR FOUNDING USERS
-The first 2,000 users use Kookout for free. If that ever has to change, they'll hear about it well in advance.
+FREE
+Kookout is free: no ads, no in-app purchases, no account needed.
 
 Made in Norway by a wing foiler. Forecasts from MET Norway (yr.no), Kystverket, NOAA and Holfuy.
 
