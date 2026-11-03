@@ -343,7 +343,8 @@ struct SpotRow: View {
         if let first = forecast.upcomingGood.first {
             let day = Self.dayLabel(first.start, zone: zone)
             let hours = Units.hours(first.start, first.end, zone: zone)
-            return String(localized: "Good \(day) \(hours)")
+            let text = String(localized: "Good \(day) \(hours)") // German puts the day first: "morgen 14–18 gut"
+            return text.prefix(1).localizedUppercase + text.dropFirst()
         }
         if let firstPowder = forecast.powderDays.first, let date = Self.dayFormatter.date(from: firstPowder) {
             return String(localized: "Powder \(Self.dayLabel(date, zone: .gmt))")

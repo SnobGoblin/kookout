@@ -42,7 +42,7 @@ const TEXT = {
   da: { more: "+{n} mere", new: "Godt {when}", changed: "Nu godt {when} (var {was})", gone: "Ikke længere godt {when}",
         powder: "Pulver {when}", powderGone: "Ikke længere pulver {when}",
         test: "Notifikationer er slået til. Kookout siger til, når dine spots ser gode ud." },
-  de: { more: "+{n} weitere", new: "Gut {when}", changed: "Jetzt gut {when} (vorher {was})", gone: "Nicht mehr gut {when}",
+  de: { more: "+{n} weitere", new: "{when} gut", changed: "Jetzt gut {when} (vorher {was})", gone: "Nicht mehr gut {when}",
         powder: "Powder {when}", powderGone: "Kein Powder mehr {when}",
         test: "Mitteilungen sind an. Kookout sagt dir, wenn deine Spots gut aussehen." },
   fr: { more: "+{n} autres", new: "Bon {when}", changed: "Bon maintenant {when} (avant {was})", gone: "Plus bon {when}",
@@ -221,10 +221,11 @@ function render(events, device, now) {
   const sound = events[0].type === "gone" ? BAD_NEWS_SOUND : SOUND; // the top line (nearest in time) decides
   const at = Math.round(events[0].period.start / 1000); // seconds since 1970: the app scrolls to the top line's period
   const ids = [...new Set(events.map(e => e.spot.id))];
+  const cap = line => line.charAt(0).toLocaleUpperCase(device.lang) + line.slice(1); // German: {when} comes first
 
   if (ids.length === 1) { // one spot: as before, one line per change
     const spot = events[0].spot;
-    const body = events.map(e => template(e).replace("{when}", when(e.period, e)).replace("{was}", e.was ? when(e.was, e) : "")).join("\n");
+    const body = events.map(e => template(e).replace("{when}", when(e.period, e)).replace("{was}", e.was ? when(e.was, e) : "")).map(cap).join("\n");
     return { aps: { alert: { title: spot.name, body }, "thread-id": spot.id, sound }, spot: spot.id, at };
   }
 
@@ -257,7 +258,7 @@ function render(events, device, now) {
   const headline = (first.type === "gone" ? (isPowder(first) ? t.powderGone : t.gone) : (isPowder(first) ? t.powder : t.new))
     .replace("{when}", day(first.period.start, first.zone));
   const shown = lines.length > MAX_LINES ? [...lines.slice(0, MAX_LINES - 1), t.more.replace("{n}", lines.length - MAX_LINES + 1)] : lines;
-  return { aps: { alert: { title: one ? headline : "Kookout", body: shown.join("\n") }, "thread-id": "kookout", sound },
+  return { aps: { alert: { title: one ? cap(headline) : "Kookout", body: shown.map(cap).join("\n") }, "thread-id": "kookout", sound },
            spots: ids, at };
 }
 
