@@ -2,7 +2,7 @@
 
 Kookout tells wing foilers, surfers and skiers when *their* spots are good: the forecast judged against each
 spot's own rules (wind directions, limits, waves, snow), with push notifications when good conditions come up
-or change. Built by Christian (owner, not a programmer; learning as we go) with Claude. README.md has the
+or change. Built by Christian (owner; technical background, new to Swift and web dev) with Claude. README.md has the
 details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
@@ -69,7 +69,7 @@ emailed through Resend), `founders.js` (founding-user numbers). Tests: `node rel
   (`npx wrangler secret put …`, `gh secret set …`). Secrets in use: FROST_CLIENT_ID, APNS_KEY, SIWA_KEY, RESEND_API_KEY.
   Non-secret ids live in `relay/wrangler.toml`.
 - **Ask before** anything outward or hard to undo: DNS, App Store Connect actions, expiring builds, deleting data.
-- **Explain plainly.** Christian is learning; say what changed, how it was tested, and what's left, without jargon.
+- **Be precise.** Say what changed, how it was tested, and what's left. Number list items (no plain bullets) so points can be referred to.
   Push back and point out downsides; he's asked for that.
 - **Test before handing over:** build, install in the Simulator, look at the screen. Also think about real-phone
   cases the Simulator misses (Bold Text, the app waking up hours later, accidental taps).
