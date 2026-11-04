@@ -1,15 +1,16 @@
-// Draws Kookout's cartoon promo for social media (9:16, 1080 × 1920, 30 fps, 25 s) frame by frame, with the
+// Draws Kookout's cartoon promo for social media (9:16, 1080 × 1920, 30 fps, 27 s) frame by frame, with the
 // brand's own swoosh. Run from the repo root:  swift -O brand/promo.swift [folder for check frames]
 //
 // Writes brand/promo/kookout-cartoon.mp4. With a folder, also writes a PNG of a few frames there, to look at.
 // This is the animatic for the script in brand/promo/README.md: captions stand in for the narrator.
 //
 //   1. 0–3 s    80s title "THE WIND": "In a world… where the wind waits for no one…"
-//   2. 3–8 s    Gary in a meeting; behind him, wings glide past the window. He turns round too late.
-//   3. 8–12 s   Kai asleep in a hammock; "Home spot: Tomorrow 2–6 PM good" (swoosh); he lifts his sunglasses
-//   4. 12–16 s  Kai fills in the details on his favourite sites (generic wind map, station, webcam)
-//   5. 16–21 s  Kai and Gary out on the water at the home spot
-//   6. 21–25 s  end card: the logo's eyes look left, right and back, as in the app's splash
+//   2. 3–7 s    Gary at dawn, buried in made-up metrics ("secondary swell median"). Verdict: …maybe?
+//   3. 7–10 s   Gary in a meeting; behind him, wings glide past the window. He turns round too late.
+//   4. 10–14 s  Kai asleep in a hammock; "Home spot: Tomorrow 2–6 PM good" (swoosh); he lifts his sunglasses
+//   5. 14–18 s  Kai fills in the details on his favourite sites (generic wind map, station, webcam)
+//   6. 18–23 s  Kai and Gary out on the water at the home spot
+//   7. 23–27 s  end card: the logo's eyes look left, right and back, as in the app's splash
 
 import AppKit
 import AVFoundation
@@ -18,11 +19,11 @@ import Foundation
 
 let W: CGFloat = 1080, H: CGFloat = 1920
 let fps: Int32 = 30
-let duration: CGFloat = 25
+let duration: CGFloat = 27
 let fade: CGFloat = 0.35
 // Instagram Reels covers these (px): keep captions and anything that matters out of them
 let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
-let swooshes: [Double] = [8.6, 21.1]                      // when the swoosh plays (s)
+let swooshes: [Double] = [10.6, 23.1]                      // when the swoosh plays (s)
 
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
     CGColor(red: CGFloat(hex >> 16 & 0xFF) / 255, green: CGFloat(hex >> 8 & 0xFF) / 255,
@@ -384,6 +385,75 @@ func scene1(_ c: CGContext, _ t: CGFloat) {
     caption(c, "where the wind waits for no one…", y: 570, size: 64, appear: ramp(t, 1.3, 1.7), color: orange)
 }
 
+// MARK: - Scene 2a: Gary's morning analysis, buried in made-up metrics
+// The joke is on Gary overdoing it, never on any real site: every metric here is invented.
+
+let metrics: [(name: String, value: String?, at: CGPoint, tilt: CGFloat)] = [
+    ("Secondary swell median", nil, P(270, 1270), -0.06),
+    ("Gust-to-lull variance (adj.)", nil, P(790, 1250), 0.05),
+    ("Ferry wake ETA", "14:52 ± 3", P(250, 960), 0.04),
+    ("Moon × tide phase", "Waxing-ish", P(800, 930), -0.05),
+    ("Wind confidence index", "63 %", P(290, 640), 0.06),
+    ("Kites on webcam 3", "2 (1 lost)", P(780, 640), -0.04),
+    ("Swell period, 4th model", nil, P(540, 1330), 0.02),
+]
+
+func metricCard(_ c: CGContext, _ i: Int, appear: CGFloat, _ t: CGFloat) {
+    guard appear > 0 else { return }
+    let m = metrics[i], r = CGRect(x: -165, y: -100, width: 330, height: 200)
+    c.saveGState()
+    c.translateBy(x: m.at.x, y: m.at.y)
+    c.rotate(by: m.tilt)
+    c.scaleBy(x: pop(appear), y: pop(appear))
+    fill(c, rgb(0x000000, 0.25), rr(r.offsetBy(dx: 8, dy: -10), 22))
+    fill(c, white, rr(r, 22))
+    text(c, m.name, x: r.minX + 22, y: r.maxY - 48, size: 30, weight: 800, color: navy, align: 0, maxWidth: r.width - 44)
+    if let value = m.value {
+        text(c, value, x: r.minX + 22, y: r.minY + 42, size: 56, weight: 800, color: orange, align: 0, maxWidth: r.width - 44)
+    } else {
+        let line = CGMutablePath()
+        for k in 0...14 {
+            let x = r.minX + 22 + CGFloat(k) * (r.width - 44) / 14
+            let y = r.minY + 70 + 50 * noise(i * 31 + k) + 10 * sin(t * 6 + CGFloat(k))
+            if k == 0 { line.move(to: P(x, y)) } else { line.addLine(to: P(x, y)) }
+        }
+        stroke(c, i % 2 == 0 ? sea : orange, 7, line)
+    }
+    c.restoreGState()
+}
+
+func scene2a(_ c: CGContext, _ t: CGFloat) {
+    background(c, rgb(0x2E3F4B))
+    // Dawn through the window, a lamp, coffee
+    let win = CGRect(x: 640, y: 1120, width: 300, height: 330)
+    fill(c, rgb(0xDCE3E8), rr(win.insetBy(dx: -16, dy: -16), 12))
+    c.saveGState(); c.addPath(rr(win, 4)); c.clip()
+    gradient(c, [rgb(0x34295A), rgb(0xFF9E7A)], from: win.maxY, to: win.minY)
+    c.restoreGState()
+    text(c, "06:12", x: 230, y: 1380, size: 90, weight: 700, color: rgb(0xFF4F4F))
+
+    // Gary at the kitchen table, eyes going round
+    fill(c, shirt, rr(CGRect(x: 380, y: 480, width: 320, height: 360), 120))
+    let tie = CGMutablePath()
+    tie.addLines(between: [P(540, 820), P(515, 600), P(540, 560), P(565, 600)]); tie.closeSubpath()
+    fill(c, navy, tie)
+    fill(c, skin, CGPath(rect: CGRect(x: 510, y: 820, width: 60, height: 70), transform: nil))
+    let dizzy = ramp(t, 1.2, 2.0)
+    face(c, P(540, 980), 125, .gary, look: P(dizzy * cos(t * 9), dizzy * sin(t * 9)),
+         mouth: dizzy > 0.5 ? .o : .flat)
+    fill(c, rgb(0x3B4A55), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: 540), transform: nil))
+    fill(c, white, rr(CGRect(x: 760, y: 520, width: 80, height: 90), 14))
+    stroke(c, white, 12, CGPath(ellipseIn: CGRect(x: 825, y: 540, width: 40, height: 46), transform: nil))
+    fill(c, skin, ellipse(P(380, 560), 60, 34))
+    fill(c, skin, ellipse(P(700, 560), 60, 34))
+
+    for i in metrics.indices { metricCard(c, i, appear: ramp(t, 0.3 + CGFloat(i) * 0.38, 0.55 + CGFloat(i) * 0.38), t) }
+
+    caption(c, "He studied the secondary", y: 1600, size: 84, appear: ramp(t, 0.2, 0.6))
+    caption(c, "swell median…", y: 1490, size: 84, appear: ramp(t, 0.5, 0.9), color: orange)
+    caption(c, "Verdict: …maybe?", y: 500, size: 90, appear: ramp(t, 3.0, 3.3))
+}
+
 // MARK: - Scene 2: Gary in a meeting, the good wind behind him
 
 func scene2(_ c: CGContext, _ t: CGFloat) {
@@ -402,8 +472,8 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     hills.addQuadCurve(to: P(1020, 1000), control: P(800, 1070)); hills.closeSubpath()
     fill(c, rgb(0x4E8C7A), hills)
     fill(c, rgb(0x3A93C9), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: 1002), transform: nil))
-    for (i, start) in [0.2, 1.3, 2.3].enumerated() {
-        let x = mix(-150, 1250, (t - CGFloat(start)) / 2.2)
+    for (i, start) in [-0.2, 0.5, 1.2].enumerated() {
+        let x = mix(-150, 1250, (t - CGFloat(start)) / 1.9)
         let by = 900 + CGFloat(i) * 25 + 6 * sin(t * 3 + CGFloat(i))
         foiler(c, x: x, by: by, scale: 0.28 - CGFloat(i) * 0.03, t, who: i == 1 ? .kai : .gary)
     }
@@ -413,7 +483,7 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     c.restoreGState()
 
     // Gary, bored, then turning round too late
-    let turn = smooth(ramp(t, 3.3, 3.7))
+    let turn = smooth(ramp(t, 2.1, 2.4))
     fill(c, shirt, rr(CGRect(x: 380, y: 480, width: 320, height: 360), 120))
     let tie = CGMutablePath()
     tie.addLines(between: [P(540, 820), P(515, 600), P(540, 560), P(565, 600)]); tie.closeSubpath()
@@ -435,9 +505,8 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     fill(c, skin, ellipse(P(330, 560), 60, 34))
     fill(c, skin, ellipse(P(750, 560), 60, 34))
 
-    caption(c, "He checked the forecast", y: 1580, size: 96, appear: ramp(t, 0.3, 0.7))
-    caption(c, "every morning.", y: 1470, size: 96, appear: ramp(t, 0.6, 1.0))
-    caption(c, "The wind came in the afternoon.", y: 500, size: 70, appear: ramp(t, 2.2, 2.6), color: orange)
+    caption(c, "The wind came", y: 1580, size: 96, appear: ramp(t, 0.2, 0.6))
+    caption(c, "in the afternoon.", y: 1470, size: 96, appear: ramp(t, 0.6, 1.0), color: orange)
 }
 
 // MARK: - Scene 3: Kai in the hammock, the swoosh
@@ -759,7 +828,8 @@ func scene6(_ c: CGContext, _ t: CGFloat) {
 // MARK: - Timeline and output
 
 let scenes: [(start: CGFloat, end: CGFloat, draw: (CGContext, CGFloat) -> Void)] = [
-    (0, 3, scene1), (3, 8, scene2), (8, 12, scene3), (12, 16, scene4), (16, 21, scene5), (21, duration, scene6),
+    (0, 3, scene1), (3, 7, scene2a), (7, 10, scene2), (10, 14, scene3), (14, 18, scene4), (18, 23, scene5),
+    (23, duration, scene6),
 ]
 
 func frame(_ c: CGContext, _ t: CGFloat) {
@@ -775,7 +845,7 @@ func frame(_ c: CGContext, _ t: CGFloat) {
 }
 
 let checks = CommandLine.arguments.count > 1 ? URL(fileURLWithPath: CommandLine.arguments[1]) : nil
-let checkTimes: [CGFloat] = [2.0, 4.5, 7.0, 9.0, 10.9, 13.0, 15.2, 17.5, 19.5, 23.5]
+let checkTimes: [CGFloat] = [2.0, 5.2, 6.6, 9.3, 12.9, 17.2, 21.5, 25.5]
 
 let output = URL(fileURLWithPath: "brand/promo/kookout-cartoon.mp4")
 try FileManager.default.createDirectory(at: output.deletingLastPathComponent(), withIntermediateDirectories: true)

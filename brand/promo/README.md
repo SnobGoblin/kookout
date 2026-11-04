@@ -1,12 +1,12 @@
 # Kookout promo: cartoon
 
-A 9:16 social video, about 25 s, for Instagram/Facebook wing foil and surf groups and later the kookout.no landing
+A 9:16 social video, about 27 s, for Instagram/Facebook wing foil and surf groups and later the kookout.no landing
 page. Cartoon only, with an 80s movie-trailer narrator.
 
 The message: **Kookout is the tap on the shoulder, not another forecast site.** It tells you when and where your
 spots are good, so you don't have to remember to check. The details (wind maps, stations, ships, webcams) stay with
 the sites riders already use and like, such as Foilmenyen. The video must never make those look bad: the joke is
-about *forgetting to check*, never about the tools.
+about Gary *overdoing it* (all the metrics in his scene are invented), never about the tools.
 
 Files here:
 1. `README.md`: this plan (script, voice-over, prompts).
@@ -18,7 +18,8 @@ Files here:
 | # | Time | Picture | Narrator (80s trailer voice) | Sound |
 |---|---|---|---|---|
 | 1 | 0–3 s | Black, then chrome 80s title "THE WIND" with a lens flare. | "In a world… where the wind waits for no one…" | Low synth hit |
-| 2 | 3–8 s | **Gary** at his office desk in a long meeting. Behind him, through the window, wings and surfers fly past on a perfect afternoon. He turns around just as the last one disappears. | "He checked the forecast every morning. The wind came in the afternoon." | Meeting murmur, a seagull |
+| 2 | 3–7 s | **Gary** at 06:12 at the kitchen table, buried under pop-up charts of made-up metrics: "Secondary swell median", "Gust-to-lull variance (adj.)", "Ferry wake ETA 14:52 ± 3", "Moon × tide phase: Waxing-ish", "Wind confidence index 63 %", "Kites on webcam 3: 2 (1 lost)", "Swell period, 4th model". His eyes go round. | "He studied the secondary swell median. The gust-to-lull variance. The ferry wake ETA. Verdict: …maybe." | Pop, pop, pop |
+| 2b | 7–10 s | Gary in a long meeting. Behind him, through the window, wings fly past on a perfect afternoon. He turns around just as the last one disappears. | "The wind came in the afternoon." | Meeting murmur, a seagull |
 | 3 | 8–12 s | **Kai**, the chill surfer, asleep in a hammock. The phone on his belly lights up: "Home spot · Tomorrow 2–6 PM good". Swoosh. Kai lifts his sunglasses with one finger, slow grin. | "Kai… just waited for the swoosh." | **Kookout swoosh** |
 | 4 | 12–16 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder. Your favourite sites do the rest." | Taps |
 | 5 | 16–21 s | Kai on the water at Home spot, flying on the foil, sun out. Gary rides past him, also grinning, phone in a waterproof pouch. | "Kookout. It tells you when… and where." | Water, wind |
@@ -41,7 +42,8 @@ slight reverb". Do **not** use a voice sold as a copy of a real narrator. Check 
 
 Lines (one file each, so they can be timed against the picture; name them `vo-1.mp3` … `vo-6.mp3`):
 1. "In a world… where the wind waits for no one…"
-2. "He checked the forecast every morning. The wind came in the afternoon."
+2. "He studied the secondary swell median. The gust-to-lull variance. The ferry wake ETA. Verdict: …maybe."
+   Then, as its own file (`vo-2b.mp3`): "The wind came in the afternoon."
 3. "Kai… just waited for the swoosh."
 4. "Kookout taps you on the shoulder. Your favourite sites do the rest."
 5. "Kookout. It tells you when… and where."
