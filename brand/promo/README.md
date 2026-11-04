@@ -22,7 +22,7 @@ Files here:
 | 1 | 0–3 s | Black, then chrome 80s title "THE WIND" with a lens flare. | "In a world… where the wind waits for no one…" | Low synth hit |
 | 2 | 3–7 s | **Gary** at 06:12 at the kitchen table, buried under pop-up charts of made-up metrics: "Secondary swell median", "Gust-to-lull variance (adj.)", "Ferry wake ETA 14:52 ± 3", "Moon × tide phase: Waxing-ish", "Wind confidence index 63 %", "Kites on webcam 3: 2 (1 lost)", "Swell period, 4th model". His eyes go round. | "He studied the secondary swell median. The gust-to-lull variance. The ferry wake ETA. Verdict: …maybe." | Pop, pop, pop |
 | 2b | 7–10 s | Gary in a long meeting. Behind him, through the window, wings fly past on a perfect afternoon. He turns around just as the last one disappears. | "The wind came in the afternoon." | Meeting murmur, a seagull |
-| 3 | 8–12 s | **Kai**, the chill surfer, asleep in a hammock. The phone on his belly lights up: "Home spot · Tomorrow 2–6 PM good". Swoosh. Kai lifts his sunglasses with one finger, slow grin. | "Kai… just waited for the swoosh." | **Kookout swoosh** |
+| 3 | 8–12 s | **Kai** the otter, asleep, floating on his back. The phone on his belly lights up: "Home spot · Tomorrow 2–6 PM good". Swoosh. Kai lifts his sunglasses with one finger, slow grin. | "Kai… just waited for the swoosh." | **Kookout swoosh** |
 | 3b | 14–17 s | Kai's Lock Screen, close up: under the clock, Kookout's **Lock Screen widget** (rectangular: "Home spot **now**", "The reef 14–18", "Ski hill Sat"; circular: wind icon and a tick), glowing; then the rectangular one pops out large enough to read. Drawn by me, exactly as the 1.1 widget looks. | "No app to open. Just glance at your Lock Screen." | Soft chime |
 | 4 | 12–16 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder. Your favourite sites do the rest." | Taps |
 | 5 | 16–21 s | Kai on the water at Home spot, flying on the foil, sun out. Gary rides past him, also grinning, phone in a waterproof pouch. | "Kookout. It tells you when… and where." | Water, wind |
@@ -62,19 +62,19 @@ Style line to start every image prompt with, so all shots match:
 > Flat 2D cartoon, thick clean dark outlines, soft cel shading, cute rounded proportions, limited palette: navy
 > #0E2A3B, sea blue #1C6EA4, buoy orange #FF6B2C, warm sand, white. Vertical 9:16. No text.
 
-Characters (make a sheet of each first, then use it as the reference image for every shot):
-1. **Kai**, the chill surfer: early 20s, round friendly face, shaggy sun-bleached hair, sleepy half-closed eyes,
-   orange beanie, navy board shorts, relaxed smile, a bit sloth-like. "Character turnaround sheet, front, side,
-   three-quarter, neutral pose."
-2. **Gary**, the busy rider: 40s, friendly, slightly frazzled, short hair, shirt and tie with a surf-brand hoodie
-   over it. Funny and likeable, never a loser: he gets his ride in the end.
+Characters (make a sheet of each first, then use it as the reference image for every shot). Both are Norwegian
+coast animals; their eyes may be drawn round with the pupil "looking out", like the logo's O's.
+1. **Kai**, a chill sea otter: round, fluffy brown fur, cream muzzle, whiskers, sleepy half-closed eyes, orange
+   beanie, navy board shorts, relaxed smile. Floats on his back whenever he can. "Character turnaround sheet,
+   front, side, three-quarter, neutral pose."
+2. **Gary**, an over-analysing Atlantic puffin: black and white, the striped orange beak, red eye rings, wide
+   anxious eyes, light blue shirt and navy tie. Funny and likeable, never a loser: he gets his ride in the end.
 
 Shots (image first, then image-to-video, 3–5 s each):
 1. Shot 2: "Gary at a desk in a glass-walled meeting room, bored; behind him through a big window a sunny fjord with
    orange wing-foil wings gliding past." Motion: wings glide past behind him; he turns around too late.
-2. Shot 3: "Kai asleep in a hammock between two pines by a sunny beach, sunglasses on, a phone lying on his belly
-   with a blank screen." Motion: the hammock sways, the screen lights up, Kai lifts the sunglasses with one finger
-   and grins.
+2. Shot 3: "Kai the otter asleep, floating on his back in a calm sunny fjord, sunglasses on, holding a phone with a blank
+   screen on his belly." Motion: he bobs gently, the screen lights up, he lifts the sunglasses with one paw and grins.
 3. Shot 4: "Kai sitting in the hammock looking at his phone, relaxed, nodding." Motion: small nods, thumb swipes.
    (The phone screens are drawn by me.)
 4. Shot 5: "Kai wing foiling on a sunny fjord, flying above the water on a hydrofoil board, holding an orange wing,
