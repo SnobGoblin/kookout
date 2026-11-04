@@ -20,14 +20,16 @@ Files here:
 | 1 | 0–3 s | Black, then chrome 80s title "THE WIND" with a lens flare. | "In a world… where the wind waits for no one…" | Low synth hit |
 | 2 | 3–8 s | **Gary** at his office desk in a long meeting. Behind him, through the window, wings and surfers fly past on a perfect afternoon. He turns around just as the last one disappears. | "He checked the forecast every morning. The wind came in the afternoon." | Meeting murmur, a seagull |
 | 3 | 8–12 s | **Kai**, the chill surfer, asleep in a hammock. The phone on his belly lights up: "Home spot · Tomorrow 2–6 PM good". Swoosh. Kai lifts his sunglasses with one finger, slow grin. | "Kai… just waited for the swoosh." | **Kookout swoosh** |
-| 4 | 12–16 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder. Your favourite forecast sites fill in the details." | Taps |
+| 4 | 12–16 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder. Your favourite sites do the rest." | Taps |
 | 5 | 16–21 s | Kai on the water at Home spot, flying on the foil, sun out. Gary rides past him, also grinning, phone in a waterproof pouch. | "Kookout. It tells you when… and where." | Water, wind |
 | 6 | 21–25 s | End card (exists in `promo.swift`): the eyes look left, right, out; KOOKOUT; "Know when your spots are good." / "Free on the App Store · kookout.no" | "Kookout. Now on the App Store." | Swoosh |
 
-On-screen captions follow the narrator line for line, since most people watch muted.
+On-screen captions follow the narrator line for line, since most people watch muted. Everything that matters
+stays inside Instagram's Reels safe zone: clear of the top 250 px, the bottom 450 px and the right 140 px (buttons);
+`promo.swift` shades those areas red in its check frames.
 
 Other ways to say line 4, in order of preference:
-1. "Kookout taps you on the shoulder. Your favourite forecast sites fill in the details."
+1. "Kookout taps you on the shoulder. Your favourite sites do the rest."
 2. "Kookout tells you when to look. Your favourite apps tell you the rest."
 3. "Keep using the sites you love. Kookout just tells you when it's time."
 
@@ -41,7 +43,7 @@ Lines (one file each, so they can be timed against the picture; name them `vo-1.
 1. "In a world… where the wind waits for no one…"
 2. "He checked the forecast every morning. The wind came in the afternoon."
 3. "Kai… just waited for the swoosh."
-4. "Kookout taps you on the shoulder. Your favourite forecast sites fill in the details."
+4. "Kookout taps you on the shoulder. Your favourite sites do the rest."
 5. "Kookout. It tells you when… and where."
 6. "Kookout. Now on the App Store."
 

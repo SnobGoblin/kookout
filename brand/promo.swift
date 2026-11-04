@@ -19,7 +19,9 @@ import Foundation
 let W: CGFloat = 1080, H: CGFloat = 1920
 let fps: Int32 = 30
 let duration: CGFloat = 25
-let fade: CGFloat = 0.35                                  // crossfade between scenes
+let fade: CGFloat = 0.35
+// Instagram Reels covers these (px): keep captions and anything that matters out of them
+let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
 let swooshes: [Double] = [8.6, 21.1]                      // when the swoosh plays (s)
 
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
@@ -182,7 +184,7 @@ func caption(_ c: CGContext, _ s: String, y: CGFloat, size: CGFloat, appear: CGF
     c.scaleBy(x: k, y: k)
     c.setAlpha(clamp(appear * 3))
     c.beginTransparencyLayer(auxiliaryInfo: nil)
-    text(c, s, x: 0, y: -size * 0.35, size: size, color: color, outline: navy)
+    text(c, s, x: 0, y: -size * 0.35, size: size, color: color, outline: navy, maxWidth: W - 2 * instagramRight - 20)
     c.endTransparencyLayer()
     c.restoreGState()
 }
@@ -378,8 +380,8 @@ func scene1(_ c: CGContext, _ t: CGFloat) {
     let glint = ramp(t, 0.8, 1.6)
     sparkle(c, P(mix(160, 920, glint), 1390), 90, alpha: sin(glint * .pi))
 
-    caption(c, "In a world…", y: 560, size: 84, appear: ramp(t, 0.6, 1.0))
-    caption(c, "where the wind waits for no one…", y: 440, size: 64, appear: ramp(t, 1.3, 1.7), color: orange)
+    caption(c, "In a world…", y: 680, size: 84, appear: ramp(t, 0.6, 1.0))
+    caption(c, "where the wind waits for no one…", y: 570, size: 64, appear: ramp(t, 1.3, 1.7), color: orange)
 }
 
 // MARK: - Scene 2: Gary in a meeting, the good wind behind him
@@ -387,6 +389,8 @@ func scene1(_ c: CGContext, _ t: CGFloat) {
 func scene2(_ c: CGContext, _ t: CGFloat) {
     background(c, rgb(0xDDE3E6))
     // The window: a sunny fjord, wings gliding past
+    c.saveGState()
+    c.translateBy(x: 0, y: -130)                         // keeps the window clear of the captions
     let win = CGRect(x: 60, y: 760, width: 960, height: 740)
     fill(c, rgb(0xF4F6F7), rr(win.insetBy(dx: -24, dy: -24), 20))
     c.saveGState()
@@ -406,6 +410,7 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     band(c, rgb(0x2A80B8), base: 880, amp: 6, k: 0.02, speed: 2.4, t)
     c.restoreGState()
     stroke(c, rgb(0xF4F6F7), 18, polyline(P(win.midX, win.minY), P(win.midX, win.maxY)))
+    c.restoreGState()
 
     // Gary, bored, then turning round too late
     let turn = smooth(ramp(t, 3.3, 3.7))
@@ -430,9 +435,9 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     fill(c, skin, ellipse(P(330, 560), 60, 34))
     fill(c, skin, ellipse(P(750, 560), 60, 34))
 
-    caption(c, "He checked the forecast", y: 1730, size: 96, appear: ramp(t, 0.3, 0.7))
-    caption(c, "every morning.", y: 1610, size: 96, appear: ramp(t, 0.6, 1.0))
-    caption(c, "The wind came in the afternoon.", y: 300, size: 70, appear: ramp(t, 2.2, 2.6), color: orange)
+    caption(c, "He checked the forecast", y: 1580, size: 96, appear: ramp(t, 0.3, 0.7))
+    caption(c, "every morning.", y: 1470, size: 96, appear: ramp(t, 0.6, 1.0))
+    caption(c, "The wind came in the afternoon.", y: 500, size: 70, appear: ramp(t, 2.2, 2.6), color: orange)
 }
 
 // MARK: - Scene 3: Kai in the hammock, the swoosh
@@ -514,8 +519,8 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
         c.restoreGState()
     }
 
-    caption(c, "Kai…", y: 1730, size: 110, appear: ramp(t, 1.2, 1.5))
-    caption(c, "just waited for the swoosh.", y: 1600, size: 90, appear: ramp(t, 1.9, 2.3), color: orange)
+    caption(c, "Kai…", y: 1560, size: 110, appear: ramp(t, 1.2, 1.5))
+    caption(c, "just waited for the swoosh.", y: 1440, size: 90, appear: ramp(t, 1.9, 2.3), color: orange)
 }
 
 // MARK: - Scene 4: Kai fills in the details on his favourite sites
@@ -578,6 +583,8 @@ func scene4(_ c: CGContext, _ t: CGFloat) {
         wedge.closeSubpath()
         fill(c, rgb(0x2A86C0), wedge)
     }
+    c.saveGState()
+    c.translateBy(x: 580, y: 990); c.scaleBy(x: 0.76, y: 0.76); c.translateBy(x: -540, y: -860)
     for i in 0..<3 {
         fill(c, skin, ellipse(P(845, 560 + CGFloat(i) * 115), 52, 40))
         fill(c, skin, ellipse(P(235, 600 + CGFloat(i) * 115), 52, 40))
@@ -606,13 +613,14 @@ func scene4(_ c: CGContext, _ t: CGFloat) {
     c.restoreGState()
     fill(c, rgb(0x000000), rr(CGRect(x: 455, y: 1360, width: 170, height: 50), 25))
     fill(c, skin, ellipse(P(250, 520), 48, 92))
+    c.restoreGState()
 
     // Kai in the corner, nodding along
     let nod = 10 * sin(t * 7)
-    face(c, P(850, 230 + nod), 175, .kai, lids: 0.3, look: P(-0.7, 0.6), mouth: .smile, shades: 1)
+    face(c, P(210, 610 + nod), 150, .kai, lids: 0.3, look: P(0.7, 0.6), mouth: .smile, shades: 1)
 
-    caption(c, "Kookout taps you on the shoulder.", y: 1730, size: 80, appear: ramp(t, 0.2, 0.6))
-    caption(c, "Your favourite sites fill in the details.", y: 1610, size: 70, appear: ramp(t, 1.2, 1.6), color: orange)
+    caption(c, "Kookout taps you on the shoulder.", y: 1600, size: 80, appear: ramp(t, 0.2, 0.6))
+    caption(c, "Your favourite sites do the rest.", y: 1500, size: 76, appear: ramp(t, 1.2, 1.6), color: orange)
 }
 
 // MARK: - Scene 5: both out on the water at the home spot
@@ -642,17 +650,17 @@ func cloud(_ c: CGContext, _ p: CGPoint, _ s: CGFloat) {
 func scene5(_ c: CGContext, _ t: CGFloat) {
     gradient(c, [rgb(0x4FAEE6), rgb(0xC4E8F8)], from: H, to: 820)
 
-    let sun = P(880, 1250)
+    let sun = P(860, 1170)
     for i in 0..<10 {
         let a = CGFloat(i) * .pi / 5 + t * 0.4
         stroke(c, rgb(0xFFD45A), 14, polyline(P(sun.x + 120 * cos(a), sun.y + 120 * sin(a)), P(sun.x + 160 * cos(a), sun.y + 160 * sin(a))))
     }
     fill(c, rgb(0xFFD45A), circle(sun, 90))
-    for (x0, y, s, v) in [(300.0, 1420.0, 1.15, 70.0), (900, 1500, 0.8, 55), (650, 1130, 0.9, 85)] {
+    for (x0, y, s, v) in [(300.0, 1300.0, 1.0, 70.0), (900, 1380, 0.75, 55), (650, 1060, 0.85, 85)] {
         cloud(c, P(fract((x0 + t * v) / (W + 400)) * (W + 400) - 200, y), s)
     }
-    for i in 0..<5 {
-        let y = 960 + CGFloat(i) * 105
+    for i in 0..<4 {
+        let y = 940 + CGFloat(i) * 100
         let x = fract((CGFloat(i) * 313 + t * 520) / (W + 600)) * (W + 600) - 300
         let streak = CGMutablePath()
         streak.move(to: P(x, y))
@@ -696,15 +704,15 @@ func scene5(_ c: CGContext, _ t: CGFloat) {
     if sign > 0 {
         c.saveGState()
         c.translateBy(x: 150, y: 90); c.scaleBy(x: pop(sign), y: pop(sign)); c.translateBy(x: -150, y: -90)
-        stroke(c, navy, 14, polyline(P(150, 90), P(150, 480)))
+        stroke(c, navy, 14, polyline(P(150, 90), P(150, 780)))
         let flag = CGMutablePath()
         let flap = { (u: CGFloat) in 10 * sin(u * 0.05 - t * 9) * (u / 150) }
-        flag.move(to: P(157, 475))
-        for u in stride(from: CGFloat(0), through: 150, by: 10) { flag.addLine(to: P(157 + u, 475 - u * 0.15 + flap(u))) }
-        for u in stride(from: CGFloat(150), through: 0, by: -10) { flag.addLine(to: P(157 + u, 395 + u * 0.15 + flap(u))) }
+        flag.move(to: P(157, 775))
+        for u in stride(from: CGFloat(0), through: 150, by: 10) { flag.addLine(to: P(157 + u, 775 - u * 0.15 + flap(u))) }
+        for u in stride(from: CGFloat(150), through: 0, by: -10) { flag.addLine(to: P(157 + u, 695 + u * 0.15 + flap(u))) }
         flag.closeSubpath()
         fill(c, orange, flag)
-        let board = CGRect(x: 60, y: 200, width: 400, height: 100)
+        let board = CGRect(x: 70, y: 500, width: 400, height: 100)
         fill(c, white, rr(board, 22))
         stroke(c, navy, 6, rr(board, 22))
         text(c, "Home spot", x: board.minX + 24, y: board.midY - 15, size: 44, weight: 800, color: navy, align: 0)
@@ -714,8 +722,8 @@ func scene5(_ c: CGContext, _ t: CGFloat) {
         c.restoreGState()
     }
 
-    caption(c, "Kookout tells you when…", y: 1730, size: 96, appear: ramp(t, 0.4, 0.8))
-    caption(c, "…and where.", y: 1600, size: 110, appear: ramp(t, 1.6, 2.0), color: orange)
+    caption(c, "Kookout tells you when…", y: 1560, size: 96, appear: ramp(t, 0.4, 0.8))
+    caption(c, "…and where.", y: 1430, size: 110, appear: ramp(t, 1.6, 2.0), color: orange)
 }
 
 // MARK: - Scene 6: end card
@@ -728,21 +736,22 @@ func scene6(_ c: CGContext, _ t: CGFloat) {
     for (a, b) in zip(keys, keys.dropFirst()) where t >= a.0 { look = mix(a.1, b.1, smooth(ramp(t, a.0, b.0))) }
     let k = mix(0.85, 1, pop(ramp(t, -0.2, 0.4)))
     c.saveGState()
-    c.translateBy(x: W / 2, y: 1120); c.scaleBy(x: k, y: k); c.translateBy(x: -W / 2, y: -1120)
-    eyes(c, P(W / 2, 1120), width: 700, look: look)
+    c.translateBy(x: W / 2, y: 1240); c.scaleBy(x: k, y: k); c.translateBy(x: -W / 2, y: -1240)
+    eyes(c, P(W / 2, 1240), width: 700, look: look)
     let box = name.path.boundingBoxOfPath, s = 560 / box.width
     c.saveGState()
-    c.translateBy(x: W / 2 - box.midX * s, y: 900 - box.maxY * s)
+    c.translateBy(x: W / 2 - box.midX * s, y: 1020 - box.maxY * s)
     c.scaleBy(x: s, y: s)
     fill(c, rgb(0xFFFFFF, 0.85), name.path)
     c.restoreGState()
     c.restoreGState()
 
-    caption(c, "Know when your spots are good.", y: 620, size: 64, appear: ramp(t, 0.9, 1.3))
+    caption(c, "Know when your spots are good.", y: 790, size: 64, appear: ramp(t, 0.9, 1.3))
     let link = ramp(t, 1.5, 1.9)
     if link > 0 {
         c.saveGState(); c.setAlpha(link)
-        text(c, "Free on the App Store  ·  kookout.no", x: W / 2, y: 500, size: 44, weight: 700, color: orange)
+        text(c, "Free on the App Store  ·  kookout.no", x: W / 2, y: 670, size: 44, weight: 700, color: orange,
+             maxWidth: W - 2 * instagramRight - 20)
         c.restoreGState()
     }
 }
@@ -801,7 +810,16 @@ for f in 0..<frameCount {
     let t = CGFloat(f) / CGFloat(fps)
     frame(c, t)
     if let checks, checkTimes.contains(where: { abs($0 - t) < 0.5 / CGFloat(fps) }) {
-        let png = NSBitmapImageRep(cgImage: c.makeImage()!).representation(using: .png, properties: [:])!
+        // Check frames show what Instagram Reels covers: top bar, caption and audio at the bottom, buttons on the right
+        let check = CGContext(data: nil, width: Int(W), height: Int(H), bitsPerComponent: 8, bytesPerRow: 0, space: srgb,
+                              bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+        check.draw(c.makeImage()!, in: CGRect(x: 0, y: 0, width: W, height: H))
+        for r in [CGRect(x: 0, y: H - instagramTop, width: W, height: instagramTop),
+                  CGRect(x: 0, y: 0, width: W, height: instagramBottom),
+                  CGRect(x: W - instagramRight, y: instagramBottom, width: instagramRight, height: 650)] {
+            fill(check, rgb(0xFF0000, 0.3), CGPath(rect: r, transform: nil))
+        }
+        let png = NSBitmapImageRep(cgImage: check.makeImage()!).representation(using: .png, properties: [:])!
         try png.write(to: checks.appendingPathComponent(String(format: "frame-%05.2f.png", Double(t))))
     }
     CVPixelBufferUnlockBaseAddress(pb, [])
