@@ -1,0 +1,7 @@
+# Media: large, and partly not ours to publish
+footage/
+generated/
+*.mp4
+*.mov
+*.mp3
+*.wav
