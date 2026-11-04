@@ -1,12 +1,14 @@
 # Kookout promo: cartoon
 
-A 9:16 social video, about 27 s, for Instagram/Facebook wing foil and surf groups and later the kookout.no landing
+A 9:16 social video, about 30 s, for Instagram/Facebook wing foil and surf groups and later the kookout.no landing
 page. Cartoon only, with an 80s movie-trailer narrator.
 
 The message: **Kookout is the tap on the shoulder, not another forecast site.** It tells you when and where your
 spots are good, so you don't have to remember to check. The details (wind maps, stations, ships, webcams) stay with
 the sites riders already use and like, such as Foilmenyen. The video must never make those look bad: the joke is
 about Gary *overdoing it* (all the metrics in his scene are invented), never about the tools.
+
+**Post only once Kookout 1.1 is in the App Store**: the Lock Screen widget (scene 3b) comes with 1.1.
 
 Files here:
 1. `README.md`: this plan (script, voice-over, prompts).
@@ -21,6 +23,7 @@ Files here:
 | 2 | 3–7 s | **Gary** at 06:12 at the kitchen table, buried under pop-up charts of made-up metrics: "Secondary swell median", "Gust-to-lull variance (adj.)", "Ferry wake ETA 14:52 ± 3", "Moon × tide phase: Waxing-ish", "Wind confidence index 63 %", "Kites on webcam 3: 2 (1 lost)", "Swell period, 4th model". His eyes go round. | "He studied the secondary swell median. The gust-to-lull variance. The ferry wake ETA. Verdict: …maybe." | Pop, pop, pop |
 | 2b | 7–10 s | Gary in a long meeting. Behind him, through the window, wings fly past on a perfect afternoon. He turns around just as the last one disappears. | "The wind came in the afternoon." | Meeting murmur, a seagull |
 | 3 | 8–12 s | **Kai**, the chill surfer, asleep in a hammock. The phone on his belly lights up: "Home spot · Tomorrow 2–6 PM good". Swoosh. Kai lifts his sunglasses with one finger, slow grin. | "Kai… just waited for the swoosh." | **Kookout swoosh** |
+| 3b | 14–17 s | Kai's Lock Screen, close up: under the clock, Kookout's **Lock Screen widget** (rectangular: "Home spot **now**", "The reef 14–18", "Ski hill Sat"; circular: wind icon and a tick), glowing; then the rectangular one pops out large enough to read. Drawn by me, exactly as the 1.1 widget looks. | "No app to open. Just glance at your Lock Screen." | Soft chime |
 | 4 | 12–16 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder. Your favourite sites do the rest." | Taps |
 | 5 | 16–21 s | Kai on the water at Home spot, flying on the foil, sun out. Gary rides past him, also grinning, phone in a waterproof pouch. | "Kookout. It tells you when… and where." | Water, wind |
 | 6 | 21–25 s | End card (exists in `promo.swift`): the eyes look left, right, out; KOOKOUT; "Know when your spots are good." / "Free on the App Store · kookout.no" | "Kookout. Now on the App Store." | Swoosh |
@@ -45,6 +48,7 @@ Lines (one file each, so they can be timed against the picture; name them `vo-1.
 2. "He studied the secondary swell median. The gust-to-lull variance. The ferry wake ETA. Verdict: …maybe."
    Then, as its own file (`vo-2b.mp3`): "The wind came in the afternoon."
 3. "Kai… just waited for the swoosh."
+   Then (`vo-3b.mp3`): "No app to open. Just glance at your Lock Screen."
 4. "Kookout taps you on the shoulder. Your favourite sites do the rest."
 5. "Kookout. It tells you when… and where."
 6. "Kookout. Now on the App Store."

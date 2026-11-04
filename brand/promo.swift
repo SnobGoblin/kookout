@@ -1,4 +1,4 @@
-// Draws Kookout's cartoon promo for social media (9:16, 1080 × 1920, 30 fps, 27 s) frame by frame, with the
+// Draws Kookout's cartoon promo for social media (9:16, 1080 × 1920, 30 fps, 30 s) frame by frame, with the
 // brand's own swoosh. Run from the repo root:  swift -O brand/promo.swift [folder for check frames]
 //
 // Writes brand/promo/kookout-cartoon.mp4. With a folder, also writes a PNG of a few frames there, to look at.
@@ -8,9 +8,10 @@
 //   2. 3–7 s    Gary at dawn, buried in made-up metrics ("secondary swell median"). Verdict: …maybe?
 //   3. 7–10 s   Gary in a meeting; behind him, wings glide past the window. He turns round too late.
 //   4. 10–14 s  Kai asleep in a hammock; "Home spot: Tomorrow 2–6 PM good" (swoosh); he lifts his sunglasses
-//   5. 14–18 s  Kai fills in the details on his favourite sites (generic wind map, station, webcam)
-//   6. 18–23 s  Kai and Gary out on the water at the home spot
-//   7. 23–27 s  end card: the logo's eyes look left, right and back, as in the app's splash
+//   5. 14–17 s  the Lock Screen widget (Kookout 1.1): "No app to open. Just glance at your Lock Screen."
+//   6. 17–21 s  Kai fills in the details on his favourite sites (generic wind map, station, webcam)
+//   7. 21–26 s  Kai and Gary out on the water at the home spot
+//   8. 26–30 s  end card: the logo's eyes look left, right and back, as in the app's splash
 
 import AppKit
 import AVFoundation
@@ -19,11 +20,11 @@ import Foundation
 
 let W: CGFloat = 1080, H: CGFloat = 1920
 let fps: Int32 = 30
-let duration: CGFloat = 27
+let duration: CGFloat = 30
 let fade: CGFloat = 0.35
 // Instagram Reels covers these (px): keep captions and anything that matters out of them
 let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
-let swooshes: [Double] = [10.6, 23.1]                      // when the swoosh plays (s)
+let swooshes: [Double] = [10.6, 26.1]                      // when the swoosh plays (s)
 
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
     CGColor(red: CGFloat(hex >> 16 & 0xFF) / 255, green: CGFloat(hex >> 8 & 0xFF) / 255,
@@ -592,6 +593,92 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
     caption(c, "just waited for the swoosh.", y: 1440, size: 90, appear: ramp(t, 1.9, 2.3), color: orange)
 }
 
+// MARK: - Scene 3b: the Lock Screen widget (Kookout 1.1)
+// As KookoutWidget draws it: rectangular = three lines, spot and when ("now" in bold, today's hours, else the
+// weekday), one colour; circular = the sport icon and a tick when it's good now.
+
+let lockSpots: [(name: String, when: String, now: Bool)] = [("Home spot", "now", true), ("The reef", "14–18", false),
+                                                             ("Ski hill", "Sat", false)]
+
+func windIcon(_ c: CGContext, _ p: CGPoint, _ s: CGFloat, _ color: CGColor) {
+    for (i, len) in [CGFloat(1), 0.75, 0.9].enumerated() {
+        let y = p.y + (1 - CGFloat(i)) * 0.32 * s
+        let line = CGMutablePath()
+        line.move(to: P(p.x - 0.5 * s, y))
+        line.addLine(to: P(p.x + (len - 0.6) * s, y))
+        line.addArc(center: P(p.x + (len - 0.6) * s, y + 0.12 * s), radius: 0.12 * s, startAngle: -.pi / 2, endAngle: .pi,
+                    clockwise: false)
+        stroke(c, color, 0.09 * s, line)
+    }
+}
+
+/// The rectangular widget's three lines, `size` points per line, white.
+func lockWidget(_ c: CGContext, origin: CGPoint, size: CGFloat) {
+    for (i, s) in lockSpots.enumerated() {
+        let y = origin.y - CGFloat(i) * size * 1.25
+        let nameFont = archivo(size: size, weight: s.now ? 700 : 500)
+        let w = CGFloat(CTLineGetTypographicBounds(CTLineCreateWithAttributedString(NSAttributedString(string: s.name,
+                    attributes: [.init(kCTFontAttributeName as String): nameFont])), nil, nil, nil))
+        text(c, s.name, x: origin.x, y: y, size: size, weight: s.now ? 700 : 500, color: white, align: 0)
+        text(c, s.when, x: origin.x + w + size * 0.35, y: y, size: size, weight: s.now ? 800 : 500, color: white, align: 0)
+    }
+}
+
+func scene3b(_ c: CGContext, _ t: CGFloat) {
+    let center = P(540, 860)
+    background(c, sea)
+    for i in 0..<18 {
+        let a = CGFloat(i) * 2 * .pi / 18 - t * 0.15
+        let wedge = CGMutablePath()
+        wedge.move(to: center)
+        wedge.addLine(to: P(center.x + 2000 * cos(a), center.y + 2000 * sin(a)))
+        wedge.addLine(to: P(center.x + 2000 * cos(a + .pi / 18), center.y + 2000 * sin(a + .pi / 18)))
+        wedge.closeSubpath()
+        fill(c, rgb(0x2A86C0), wedge)
+    }
+    // The phone's Lock Screen
+    c.saveGState()
+    c.translateBy(x: 540, y: 1030); c.scaleBy(x: 0.68, y: 0.68); c.translateBy(x: -540, y: -860)
+    let phone = CGRect(x: 240, y: 270, width: 600, height: 1180)
+    fill(c, rgb(0x0B0F12), rr(phone, 96))
+    let screen = phone.insetBy(dx: 22, dy: 22)
+    c.saveGState()
+    c.addPath(rr(screen, 76)); c.clip()
+    gradient(c, [rgb(0x1B3B52), rgb(0x3E7FA8), rgb(0xF2A65A)], from: screen.maxY, to: screen.minY)
+    band(c, rgb(0x1C6EA4), base: 520, amp: 14, k: 0.02, speed: 1.5, t)
+    band(c, rgb(0x155985), base: 440, amp: 18, k: 0.014, speed: 2.2, t)
+    c.restoreGState()
+    fill(c, rgb(0x000000), rr(CGRect(x: 455, y: 1360, width: 170, height: 50), 25))
+    text(c, "Saturday 7 November", x: 540, y: 1270, size: 40, weight: 600, color: rgb(0xFFFFFF, 0.9))
+    text(c, "07:42", x: 540, y: 1080, size: 200, weight: 700, color: rgb(0xFFFFFF, 0.95))
+    let glow = 0.5 + 0.5 * sin(t * 5)
+    let rect = CGRect(x: 290, y: 860, width: 340, height: 140)
+    fill(c, rgb(0xFFFFFF, 0.14), rr(rect, 24))
+    lockWidget(c, origin: P(rect.minX + 20, rect.maxY - 42), size: 30)
+    let round = P(720, 930)
+    fill(c, rgb(0xFFFFFF, 0.14), circle(round, 70))
+    windIcon(c, P(round.x, round.y + 26), 44, white)
+    stroke(c, white, 9, polyline(P(round.x - 22, round.y - 22), P(round.x - 6, round.y - 38), P(round.x + 24, round.y - 4)))
+    stroke(c, rgb(0xFF6B2C, 0.6 + 0.4 * glow), 8, rr(rect.insetBy(dx: -10, dy: -10), 30))
+    stroke(c, rgb(0xFF6B2C, 0.6 + 0.4 * glow), 8, circle(round, 80))
+    c.restoreGState()
+
+    // The widget again, big enough to read on a phone
+    let zoom = ramp(t, 0.7, 1.05)
+    if zoom > 0 {
+        let card = CGRect(x: 220, y: 470, width: 640, height: 250)
+        c.saveGState()
+        c.translateBy(x: card.midX, y: card.maxY); c.scaleBy(x: pop(zoom), y: pop(zoom)); c.translateBy(x: -card.midX, y: -card.maxY)
+        fill(c, rgb(0x0B1E2A, 0.92), rr(card, 40))
+        stroke(c, orange, 6, rr(card, 40))
+        lockWidget(c, origin: P(card.minX + 40, card.maxY - 70), size: 54)
+        c.restoreGState()
+    }
+
+    caption(c, "No app to open.", y: 1600, size: 90, appear: ramp(t, 0.2, 0.6))
+    caption(c, "Just glance.", y: 1490, size: 90, appear: ramp(t, 0.9, 1.3), color: orange)
+}
+
 // MARK: - Scene 4: Kai fills in the details on his favourite sites
 
 func card(_ c: CGContext, _ r: CGRect, _ kind: Int, _ t: CGFloat) {
@@ -828,8 +915,8 @@ func scene6(_ c: CGContext, _ t: CGFloat) {
 // MARK: - Timeline and output
 
 let scenes: [(start: CGFloat, end: CGFloat, draw: (CGContext, CGFloat) -> Void)] = [
-    (0, 3, scene1), (3, 7, scene2a), (7, 10, scene2), (10, 14, scene3), (14, 18, scene4), (18, 23, scene5),
-    (23, duration, scene6),
+    (0, 3, scene1), (3, 7, scene2a), (7, 10, scene2), (10, 14, scene3), (14, 17, scene3b), (17, 21, scene4),
+    (21, 26, scene5), (26, duration, scene6),
 ]
 
 func frame(_ c: CGContext, _ t: CGFloat) {
@@ -845,7 +932,7 @@ func frame(_ c: CGContext, _ t: CGFloat) {
 }
 
 let checks = CommandLine.arguments.count > 1 ? URL(fileURLWithPath: CommandLine.arguments[1]) : nil
-let checkTimes: [CGFloat] = [2.0, 5.2, 6.6, 9.3, 12.9, 17.2, 21.5, 25.5]
+let checkTimes: [CGFloat] = [2.0, 6.6, 12.9, 15.0, 16.5, 20.2, 24.5, 28.5]
 
 let output = URL(fileURLWithPath: "brand/promo/kookout-cartoon.mp4")
 try FileManager.default.createDirectory(at: output.deletingLastPathComponent(), withIntermediateDirectories: true)
