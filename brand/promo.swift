@@ -1,13 +1,15 @@
-// Draws Kookout's cartoon promo for social media (9:16, 1080 × 1920, 30 fps, 18 s) frame by frame, with the
+// Draws Kookout's cartoon promo for social media (9:16, 1080 × 1920, 30 fps, 25 s) frame by frame, with the
 // brand's own swoosh. Run from the repo root:  swift -O brand/promo.swift [folder for check frames]
 //
 // Writes brand/promo/kookout-cartoon.mp4. With a folder, also writes a PNG of a few frames there, to look at.
+// This is the animatic for the script in brand/promo/README.md: captions stand in for the narrator.
 //
-// The story (pitch: Kookout tells you when and where, no rechecking):
-//   1. 0–4.4 s    a rider on the sofa on a rainy day, refreshing the forecast while the clock spins
-//   2. 4.4–8.4 s  the phone buzzes: "Home spot: Tomorrow 2–6 PM good" (swoosh); the rider's eyes turn into Kookout's
-//   3. 8.4–14 s   out wing foiling at the home spot
-//   4. 14–18 s    end card: the logo's eyes look left, right and back, as in the app's splash
+//   1. 0–3 s    80s title "THE WIND": "In a world… where the wind waits for no one…"
+//   2. 3–8 s    Gary in a meeting; behind him, wings glide past the window. He turns round too late.
+//   3. 8–12 s   Kai asleep in a hammock; "Home spot: Tomorrow 2–6 PM good" (swoosh); he lifts his sunglasses
+//   4. 12–16 s  Kai fills in the details on his favourite sites (generic wind map, station, webcam)
+//   5. 16–21 s  Kai and Gary out on the water at the home spot
+//   6. 21–25 s  end card: the logo's eyes look left, right and back, as in the app's splash
 
 import AppKit
 import AVFoundation
@@ -16,9 +18,9 @@ import Foundation
 
 let W: CGFloat = 1080, H: CGFloat = 1920
 let fps: Int32 = 30
-let duration: CGFloat = 18
+let duration: CGFloat = 25
 let fade: CGFloat = 0.35                                  // crossfade between scenes
-let swooshes: [Double] = [4.9, 14.1]                      // when the swoosh plays (s)
+let swooshes: [Double] = [8.6, 21.1]                      // when the swoosh plays (s)
 
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
     CGColor(red: CGFloat(hex >> 16 & 0xFF) / 255, green: CGFloat(hex >> 8 & 0xFF) / 255,
@@ -146,10 +148,11 @@ func text(_ c: CGContext, _ s: String, x: CGFloat, y: CGFloat, size: CGFloat, we
     func line(_ size: CGFloat, stroke: Bool) -> CTLine {
         var a: [NSAttributedString.Key: Any] = [
             .init(kCTFontAttributeName as String): archivo(size: size, weight: weight),
-            .init(kCTForegroundColorAttributeName as String): color]
+            .init(kCTForegroundColorAttributeName as String): color,
+            .init(kCTKernAttributeName as String): outline == nil ? 0 : size * 0.02]
         if stroke, let outline {
             a[.init(kCTStrokeColorAttributeName as String)] = outline
-            a[.init(kCTStrokeWidthAttributeName as String)] = 24
+            a[.init(kCTStrokeWidthAttributeName as String)] = 16
         }
         return CTLineCreateWithAttributedString(NSAttributedString(string: s, attributes: a))
     }
@@ -184,164 +187,398 @@ func caption(_ c: CGContext, _ s: String, y: CGFloat, size: CGFloat, appear: CGF
     c.restoreGState()
 }
 
-// MARK: - Scene 1: the sofa, a rainy day, refreshing the forecast
+// MARK: - Characters
 
-func refreshIcon(_ c: CGContext, _ p: CGPoint, r: CGFloat, alpha: CGFloat) {
+let kaiHair = rgb(0xE8C36A), garyHair = rgb(0x4A3426), shirt = rgb(0xCFE3F2), wood = rgb(0x6B4A33)
+let pine = rgb(0x2F5D50)
+
+enum Who { case kai, gary }
+enum Mouth { case smile, flat, grin, o }
+
+/// A face seen from the front, centred on `p`, head radius `r`. `lids` 0 = open, 1 = shut; `look` moves the pupils
+/// (in eye radii); `shades` nil = none, 0 = over the eyes, 1 = pushed up on the forehead.
+func face(_ c: CGContext, _ p: CGPoint, _ r: CGFloat, _ who: Who, lids: CGFloat = 0, look: CGPoint = .zero,
+          mouth: Mouth = .smile, shades: CGFloat? = nil) {
     c.saveGState()
-    c.setAlpha(alpha)
-    let start: CGFloat = 0.6, end: CGFloat = 0.6 + 4.9
-    let arc = CGMutablePath()
-    arc.addArc(center: p, radius: r, startAngle: start, endAngle: end, clockwise: false)
-    stroke(c, white, r * 0.3, arc)
-    let e = P(p.x + r * cos(end), p.y + r * sin(end))
-    let along = P(-sin(end), cos(end)), out = P(cos(end), sin(end))
-    let head = CGMutablePath()
-    head.addLines(between: [P(e.x + along.x * r * 0.55, e.y + along.y * r * 0.55),
-                            P(e.x + out.x * r * 0.42, e.y + out.y * r * 0.42),
-                            P(e.x - out.x * r * 0.42, e.y - out.y * r * 0.42)])
-    head.closeSubpath()
-    fill(c, white, head)
-    c.restoreGState()
-}
-
-func scene1(_ c: CGContext, _ t: CGFloat) {
-    // Wall and floor
-    fill(c, rgb(0x2E3F4B), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: H), transform: nil))
-    fill(c, rgb(0x22303A), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: 470), transform: nil))
-
-    // Window: grey sky, dark clouds, rain
-    let win = CGRect(x: 110, y: 1010, width: 420, height: 470)
-    fill(c, rgb(0xDCE3E8), rr(win.insetBy(dx: -22, dy: -22), 18))
+    c.translateBy(x: p.x, y: p.y)
+    c.scaleBy(x: r / 100, y: r / 100)
+    fill(c, skinShade, circle(P(-98, -5), 22))
+    fill(c, skinShade, circle(P(98, -5), 22))
+    fill(c, skin, circle(.zero, 100))
     c.saveGState()
-    c.addPath(rr(win, 6)); c.clip()
-    let space = CGColorSpace(name: CGColorSpace.sRGB)!
-    let sky = CGGradient(colorsSpace: space, colors: [rgb(0x6F7E89), rgb(0xA9B5BD)] as CFArray, locations: [0, 1])!
-    c.drawLinearGradient(sky, start: P(0, win.maxY), end: P(0, win.minY), options: [])
-    for (x, y, r) in [(150.0, 1440.0, 70.0), (240, 1460, 80), (340, 1440, 66), (450, 1450, 74), (520, 1430, 60)] {
-        fill(c, rgb(0x5E6C76), circle(P(x - fract(t * 0.05) * 40, y), r))
-    }
-    for i in 0..<34 {
-        let x = win.minX + fract(CGFloat(i) * 0.618) * (win.width + 60)
-        let y = win.maxY + 40 - fract(CGFloat(i) * 0.37 + t * 1.7) * (win.height + 100)
-        stroke(c, rgb(0xFFFFFF, 0.55), 5, polyline(P(x, y), P(x - 14, y - 46)))
+    c.addPath(circle(.zero, 106)); c.clip()
+    switch who {
+    case .kai:                                           // shaggy blond fringe under an orange beanie
+        let fringe = CGMutablePath()
+        fringe.move(to: P(-110, 120))
+        for i in 0...11 { fringe.addLine(to: P(-110 + CGFloat(i) * 20, i % 2 == 0 ? 30 : 52)) }
+        fringe.addLine(to: P(120, 120)); fringe.closeSubpath()
+        fill(c, kaiHair, fringe)
+        fill(c, orange, CGPath(rect: CGRect(x: -110, y: 62, width: 220, height: 60), transform: nil))
+        fill(c, orangeDark, rr(CGRect(x: -106, y: 50, width: 212, height: 30), 15))
+    case .gary:                                          // short dark hair
+        let hair = CGMutablePath()
+        hair.move(to: P(-110, 120)); hair.addLine(to: P(-110, 30))
+        hair.addQuadCurve(to: P(110, 40), control: P(0, 80))
+        hair.addLine(to: P(110, 120)); hair.closeSubpath()
+        fill(c, garyHair, hair)
     }
     c.restoreGState()
-    stroke(c, rgb(0xDCE3E8), 16, polyline(P(win.midX, win.minY), P(win.midX, win.maxY)))
-    stroke(c, rgb(0xDCE3E8), 16, polyline(P(win.minX, win.midY), P(win.maxX, win.midY)))
-
-    // Clock, spinning: hours go by
-    let clock = P(850, 1330)
-    fill(c, white, circle(clock, 95))
-    stroke(c, navy, 12, circle(clock, 95))
-    for i in 0..<12 {
-        let a = CGFloat(i) * .pi / 6
-        stroke(c, navy, 6, polyline(P(clock.x + 72 * cos(a), clock.y + 72 * sin(a)), P(clock.x + 82 * cos(a), clock.y + 82 * sin(a))))
-    }
-    let hour = .pi / 2 - t * 2.4, minute = .pi / 2 - t * 2.4 * 12
-    stroke(c, navy, 12, polyline(clock, P(clock.x + 45 * cos(hour), clock.y + 45 * sin(hour))))
-    stroke(c, navy, 8, polyline(clock, P(clock.x + 70 * cos(minute), clock.y + 70 * sin(minute))))
-    fill(c, orange, circle(clock, 10))
-
-    // Sofa
-    fill(c, rgb(0x000000, 0.25), ellipse(P(540, 285), 520, 40))
-    fill(c, sea, rr(CGRect(x: 90, y: 430, width: 900, height: 390), 70))
-    fill(c, rgb(0x175C8A), rr(CGRect(x: 70, y: 300, width: 940, height: 220), 60))
-
-    // The rider: legs, hoodie, arms, phone, head
-    let jeans = rgb(0x34567A)
-    fill(c, jeans, rr(CGRect(x: 428, y: 190, width: 98, height: 360), 46))
-    fill(c, jeans, rr(CGRect(x: 554, y: 190, width: 98, height: 360), 46))
-    fill(c, white, ellipse(P(470, 185), 66, 34))
-    fill(c, white, ellipse(P(610, 185), 66, 34))
-    fill(c, orange, rr(CGRect(x: 380, y: 500, width: 320, height: 380), 130))
-    fill(c, rgb(0xE85A1E), rr(CGRect(x: 450, y: 560, width: 180, height: 90), 40))
-    fill(c, skin, CGPath(rect: CGRect(x: 510, y: 840, width: 60, height: 70), transform: nil))
-
-    // Phone, flickering through forecasts
-    fill(c, rgb(0x111518), rr(CGRect(x: 478, y: 650, width: 124, height: 212), 22))
-    fill(c, rgb(0xCFE8F7), rr(CGRect(x: 486, y: 660, width: 108, height: 192), 16))
-    let page = Int(t * 6)
-    for row in 0..<5 {
-        let y = 820 - CGFloat(row) * 34
-        fill(c, rgb(0x1C6EA4, 0.8), circle(P(502, y), 7))
-        fill(c, rgb(0x0E2A3B, 0.55), rr(CGRect(x: 516, y: y - 6, width: 18 + 56 * noise(page * 7 + row), height: 12), 6))
-    }
-    let tap = max(0, sin(t * 18)) * 8
-    stroke(c, orange, 64, polyline(P(405, 800), P(470, 720)))
-    stroke(c, orange, 64, polyline(P(675, 800), P(612, 720 + tap)))
-    fill(c, skin, circle(P(476, 724), 34))
-    fill(c, skin, circle(P(606, 724 + tap), 34))
-
-    // Head, beanie, bored eyes
-    let head = P(540, 1010)
-    fill(c, skinShade, circle(P(413, 995), 28))
-    fill(c, skinShade, circle(P(667, 995), 28))
-    fill(c, skin, circle(head, 125))
-    c.saveGState()
-    c.addPath(circle(head, 132)); c.clip()
-    fill(c, navy, CGPath(rect: CGRect(x: 380, y: 1060, width: 320, height: 200), transform: nil))
-    c.restoreGState()
-    fill(c, rgb(0x0A1F2C), rr(CGRect(x: 405, y: 1040, width: 270, height: 50), 25))
-    fill(c, orange, circle(P(540, 1150), 30))
-    let blink = fract(t / 2.3) < 0.06
-    for ex in [CGFloat(493), 587] {
-        let e = CGRect(x: ex - 32, y: 966, width: 64, height: 72)
+    for ex in [CGFloat(-36), 36] {
+        let e = CGRect(x: ex - 24, y: -28, width: 48, height: 56)
         c.saveGState()
         c.addEllipse(in: e); c.clip()
         fill(c, white, CGPath(rect: e, transform: nil))
-        fill(c, navy, circle(P(ex + 2, 984), 16))
-        let lid = e.maxY - (blink ? 1 : 0.45) * e.height
-        fill(c, skin, CGPath(rect: CGRect(x: e.minX, y: lid, width: e.width, height: e.maxY - lid), transform: nil))
-        stroke(c, navy, 7, polyline(P(e.minX, lid), P(e.maxX, lid)))
+        fill(c, navy, circle(P(ex + look.x * 10, look.y * 12), 12))
+        if lids > 0 {
+            let lid = e.maxY - lids * e.height
+            fill(c, skin, CGPath(rect: CGRect(x: e.minX, y: lid, width: e.width, height: e.maxY - lid), transform: nil))
+            stroke(c, navy, 5, polyline(P(e.minX, lid), P(e.maxX, lid)))
+        }
         c.restoreGState()
-        stroke(c, navy, 5, CGPath(ellipseIn: e, transform: nil))
+        stroke(c, navy, 4, CGPath(ellipseIn: e, transform: nil))
     }
-    stroke(c, navy, 8, curve(P(505, 922), P(540, 940), P(575, 922)))
-
-    // Refresh, refresh, refresh
-    for k in 0..<12 {
-        let age = (t - 0.2 - CGFloat(k) * 0.42) / 1.3
-        guard age > 0, age < 1 else { continue }
-        let side: CGFloat = k % 2 == 0 ? 1 : -1
-        refreshIcon(c, P(540 + side * (110 + 230 * sqrt(age)), 860 + 440 * age), r: 30 + 12 * age, alpha: 1 - age * age)
+    switch mouth {
+    case .smile: stroke(c, navy, 7, curve(P(-30, -45), P(0, -75), P(30, -45)))
+    case .flat: stroke(c, navy, 7, polyline(P(-22, -52), P(22, -52)))
+    case .o: fill(c, navy, ellipse(P(0, -58), 14, 18))
+    case .grin:
+        let g = CGMutablePath()
+        g.move(to: P(-36, -42)); g.addQuadCurve(to: P(36, -42), control: P(0, -98)); g.closeSubpath()
+        fill(c, navy, g)
+        c.saveGState(); c.addPath(g); c.clip()
+        fill(c, white, CGPath(rect: CGRect(x: -40, y: -52, width: 80, height: 12), transform: nil))
+        c.restoreGState()
     }
-
-    caption(c, "Checking the", y: 1730, size: 104, appear: ramp(t, 0.3, 0.75))
-    caption(c, "forecast again?", y: 1600, size: 104, appear: ramp(t, 1.1, 1.55), color: orange)
+    if let shades {
+        let y = mix(0, 78, smooth(shades))
+        for ex in [CGFloat(-38), 38] {
+            fill(c, rgb(0x111518), rr(CGRect(x: ex - 34, y: y - 22, width: 68, height: 46), 18))
+            stroke(c, rgb(0xFFFFFF, 0.6), 4, polyline(P(ex - 20, y + 10), P(ex - 6, y + 14)))
+        }
+        stroke(c, rgb(0x111518), 6, polyline(P(-6, y + 6), P(6, y + 6)))
+    }
+    c.restoreGState()
 }
 
-// MARK: - Scene 2: the phone buzzes
+/// A wing foiler seen from the side, flying left to right; (x, by) is the board's centre. `scale` 1 ≈ 600 px tall.
+func foiler(_ c: CGContext, x: CGFloat, by: CGFloat, scale s: CGFloat, _ t: CGFloat, who: Who) {
+    c.saveGState()
+    c.translateBy(x: x, y: by)
+    c.scaleBy(x: s, y: s)
+    let wingColor = who == .kai ? orange : rgb(0xF2F5F7), wingEdge = who == .kai ? orangeDark : sea
+    stroke(c, rgb(0x1D2329), 11, polyline(P(20, -12), P(20, -175)))
+    fill(c, rgb(0x1D2329), ellipse(P(40, -176), 62, 10))
+    c.saveGState()
+    c.translateBy(x: 20, y: 515)
+    c.rotate(by: -0.15 + 0.05 * sin(t * 1.7))
+    let wing = CGMutablePath()
+    wing.move(to: P(-270, -30))
+    wing.addQuadCurve(to: P(270, -30), control: P(0, 200))
+    wing.addQuadCurve(to: P(-270, -30), control: P(0, 70))
+    fill(c, wingColor, wing)
+    fill(c, rgb(0xC4E8F8, 0.75), ellipse(P(-110, 40), 46, 22))
+    stroke(c, wingEdge, 28, curve(P(-270, -30), P(0, 200), P(270, -30)))
+    stroke(c, wingEdge, 20, polyline(P(0, 85), P(0, 22)))
+    c.restoreGState()
+    fill(c, rgb(0x0B1E2A), rr(CGRect(x: -115, y: -13, width: 230, height: 26), 13))
+    let legs = who == .kai ? navy : wetsuit
+    stroke(c, legs, 34, polyline(P(-45, 14), P(-15, 82), P(5, 150)))
+    stroke(c, legs, 34, polyline(P(45, 14), P(62, 86), P(5, 150)))
+    let top = who == .kai ? skin : wetsuit
+    stroke(c, top, 76, polyline(P(5, 150), P(20, 285)))
+    if who == .kai { fill(c, navy, rr(CGRect(x: -34, y: 130, width: 80, height: 50), 20)) }   // board shorts
+    else { fill(c, orange, rr(CGRect(x: -28, y: 185, width: 86, height: 104), 32)) }          // vest
+    stroke(c, top, 26, polyline(P(20, 285), P(-30, 372), P(-62, 470)))
+    stroke(c, top, 26, polyline(P(20, 285), P(62, 378), P(92, 465)))
+    fill(c, skin, circle(P(-62, 472), 17))
+    fill(c, skin, circle(P(92, 467), 17))
+    let head = P(28, 350)
+    fill(c, skin, circle(head, 46))
+    c.saveGState()
+    c.addPath(circle(head, 50)); c.clip()
+    if who == .kai {
+        fill(c, kaiHair, CGPath(rect: CGRect(x: head.x - 60, y: head.y - 4, width: 120, height: 70), transform: nil))
+        fill(c, orange, CGPath(rect: CGRect(x: head.x - 60, y: head.y + 16, width: 120, height: 60), transform: nil))
+    } else {
+        fill(c, garyHair, CGPath(rect: CGRect(x: head.x - 60, y: head.y + 14, width: 120, height: 60), transform: nil))
+    }
+    c.restoreGState()
+    fill(c, white, circle(P(head.x + 22, head.y - 6), 13))
+    fill(c, navy, circle(P(head.x + 27, head.y - 6), 6))
+    stroke(c, navy, 6, curve(P(head.x + 4, head.y - 24), P(head.x + 26, head.y - 46), P(head.x + 42, head.y - 24)))
+    c.restoreGState()
+}
+
+func background(_ c: CGContext, _ color: CGColor) {
+    fill(c, color, CGPath(rect: CGRect(x: 0, y: 0, width: W, height: H), transform: nil))
+}
+
+func gradient(_ c: CGContext, _ colors: [CGColor], from top: CGFloat, to bottom: CGFloat) {
+    let g = CGGradient(colorsSpace: CGColorSpace(name: CGColorSpace.sRGB)!, colors: colors as CFArray, locations: nil)!
+    c.drawLinearGradient(g, start: P(0, top), end: P(0, bottom), options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
+}
+
+func sparkle(_ c: CGContext, _ p: CGPoint, _ r: CGFloat, alpha: CGFloat) {
+    guard alpha > 0 else { return }
+    fill(c, rgb(0xFFFFFF, 0.35 * alpha), circle(p, r * 0.45))
+    let star = CGMutablePath()
+    for i in 0..<8 {
+        let a = CGFloat(i) * .pi / 4, d = i % 2 == 0 ? r : r * 0.12
+        let q = P(p.x + d * cos(a), p.y + d * sin(a))
+        if i == 0 { star.move(to: q) } else { star.addLine(to: q) }
+    }
+    star.closeSubpath()
+    fill(c, rgb(0xFFFFFF, alpha), star)
+}
+
+// MARK: - Scene 1: 80s title, "In a world…"
+
+func scene1(_ c: CGContext, _ t: CGFloat) {
+    let horizon: CGFloat = 860
+    gradient(c, [rgb(0x0B0420), rgb(0x4A1450)], from: H, to: horizon)
+    // The sun, striped at the bottom
+    c.saveGState()
+    c.addRect(CGRect(x: 0, y: horizon, width: W, height: H)); c.clip()
+    c.addPath(circle(P(540, horizon + 40), 300)); c.clip()
+    gradient(c, [rgb(0xFFD45A), rgb(0xFF6B2C), rgb(0xFF4F7B)], from: horizon + 340, to: horizon)
+    for i in 0..<6 {
+        let y = horizon + 20 + CGFloat(i) * 34
+        fill(c, rgb(0x3A1046), CGPath(rect: CGRect(x: 0, y: y, width: W, height: 14 - CGFloat(i) * 2), transform: nil))
+    }
+    c.restoreGState()
+    // The grid, rolling towards us
+    fill(c, rgb(0x12082A), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: horizon), transform: nil))
+    for i in -14...14 {
+        stroke(c, rgb(0xFF4FA0, 0.7), 4, polyline(P(540 + CGFloat(i) * 20, horizon), P(540 + CGFloat(i) * 230, 0)))
+    }
+    for k in 0..<14 {
+        let d = fract((CGFloat(k) + t * 1.5) / 14)
+        let y = horizon - horizon * pow(d, 2.4)
+        stroke(c, rgb(0xFF4FA0, 0.3 + 0.6 * d), 4, polyline(P(0, y), P(W, y)))
+    }
+    // Chrome title
+    let title = letters("THE WIND", size: 1000, tracking: 0.04)
+    let box = title.path.boundingBoxOfPath
+    let k = mix(1.5, 1, pop(ramp(t, 0.1, 0.6))) * 880 / box.width
+    if t > 0.1 {
+        c.saveGState()
+        c.setAlpha(clamp((t - 0.1) * 4))
+        c.translateBy(x: 540 - box.midX * k, y: 1300 - box.midY * k)
+        c.scaleBy(x: k, y: k)
+        c.addPath(title.path); c.setStrokeColor(rgb(0xFF4FA0)); c.setLineWidth(70); c.setLineJoin(.round); c.strokePath()
+        c.addPath(title.path); c.setStrokeColor(rgb(0x0B0420)); c.setLineWidth(30); c.strokePath()
+        c.addPath(title.path); c.clip()
+        let g = CGGradient(colorsSpace: CGColorSpace(name: CGColorSpace.sRGB)!,
+                           colors: [white, rgb(0x9FD3F5), rgb(0x1C3F66), rgb(0xFFB067), white] as CFArray,
+                           locations: [0, 0.45, 0.5, 0.56, 1])!
+        c.drawLinearGradient(g, start: P(0, box.maxY), end: P(0, box.minY), options: [])
+        c.restoreGState()
+    }
+    let glint = ramp(t, 0.8, 1.6)
+    sparkle(c, P(mix(160, 920, glint), 1390), 90, alpha: sin(glint * .pi))
+
+    caption(c, "In a world…", y: 560, size: 84, appear: ramp(t, 0.6, 1.0))
+    caption(c, "where the wind waits for no one…", y: 440, size: 64, appear: ramp(t, 1.3, 1.7), color: orange)
+}
+
+// MARK: - Scene 2: Gary in a meeting, the good wind behind him
 
 func scene2(_ c: CGContext, _ t: CGFloat) {
-    let center = P(540, 860)
-    fill(c, sea, CGPath(rect: CGRect(x: 0, y: 0, width: W, height: H), transform: nil))
-    let burst = ramp(t, 0.5, 0.9)
-    if burst > 0 {
-        for i in 0..<18 {
-            let a = CGFloat(i) * 2 * .pi / 18 + t * 0.15
-            let wedge = CGMutablePath()
-            wedge.move(to: center)
-            wedge.addLine(to: P(center.x + 2000 * cos(a), center.y + 2000 * sin(a)))
-            wedge.addLine(to: P(center.x + 2000 * cos(a + .pi / 18), center.y + 2000 * sin(a + .pi / 18)))
-            wedge.closeSubpath()
-            fill(c, rgb(0x2A86C0, burst), wedge)
-        }
-    }
-
-    // Buzz: the phone shakes, with lines at its sides
-    let buzz = max(0, 1 - abs(t - 0.45) / 0.35)
-    if buzz > 0 {
-        for i in [CGFloat(-1), 0, 1] {
-            stroke(c, rgb(0xFFFFFF, buzz), 12, polyline(P(200, 860 + i * 130), P(150, 860 + i * 160)))
-            stroke(c, rgb(0xFFFFFF, buzz), 12, polyline(P(880, 860 + i * 130), P(930, 860 + i * 160)))
-        }
-    }
+    background(c, rgb(0xDDE3E6))
+    // The window: a sunny fjord, wings gliding past
+    let win = CGRect(x: 60, y: 760, width: 960, height: 740)
+    fill(c, rgb(0xF4F6F7), rr(win.insetBy(dx: -24, dy: -24), 20))
     c.saveGState()
-    c.translateBy(x: center.x, y: center.y)
-    c.rotate(by: 0.045 * sin(t * 75) * buzz)
-    c.translateBy(x: -center.x, y: -center.y)
+    c.addPath(rr(win, 8)); c.clip()
+    gradient(c, [rgb(0x4FAEE6), rgb(0xC4E8F8)], from: win.maxY, to: 1000)
+    fill(c, rgb(0xFFD45A), circle(P(880, 1380), 60))
+    let hills = CGMutablePath()
+    hills.move(to: P(60, 1000)); hills.addQuadCurve(to: P(560, 1000), control: P(300, 1110))
+    hills.addQuadCurve(to: P(1020, 1000), control: P(800, 1070)); hills.closeSubpath()
+    fill(c, rgb(0x4E8C7A), hills)
+    fill(c, rgb(0x3A93C9), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: 1002), transform: nil))
+    for (i, start) in [0.2, 1.3, 2.3].enumerated() {
+        let x = mix(-150, 1250, (t - CGFloat(start)) / 2.2)
+        let by = 900 + CGFloat(i) * 25 + 6 * sin(t * 3 + CGFloat(i))
+        foiler(c, x: x, by: by, scale: 0.28 - CGFloat(i) * 0.03, t, who: i == 1 ? .kai : .gary)
+    }
+    band(c, rgb(0x2A80B8), base: 880, amp: 6, k: 0.02, speed: 2.4, t)
+    c.restoreGState()
+    stroke(c, rgb(0xF4F6F7), 18, polyline(P(win.midX, win.minY), P(win.midX, win.maxY)))
 
-    for i in 0..<3 {                                     // fingers behind the phone
+    // Gary, bored, then turning round too late
+    let turn = smooth(ramp(t, 3.3, 3.7))
+    fill(c, shirt, rr(CGRect(x: 380, y: 480, width: 320, height: 360), 120))
+    let tie = CGMutablePath()
+    tie.addLines(between: [P(540, 820), P(515, 600), P(540, 560), P(565, 600)]); tie.closeSubpath()
+    fill(c, navy, tie)
+    fill(c, skin, CGPath(rect: CGRect(x: 510, y: 820, width: 60, height: 70), transform: nil))
+    face(c, P(540 + turn * 30, 980), 125, .gary, lids: mix(0.45, 0, turn),
+         look: P(mix(0, 0.9, turn), mix(-0.6, 0.6, turn)), mouth: turn > 0.5 ? .o : .flat)
+    if turn > 0.5 {
+        text(c, "!", x: 760, y: 1080, size: 140, color: orange, outline: navy)
+    }
+    // The meeting table, a laptop, coffee
+    let table = CGMutablePath()
+    table.addLines(between: [P(0, 0), P(0, 470), P(160, 600), P(920, 600), P(W, 470), P(W, 0)]); table.closeSubpath()
+    fill(c, rgb(0x3B4A55), table)
+    fill(c, rgb(0x9AA6AE), rr(CGRect(x: 370, y: 480, width: 340, height: 30), 10))
+    fill(c, rgb(0xB8C2C8), rr(CGRect(x: 395, y: 505, width: 290, height: 190), 14))
+    fill(c, white, rr(CGRect(x: 150, y: 470, width: 80, height: 90), 14))
+    stroke(c, white, 12, CGPath(ellipseIn: CGRect(x: 215, y: 490, width: 40, height: 46), transform: nil))
+    fill(c, skin, ellipse(P(330, 560), 60, 34))
+    fill(c, skin, ellipse(P(750, 560), 60, 34))
+
+    caption(c, "He checked the forecast", y: 1730, size: 96, appear: ramp(t, 0.3, 0.7))
+    caption(c, "every morning.", y: 1610, size: 96, appear: ramp(t, 0.6, 1.0))
+    caption(c, "The wind came in the afternoon.", y: 300, size: 70, appear: ramp(t, 2.2, 2.6), color: orange)
+}
+
+// MARK: - Scene 3: Kai in the hammock, the swoosh
+
+func pineTree(_ c: CGContext, _ x: CGFloat, _ base: CGFloat) {
+    fill(c, wood, rr(CGRect(x: x - 22, y: base, width: 44, height: 560), 18))
+    for i in 0..<3 {
+        let y = base + 380 + CGFloat(i) * 150, w = 240 - CGFloat(i) * 55
+        let tri = CGMutablePath()
+        tri.addLines(between: [P(x - w, y), P(x + w, y), P(x, y + 260)]); tri.closeSubpath()
+        fill(c, pine, tri)
+    }
+}
+
+func scene3(_ c: CGContext, _ t: CGFloat) {
+    gradient(c, [rgb(0x4FAEE6), rgb(0xC4E8F8)], from: H, to: 900)
+    fill(c, rgb(0x3A93C9), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: 900), transform: nil))
+    band(c, rgb(0x2F86BF), base: 860, amp: 8, k: 0.02, speed: 1.6, t)
+    let edge = stride(from: CGFloat(0), through: W, by: 10).map { P($0, 700 + 20 * sin($0 * 0.006)) }
+    let sand = CGMutablePath()
+    sand.move(to: P(0, 0)); sand.addLines(between: edge); sand.addLine(to: P(W, 0)); sand.closeSubpath()
+    fill(c, rgb(0xEAD6A8), sand)
+    pineTree(c, 120, 180)
+    pineTree(c, 960, 180)
+
+    // Ropes and hammock, with Kai lying in it
+    let sway = 10 * sin(t * 1.6)
+    stroke(c, rgb(0x8C6B4A), 8, polyline(P(140, 640), P(250, 560 + sway)))
+    stroke(c, rgb(0x8C6B4A), 8, polyline(P(940, 640), P(830, 560 + sway)))
+    stroke(c, skin, 70, polyline(P(760, 520 + sway), P(820, 560 + sway)))         // legs, feet up
+    fill(c, skin, ellipse(P(835, 575 + sway), 26, 36))
+    fill(c, skin, ellipse(P(805, 590 + sway), 26, 36))
+    let lift = ramp(t, 1.9, 2.4)
+    c.saveGState()
+    c.translateBy(x: 330, y: 590 + sway)
+    c.rotate(by: 0.35)
+    face(c, .zero, 95, .kai, lids: lift > 0.5 ? 0.35 : 1, look: P(0.3, -0.2),
+         mouth: lift > 0.5 ? .grin : .smile, shades: lift)
+    c.restoreGState()
+    let hammock = CGMutablePath()
+    hammock.move(to: P(250, 560 + sway))
+    hammock.addQuadCurve(to: P(830, 560 + sway), control: P(540, 280 + sway))
+    hammock.addQuadCurve(to: P(250, 560 + sway), control: P(540, 500 + sway))
+    fill(c, sea, hammock)
+    for i in 1..<4 {
+        let f = CGFloat(i) / 4
+        stroke(c, rgb(0xFFFFFF, 0.6), 8, curve(P(250 + 580 * f - 30, 540 + sway), P(250 + 580 * f, 470 + sway),
+                                                P(250 + 580 * f + 10, 430 + sway - 40 * sin(f * .pi))))
+    }
+    // The phone on his belly, lighting up
+    let lit = ramp(t, 0.6, 0.7)
+    fill(c, rgb(0x111518), rr(CGRect(x: 520, y: 470 + sway, width: 70, height: 120), 14))
+    fill(c, lit > 0 ? rgb(0xCFE8F7) : rgb(0x1D2329), rr(CGRect(x: 526, y: 478 + sway, width: 58, height: 104), 10))
+    if lit > 0 {
+        fill(c, rgb(0xFFFFFF, 0.25 * (1 + sin(t * 8)) / 2), circle(P(555, 530 + sway), 110))
+    }
+
+    // The notification, big, above
+    let appear = ramp(t, 0.6, 0.95)
+    if appear > 0 {
+        let banner = CGRect(x: 120, y: 1040, width: 840, height: 250)
+        let k = mix(0.5, 1, pop(appear))
+        c.saveGState()
+        c.translateBy(x: banner.midX, y: banner.midY); c.scaleBy(x: k, y: k); c.translateBy(x: -banner.midX, y: -banner.midY)
+        c.setAlpha(clamp(appear * 2))
+        c.beginTransparencyLayer(auxiliaryInfo: nil)
+        let tail = CGMutablePath()
+        tail.addLines(between: [P(500, banner.minY + 10), P(580, banner.minY + 10), P(560, banner.minY - 120)]); tail.closeSubpath()
+        fill(c, rgb(0xFFFFFF, 0.96), tail)
+        fill(c, rgb(0xFFFFFF, 0.96), rr(banner, 56))
+        let icon = CGRect(x: banner.minX + 34, y: banner.midY - 76, width: 152, height: 152)
+        fill(c, navy, rr(icon, 36))
+        eyes(c, P(icon.midX, icon.midY), width: 118)
+        text(c, "Home spot", x: banner.minX + 216, y: banner.midY + 22, size: 62, weight: 800, color: rgb(0x111111), align: 0)
+        text(c, "now", x: banner.maxX - 40, y: banner.midY + 22, size: 44, weight: 500, color: rgb(0x777777), align: 1)
+        text(c, "Tomorrow 2–6 PM good", x: banner.minX + 216, y: banner.midY - 58, size: 54, weight: 500,
+             color: rgb(0x222222), align: 0, maxWidth: banner.width - 250)
+        c.endTransparencyLayer()
+        c.restoreGState()
+    }
+
+    caption(c, "Kai…", y: 1730, size: 110, appear: ramp(t, 1.2, 1.5))
+    caption(c, "just waited for the swoosh.", y: 1600, size: 90, appear: ramp(t, 1.9, 2.3), color: orange)
+}
+
+// MARK: - Scene 4: Kai fills in the details on his favourite sites
+
+func card(_ c: CGContext, _ r: CGRect, _ kind: Int, _ t: CGFloat) {
+    fill(c, white, rr(r, 36))
+    c.saveGState()
+    c.addPath(rr(r, 36)); c.clip()
+    let body = CGRect(x: r.minX, y: r.minY, width: r.width, height: r.height - 110)
+    switch kind {
+    case 0:                                              // a wind map
+        fill(c, rgb(0xBFE3F5), CGPath(rect: body, transform: nil))
+        let land = CGMutablePath()
+        land.move(to: P(body.minX, body.minY + 120))
+        land.addQuadCurve(to: P(body.minX + 220, body.maxY), control: P(body.minX + 260, body.midY))
+        land.addLine(to: P(body.minX, body.maxY)); land.closeSubpath()
+        fill(c, rgb(0xE6D9B5), land)
+        for row in 0..<6 {
+            for col in 0..<4 {
+                let p = P(body.minX + 80 + CGFloat(col) * 110, body.minY + 80 + CGFloat(row) * 110)
+                let a: CGFloat = 0.5 + 0.1 * sin(CGFloat(row + col) + t * 2), len: CGFloat = 50
+                let q = P(p.x + len * cos(a), p.y + len * sin(a))
+                stroke(c, navy, 8, polyline(p, q))
+                fill(c, navy, circle(q, 9))
+            }
+        }
+    case 1:                                              // a station graph: mean and gusts
+        stroke(c, rgb(0xDDE3E6), 4, polyline(P(body.minX + 40, body.minY + 80), P(body.maxX - 40, body.minY + 80)))
+        let mean = CGMutablePath(), gust = CGMutablePath()
+        for i in 0...12 {
+            let x = body.minX + 40 + CGFloat(i) * (body.width - 80) / 12
+            let m = body.minY + 160 + 260 * (0.5 + 0.5 * sin(CGFloat(i) * 0.5 - 1)) + 30 * noise(i)
+            if i == 0 { mean.move(to: P(x, m)); gust.move(to: P(x, m + 120)) }
+            else { mean.addLine(to: P(x, m)); gust.addLine(to: P(x, m + 120 + 40 * noise(i + 9))) }
+        }
+        stroke(c, orange, 8, gust)
+        stroke(c, sea, 10, mean)
+    default:                                             // a webcam
+        gradient(c, [rgb(0x4FAEE6), rgb(0xC4E8F8)], from: body.maxY, to: body.midY)
+        fill(c, rgb(0x3A93C9), CGPath(rect: CGRect(x: body.minX, y: body.minY, width: body.width, height: body.height / 2), transform: nil))
+        fill(c, rgb(0xEAD6A8), CGPath(rect: CGRect(x: body.minX, y: body.minY, width: body.width, height: 120), transform: nil))
+        foiler(c, x: body.midX + 40 * sin(t), by: body.midY - 40, scale: 0.3, t, who: .gary)
+        fill(c, rgb(0xE5383B), rr(CGRect(x: body.maxX - 150, y: body.maxY - 70, width: 110, height: 48), 24))
+        text(c, "LIVE", x: body.maxX - 95, y: body.maxY - 56, size: 28, weight: 800, color: white)
+    }
+    c.restoreGState()
+    text(c, ["Wind map", "Station", "Webcam"][kind], x: r.minX + 40, y: r.maxY - 72, size: 44, weight: 800,
+         color: navy, align: 0)
+}
+
+func scene4(_ c: CGContext, _ t: CGFloat) {
+    let center = P(540, 860)
+    background(c, sea)
+    for i in 0..<18 {
+        let a = CGFloat(i) * 2 * .pi / 18 + t * 0.15
+        let wedge = CGMutablePath()
+        wedge.move(to: center)
+        wedge.addLine(to: P(center.x + 2000 * cos(a), center.y + 2000 * sin(a)))
+        wedge.addLine(to: P(center.x + 2000 * cos(a + .pi / 18), center.y + 2000 * sin(a + .pi / 18)))
+        wedge.closeSubpath()
+        fill(c, rgb(0x2A86C0), wedge)
+    }
+    for i in 0..<3 {
         fill(c, skin, ellipse(P(845, 560 + CGFloat(i) * 115), 52, 40))
         fill(c, skin, ellipse(P(235, 600 + CGFloat(i) * 115), 52, 40))
     }
@@ -350,63 +587,35 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     let screen = phone.insetBy(dx: 22, dy: 22)
     c.saveGState()
     c.addPath(rr(screen, 76)); c.clip()
-    let space = CGColorSpace(name: CGColorSpace.sRGB)!
-    let wall = CGGradient(colorsSpace: space, colors: [rgb(0x1B3B52), rgb(0x3E7FA8)] as CFArray, locations: [0, 1])!
-    c.drawLinearGradient(wall, start: P(0, screen.maxY), end: P(0, screen.minY), options: [])
+    fill(c, rgb(0xEEF2F4), CGPath(rect: screen, transform: nil))
+    let swipe = smooth(ramp(t, 0.9, 1.25)) + smooth(ramp(t, 1.9, 2.25))
+    for kind in 0..<3 {
+        let x = 540 + (CGFloat(kind) - swipe) * 600
+        card(c, CGRect(x: x - 250, y: 420, width: 500, height: 880), kind, t)
+    }
+    let going = ramp(t, 2.8, 3.1)
+    if going > 0 {
+        let chip = CGRect(x: 290, y: 440, width: 500, height: 90)
+        c.saveGState()
+        c.translateBy(x: chip.midX, y: chip.midY); c.scaleBy(x: pop(going), y: pop(going)); c.translateBy(x: -chip.midX, y: -chip.midY)
+        fill(c, orange, rr(chip, 45))
+        text(c, "Going tomorrow, 2–6 PM", x: chip.midX, y: chip.midY - 14, size: 40, weight: 800, color: white,
+             maxWidth: chip.width - 50)
+        c.restoreGState()
+    }
     c.restoreGState()
     fill(c, rgb(0x000000), rr(CGRect(x: 455, y: 1360, width: 170, height: 50), 25))
-    text(c, "Friday, November 6", x: 540, y: 1270, size: 40, weight: 600, color: rgb(0xFFFFFF, 0.85))
-    text(c, "10:42", x: 540, y: 1080, size: 200, weight: 700, color: rgb(0xFFFFFF, 0.95))
+    fill(c, skin, ellipse(P(250, 520), 48, 92))
 
-    // The notification
-    let appear = ramp(t, 0.5, 0.85)
-    if appear > 0 {
-        let banner = CGRect(x: 280, y: 796, width: 520, height: 168)
-        let k = mix(0.6, 1, pop(appear))
-        c.saveGState()
-        c.translateBy(x: banner.midX, y: banner.midY); c.scaleBy(x: k, y: k); c.translateBy(x: -banner.midX, y: -banner.midY)
-        c.setAlpha(clamp(appear * 2))
-        c.beginTransparencyLayer(auxiliaryInfo: nil)
-        fill(c, rgb(0xFFFFFF, 0.94), rr(banner, 40))
-        let icon = CGRect(x: banner.minX + 22, y: banner.midY - 50, width: 100, height: 100)
-        fill(c, navy, rr(icon, 24))
-        eyes(c, P(icon.midX, icon.midY), width: 78)
-        text(c, "Home spot", x: banner.minX + 142, y: banner.midY + 14, size: 40, weight: 800, color: rgb(0x111111), align: 0)
-        text(c, "now", x: banner.maxX - 26, y: banner.midY + 14, size: 30, weight: 500, color: rgb(0x777777), align: 1)
-        text(c, "Tomorrow 2–6 PM good", x: banner.minX + 142, y: banner.midY - 40, size: 36, weight: 500,
-             color: rgb(0x222222), align: 0, maxWidth: banner.width - 166)
-        c.endTransparencyLayer()
-        c.restoreGState()
-    }
-    fill(c, skin, ellipse(P(250, 520), 48, 92))       // left thumb, in front
-    c.restoreGState()
+    // Kai in the corner, nodding along
+    let nod = 10 * sin(t * 7)
+    face(c, P(850, 230 + nod), 175, .kai, lids: 0.3, look: P(-0.7, 0.6), mouth: .smile, shades: 1)
 
-    // The rider pops up: eyes turned into Kookout's
-    let up = ramp(t, 1.8, 2.25)
-    if up > 0 {
-        let y = mix(-260, 230, pop(up)), x: CGFloat = 835
-        for i in 0..<3 {
-            let a = 2.2 + CGFloat(i) * 0.35
-            stroke(c, rgb(0xFFFFFF, up), 12, polyline(P(x + 230 * cos(a), y + 230 * sin(a)), P(x + 290 * cos(a), y + 290 * sin(a))))
-        }
-        fill(c, skinShade, circle(P(x - 185, y - 10), 36))
-        fill(c, skinShade, circle(P(x + 185, y - 10), 36))
-        fill(c, skin, circle(P(x, y), 185))
-        c.saveGState()
-        c.addPath(circle(P(x, y), 192)); c.clip()
-        fill(c, navy, CGPath(rect: CGRect(x: x - 200, y: y + 85, width: 400, height: 200), transform: nil))
-        c.restoreGState()
-        fill(c, rgb(0x0A1F2C), rr(CGRect(x: x - 200, y: y + 62, width: 400, height: 64), 32))
-        fill(c, orange, circle(P(x, y + 205), 40))
-        eyes(c, P(x, y - 10), width: 290, look: 0.03 * sin(t * 9), pupil: navy, sclera: white)
-        fill(c, navy, ellipse(P(x, y - 112), 30, 36))
-    }
-
-    caption(c, "Kookout tells you", y: 1730, size: 104, appear: ramp(t, 0.9, 1.3))
-    caption(c, "when…", y: 1600, size: 104, appear: ramp(t, 1.3, 1.7), color: orange)
+    caption(c, "Kookout taps you on the shoulder.", y: 1730, size: 80, appear: ramp(t, 0.2, 0.6))
+    caption(c, "Your favourite sites fill in the details.", y: 1610, size: 70, appear: ramp(t, 1.2, 1.6), color: orange)
 }
 
-// MARK: - Scene 3: wing foiling at the home spot
+// MARK: - Scene 5: both out on the water at the home spot
 
 func wave(_ x: CGFloat, base: CGFloat, amp: CGFloat, k: CGFloat, speed: CGFloat, _ t: CGFloat) -> CGFloat {
     base + amp * sin(k * x + speed * t) + 0.35 * amp * sin(2.3 * k * x - 1.7 * speed * t)
@@ -430,12 +639,9 @@ func cloud(_ c: CGContext, _ p: CGPoint, _ s: CGFloat) {
     }
 }
 
-func scene3(_ c: CGContext, _ t: CGFloat) {
-    let space = CGColorSpace(name: CGColorSpace.sRGB)!
-    let sky = CGGradient(colorsSpace: space, colors: [rgb(0x4FAEE6), rgb(0xC4E8F8)] as CFArray, locations: [0, 1])!
-    c.drawLinearGradient(sky, start: P(0, H), end: P(0, 820), options: [.drawsAfterEndLocation])
+func scene5(_ c: CGContext, _ t: CGFloat) {
+    gradient(c, [rgb(0x4FAEE6), rgb(0xC4E8F8)], from: H, to: 820)
 
-    // Sun and clouds, blown along
     let sun = P(880, 1250)
     for i in 0..<10 {
         let a = CGFloat(i) * .pi / 5 + t * 0.4
@@ -445,7 +651,7 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
     for (x0, y, s, v) in [(300.0, 1420.0, 1.15, 70.0), (900, 1500, 0.8, 55), (650, 1130, 0.9, 85)] {
         cloud(c, P(fract((x0 + t * v) / (W + 400)) * (W + 400) - 200, y), s)
     }
-    for i in 0..<5 {                                     // wind
+    for i in 0..<5 {
         let y = 960 + CGFloat(i) * 105
         let x = fract((CGFloat(i) * 313 + t * 520) / (W + 600)) * (W + 600) - 300
         let streak = CGMutablePath()
@@ -454,7 +660,6 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
         stroke(c, rgb(0xFFFFFF, 0.75), 7, streak)
     }
 
-    // Land across the fjord, then the sea
     let hills = CGMutablePath()
     hills.move(to: P(0, 800))
     hills.addQuadCurve(to: P(300, 820), control: P(130, 940))
@@ -464,45 +669,14 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
     fill(c, rgb(0x4E8C7A), hills)
     fill(c, rgb(0x3A93C9), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: 822), transform: nil))
     band(c, rgb(0x2F86BF), base: 770, amp: 8, k: 0.02, speed: 2.0, t)
+    // Gary, further out
+    foiler(c, x: mix(-300, 1000, t / 5), by: 720 + 8 * sin(t * 2.2 + 1), scale: 0.55, t, who: .gary)
     band(c, rgb(0x2477AF), base: 650, amp: 14, k: 0.012, speed: 2.6, t)
 
-    // The rider, flying on the foil
-    let x = mix(-160, 1180, t / 5.6), by = 560 + 14 * sin(t * 2.6)
+    // Kai, close
+    let x = mix(-160, 1180, t / 5.0), by = 560 + 14 * sin(t * 2.6)
     let front = (base: CGFloat(420), amp: CGFloat(22), k: CGFloat(0.009), speed: CGFloat(3.2))
-    stroke(c, rgb(0x1D2329), 11, polyline(P(x + 20, by - 12), P(x + 20, by - 175)))
-    fill(c, rgb(0x1D2329), ellipse(P(x + 40, by - 176), 62, 10))
-    c.saveGState()
-    c.translateBy(x: x + 20, y: by + 515)
-    c.rotate(by: -0.15 + 0.05 * sin(t * 1.7))
-    let wing = CGMutablePath()
-    wing.move(to: P(-270, -30))
-    wing.addQuadCurve(to: P(270, -30), control: P(0, 200))
-    wing.addQuadCurve(to: P(-270, -30), control: P(0, 70))
-    fill(c, orange, wing)
-    fill(c, rgb(0xC4E8F8, 0.75), ellipse(P(-110, 40), 46, 22))
-    stroke(c, orangeDark, 28, curve(P(-270, -30), P(0, 200), P(270, -30)))
-    stroke(c, orangeDark, 20, polyline(P(0, 85), P(0, 22)))
-    c.restoreGState()
-    fill(c, rgb(0x0B1E2A), rr(CGRect(x: x - 115, y: by - 13, width: 230, height: 26), 13))
-    stroke(c, wetsuit, 34, polyline(P(x - 45, by + 14), P(x - 15, by + 82), P(x + 5, by + 150)))
-    stroke(c, wetsuit, 34, polyline(P(x + 45, by + 14), P(x + 62, by + 86), P(x + 5, by + 150)))
-    stroke(c, wetsuit, 76, polyline(P(x + 5, by + 150), P(x + 20, by + 285)))
-    fill(c, orange, rr(CGRect(x: x - 28, y: by + 185, width: 86, height: 104), 32))
-    stroke(c, wetsuit, 26, polyline(P(x + 20, by + 285), P(x - 30, by + 372), P(x - 62, by + 470)))
-    stroke(c, wetsuit, 26, polyline(P(x + 20, by + 285), P(x + 62, by + 378), P(x + 92, by + 465)))
-    fill(c, skin, circle(P(x - 62, by + 472), 17))
-    fill(c, skin, circle(P(x + 92, by + 467), 17))
-    let head = P(x + 28, by + 350)
-    fill(c, skin, circle(head, 46))
-    c.saveGState()
-    c.addPath(circle(head, 50)); c.clip()
-    fill(c, orange, CGPath(rect: CGRect(x: head.x - 60, y: head.y + 8, width: 120, height: 60), transform: nil))
-    c.restoreGState()
-    fill(c, white, circle(P(head.x + 22, head.y - 4), 13))
-    fill(c, navy, circle(P(head.x + 27, head.y - 4), 6))
-    stroke(c, navy, 6, curve(P(head.x + 4, head.y - 22), P(head.x + 26, head.y - 44), P(head.x + 42, head.y - 22)))
-
-    // Spray where the mast meets the water, then the near waves over the foil
+    foiler(c, x: x, by: by, scale: 1, t, who: .kai)
     let mast = x + 20
     let surface = wave(mast, base: front.base, amp: front.amp, k: front.k, speed: front.speed, t)
     for i in 0..<12 {
@@ -518,7 +692,7 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
     fill(c, rgb(0xEAD6A8), beach)
     let foam = CGMutablePath(); foam.addLines(between: edge)
     stroke(c, rgb(0xFFFFFF, 0.8), 10, foam)
-    let sign = ramp(t, 2.0, 2.4)
+    let sign = ramp(t, 1.0, 1.4)
     if sign > 0 {
         c.saveGState()
         c.translateBy(x: 150, y: 90); c.scaleBy(x: pop(sign), y: pop(sign)); c.translateBy(x: -150, y: -90)
@@ -530,7 +704,7 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
         for u in stride(from: CGFloat(150), through: 0, by: -10) { flag.addLine(to: P(157 + u, 395 + u * 0.15 + flap(u))) }
         flag.closeSubpath()
         fill(c, orange, flag)
-        let board = CGRect(x: 60, y: 200, width: 340, height: 100)
+        let board = CGRect(x: 60, y: 200, width: 400, height: 100)
         fill(c, white, rr(board, 22))
         stroke(c, navy, 6, rr(board, 22))
         text(c, "Home spot", x: board.minX + 24, y: board.midY - 15, size: 44, weight: 800, color: navy, align: 0)
@@ -540,13 +714,13 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
         c.restoreGState()
     }
 
-    caption(c, "…and where.", y: 1730, size: 120, appear: ramp(t, 0.5, 0.9))
-    caption(c, "No more rechecking.", y: 1600, size: 96, appear: ramp(t, 2.6, 3.0), color: orange)
+    caption(c, "Kookout tells you when…", y: 1730, size: 96, appear: ramp(t, 0.4, 0.8))
+    caption(c, "…and where.", y: 1600, size: 110, appear: ramp(t, 1.6, 2.0), color: orange)
 }
 
-// MARK: - Scene 4: end card
+// MARK: - Scene 6: end card
 
-func scene4(_ c: CGContext, _ t: CGFloat) {
+func scene6(_ c: CGContext, _ t: CGFloat) {
     fill(c, nearBlack, CGPath(rect: CGRect(x: 0, y: 0, width: W, height: H), transform: nil))
     // Pupils: out, left, a little right, back (em), as the app's splash does
     let keys: [(CGFloat, CGFloat)] = [(0.4, 0), (0.7, -0.16), (1.3, -0.16), (1.6, 0.02), (2.0, 0.02), (2.3, 0)]
@@ -568,7 +742,7 @@ func scene4(_ c: CGContext, _ t: CGFloat) {
     let link = ramp(t, 1.5, 1.9)
     if link > 0 {
         c.saveGState(); c.setAlpha(link)
-        text(c, "On the App Store  ·  kookout.no", x: W / 2, y: 500, size: 44, weight: 700, color: orange)
+        text(c, "Free on the App Store  ·  kookout.no", x: W / 2, y: 500, size: 44, weight: 700, color: orange)
         c.restoreGState()
     }
 }
@@ -576,7 +750,7 @@ func scene4(_ c: CGContext, _ t: CGFloat) {
 // MARK: - Timeline and output
 
 let scenes: [(start: CGFloat, end: CGFloat, draw: (CGContext, CGFloat) -> Void)] = [
-    (0, 4.4, scene1), (4.4, 8.4, scene2), (8.4, 14, scene3), (14, duration, scene4),
+    (0, 3, scene1), (3, 8, scene2), (8, 12, scene3), (12, 16, scene4), (16, 21, scene5), (21, duration, scene6),
 ]
 
 func frame(_ c: CGContext, _ t: CGFloat) {
@@ -592,7 +766,7 @@ func frame(_ c: CGContext, _ t: CGFloat) {
 }
 
 let checks = CommandLine.arguments.count > 1 ? URL(fileURLWithPath: CommandLine.arguments[1]) : nil
-let checkTimes: [CGFloat] = [1.0, 2.6, 4.3, 5.5, 6.9, 7.9, 9.6, 11.3, 13.0, 14.6, 15.4, 17.5]
+let checkTimes: [CGFloat] = [2.0, 4.5, 7.0, 9.0, 10.9, 13.0, 15.2, 17.5, 19.5, 23.5]
 
 let output = URL(fileURLWithPath: "brand/promo/kookout-cartoon.mp4")
 try FileManager.default.createDirectory(at: output.deletingLastPathComponent(), withIntermediateDirectories: true)
