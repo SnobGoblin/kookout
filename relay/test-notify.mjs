@@ -98,3 +98,9 @@ r = run(now, { s: { periods: [D(0, 4), D(24, 28)], horizon: now + 120 * H } }, [
 check("plan: out-of-season period drops out quietly", [text(r), r.sent.s.periods.length], [null, 1]);
 r = run(now, { s: { periods: [], horizon: now + 120 * H } }, [[S, [D(0, 4), D(24, 28)]]]);
 check("plan: only the in-season period is news", text(r), "Seasonal | Good today 11–15");
+
+// A week or more ahead: the date, not a weekday that reads as this week's
+const wed = Date.parse("2026-11-04T07:00:00+01:00");
+check("6 days ahead: weekday", dayLabel(wed + 6 * 24 * H, Z, "de", wed), "Di");
+check("7 days ahead: date", dayLabel(wed + 7 * 24 * H, Z, "de", wed), "11. Nov.");
+check("7 days ahead, English", dayLabel(wed + 7 * 24 * H, Z, "en", wed), "Nov 11");

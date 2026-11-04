@@ -442,7 +442,10 @@ function badge(p, data, waves) {
   const first = analyse(p, data, waves).find(r => r.good || r.powderDay);
   btn.classList.toggle("good", !!first?.good);
   btn.classList.toggle("snow", !!first && !first.good);
-  const when = first && (first.day === dayKey(new Date()) ? "i dag" : wdFmt.format(first.time).replace(".", ""));
+  // A week or more ahead the weekday alone would read as this week's: the date instead ("11. nov")
+  const ahead = first && (Date.parse(first.day) - Date.parse(dayKey(new Date()))) / 864e5;
+  const when = first && (ahead === 0 ? "i dag" : ahead >= 7 ? timeFmt("nb-NO", { day: "numeric", month: "short" }).format(first.time).replace(/\.$/, "")
+                                                            : wdFmt.format(first.time).replace(".", ""));
   btn.querySelector(".badge").innerHTML = first ? `${first.good ? sportIcon(p) : "❄️"} ${when}` : "";
 }
 

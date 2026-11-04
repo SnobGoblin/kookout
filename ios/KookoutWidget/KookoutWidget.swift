@@ -166,8 +166,11 @@ struct Words {
         if calendar(s).isDate(date, inSameDayAs: now + 86400) { return String(localized: "tomorrow") }
         return weekday(date, s)
     }
+    /// A week or more ahead the weekday alone would read as this week's: the date instead ("11 Nov").
     func weekday(_ date: Date, _ s: WidgetStatus) -> String {
-        var style = Date.FormatStyle.dateTime.weekday(.abbreviated)
+        let c = calendar(s)
+        let days = c.dateComponents([.day], from: c.startOfDay(for: now), to: c.startOfDay(for: date)).day ?? 0
+        var style = days >= 7 ? Date.FormatStyle.dateTime.day().month(.abbreviated) : Date.FormatStyle.dateTime.weekday(.abbreviated)
         style.timeZone = zone(s)
         return date.formatted(style)
     }

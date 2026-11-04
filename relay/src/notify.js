@@ -306,6 +306,9 @@ function dayLabel(t, zone, lang, now) {
   const rel = n => new Intl.RelativeTimeFormat(lang, { numeric: "auto" }).format(n, "day");
   if (day === dayKey(new Date(now), zone)) return rel(0);
   if (day === dayKey(new Date(now + 24 * HOUR), zone)) return rel(1);
+  // A week or more ahead the weekday alone would read as this week's: the date instead ("11 Nov")
+  if ((Date.parse(day) - Date.parse(dayKey(new Date(now), zone))) / (24 * HOUR) >= 7)
+    return new Intl.DateTimeFormat(lang, { day: "numeric", month: "short", timeZone: zone }).format(t);
   return new Intl.DateTimeFormat(lang, { weekday: "short", timeZone: zone }).format(t);
 }
 
