@@ -83,3 +83,18 @@ const many = ["a", "b", "c", "d", "e"].map((id, i) => [spot(id, id.toUpperCase()
 r = run(now, Object.fromEntries(many.map(([s]) => [s.id, empty(now)])), many);
 check("+N more", text(r).split("\n").at(-1), "+2 more");
 console.log(text(r));
+
+// Seasons: out-of-season periods don't count, and leaving the season isn't "no longer good"
+import { inSeason } from "./src/season.js";
+const season = { from: "03-15", to: "12-24" }, dec = Date.parse("2026-12-24T10:00:00Z");
+const D = (a, b) => ({ start: dec + a * H, end: dec + b * H });
+const inside = ps => ps.filter(p => inSeason(season, p.start, "Europe/Oslo"));
+const told = { periods: inside([D(0, 4), D(24, 28)]), horizon: dec + 48 * H };
+check("season ends: nothing to say", show(compare(told, inside([D(0, 4), D(24, 28)]), dec - H, dec + 47 * H)), []);
+// Through plan(): a spot told about 25 Dec, then given a season ending 24 Dec, says nothing (no "gone")
+const S = { ...spot("s", "Seasonal"), season };
+now = Date.parse("2026-12-24T08:07:00+01:00");
+r = run(now, { s: { periods: [D(0, 4), D(24, 28)], horizon: now + 120 * H } }, [[S, [D(0, 4), D(24, 28)]]]);
+check("plan: out-of-season period drops out quietly", [text(r), r.sent.s.periods.length], [null, 1]);
+r = run(now, { s: { periods: [], horizon: now + 120 * H } }, [[S, [D(0, 4), D(24, 28)]]]);
+check("plan: only the in-season period is news", text(r), "Seasonal | Good today 11–15");

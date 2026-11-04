@@ -25,7 +25,8 @@ framed screenshots in `appstore/framed`. EU status: non-trader. Not built yet: s
 
 Relay files: `index.js` (forecasts, live wind, waves, holidays), `notify.js` (push via APNs), `auth.js` (Sign in
 with Apple, sessions), `community.js` (community spots, edits/history, majority vote), `reports.js` (reports,
-emailed through Resend), `founders.js` (founding-user numbers). Tests: `node relay/test-notify.mjs`, `node relay/test-community.mjs`.
+emailed through Resend), `founders.js` (founding-user numbers), `widget.js` (the widget's good periods). Tests: `node relay/test-notify.mjs`,
+`node relay/test-community.mjs`, `node relay/test-widget.mjs`.
 
 ## Decisions already made (don't relitigate without asking)
 
@@ -39,6 +40,11 @@ emailed through Resend), `founders.js` (founding-user numbers). Tests: `node rel
   Gullholmen (Kystverket). Votes count without an account, like the rules.
 - **Sharing** needs Sign in with Apple and is asked once (never on by default, never while signed out).
   Following, notifications and everything else work without an account.
+- **Seasons (decided 20 Oct 2026, for 1.1):** each spot has a season; outside it, good conditions don't count for
+  notifications or the widget (the forecast still shows), and leaving the season sends nothing. Default per spot:
+  wing and surf from 50° N 15 Mar–24 Dec, elsewhere (Fuerteventura, Brazil…) and powder all year. A vote like the
+  wind station: "Automatic" follows the community's (majority by day, from 3 active followers); each follower can
+  pick "All year" or own dates. Apps before 1.1 get notifications all year.
 - **Weekend spots:** good only on days off (weekends + public holidays of the *phone's* country, from Nager.Date),
   5 hours in a row, notifications look 5 days ahead by default.
 - **Powder:** snow counted over the day and the one before (`days`, default 2), optional "sunny days only".
@@ -140,6 +146,14 @@ usually pass within a day); for a serious bug (crash, notifications down) ask Ap
 
 Founding users: numbers come only from App Store installs (TestFlight/Xcode have no real download); the
 `founders` table must start empty at launch (it is). Founding = number ≤ 2,000 (`FOUNDERS` in `relay/src/founders.js`).
+
+**Version 1.1** (branch `claude/mystifying-pike-35db35`, not merged; merge to main only with the 1.1 release, since
+`privacy.html` already describes the widget and seasons and deploys on push): the home screen / Lock Screen widget
+(the 3 spots good soonest; tested on Christian's iPhone 16 Pro, hourly refresh confirmed 20 Oct) and seasons (see
+Decisions). The relay side of both is already live (`POST /widget`, seasons in D1 via `relay/migrate-season.sql`).
+Left: "What's New" in 7 languages; a screen check in another language, 12-hour clock and knots/feet; bump
+MARKETING_VERSION to 1.1 and the build number, archive, TestFlight (ask first); submit after 1.0 is approved. It
+should be out well before 24 Dec (apps on 1.0 get notifications all winter).
 
 Later: the landing page (see Reminders), the subscription and paywall (StoreKit, App Store Connect, tax/bank;
 switch EU status to trader first), a test copy of the relay, a pre-release checklist.

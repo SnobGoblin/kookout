@@ -90,6 +90,8 @@ struct SpotEditView: View {
                      : "When good conditions come up in the next \(Settings.hoursText(Settings.shared.notifyHours)), or change. How far ahead is set in Settings.")
             }
 
+            seasonSection
+
             Section {
                 Button("Delete spot", role: .destructive) { confirmDelete = true }
             }
@@ -187,6 +189,42 @@ struct SpotEditView: View {
         } footer: {
             Text(community.followers == 1 ? String(localized: "You're the only one following this spot so far.")
                                           : String(localized: "Followed by \(community.followers) riders. The community's rules are the majority's; yours are your own."))
+        }
+    }
+
+    // MARK: - Season
+
+    private enum SeasonChoice: Hashable { case automatic, allYear, own }
+
+    private var seasonChoice: Binding<SeasonChoice> {
+        Binding(get: { spot.season == nil ? .automatic : spot.season!.isAllYear ? .allYear : .own },
+                set: { choice in
+                    switch choice {
+                    case .automatic: spot.season = nil
+                    case .allYear: spot.season = .allYear
+                    case .own: // start from the dates in use (or the north's, after all year)
+                        spot.season = spot.automaticSeason.isAllYear ? .north : spot.automaticSeason
+                    }
+                })
+    }
+
+    private var seasonSection: some View {
+        Section {
+            Picker("Season", selection: seasonChoice) {
+                Text("Automatic (\(spot.automaticSeason.text))").tag(SeasonChoice.automatic)
+                Text("All year").tag(SeasonChoice.allYear)
+                Text("Own dates").tag(SeasonChoice.own)
+            }
+            if let season = spot.season, !season.isAllYear {
+                SeasonDayPicker(title: "From", day: Binding(get: { season.start },
+                                                            set: { spot.season = Season(from: $0, to: season.end) }))
+                SeasonDayPicker(title: "To", day: Binding(get: { season.end },
+                                                          set: { spot.season = Season(from: season.start, to: $0) }))
+            }
+        } footer: {
+            Text(isCommunity
+                 ? "Notifications and the widget only count good conditions in the season; the forecast always shows. Automatic: what most riders here choose (from 3 riders), at first what suits the place."
+                 : "Notifications and the widget only count good conditions in the season; the forecast always shows. Automatic: what suits the place.")
         }
     }
 
@@ -308,6 +346,52 @@ struct SpotEditView: View {
     private func dirsBinding<R>(_ rule: WritableKeyPath<Spot, R?>) -> Binding<Set<String>> where R: HasDirections {
         Binding(get: { Set(spot[keyPath: rule]?.dirs ?? []) },
                 set: { spot[keyPath: rule]?.dirs = Compass.points.filter($0.contains) })
+    }
+}
+
+/// A day of the year (no year): the day and the month, each a menu, in the order the phone's language writes dates.
+struct SeasonDayPicker: View {
+    let title: LocalizedStringKey
+    @Binding var day: (month: Int, day: Int)
+
+    var body: some View {
+        HStack {
+            Text(title)
+            Spacer()
+            if Self.dayFirst { dayMenu; monthMenu } else { monthMenu; dayMenu }
+        }
+    }
+
+    private var dayMenu: some View {
+        Picker("Day", selection: Binding(get: { day.day }, set: { day = (day.month, $0) })) {
+            ForEach(1...Season.daysInMonth[day.month - 1], id: \.self) { Text(verbatim: "\($0)").tag($0) }
+        }
+        .labelsHidden().fixedSize()
+    }
+
+    private var monthMenu: some View {
+        Picker("Month", selection: Binding(get: { day.month },
+                                           set: { m in day = (m, min(day.day, Season.daysInMonth[m - 1])) })) {
+            ForEach(1...12, id: \.self) { Text(Calendar.current.monthSymbols[$0 - 1]).tag($0) }
+        }
+        .labelsHidden().fixedSize()
+    }
+
+    private static let dayFirst: Bool = {
+        let pattern = DateFormatter.dateFormat(fromTemplate: "dMMMM", options: 0, locale: .current) ?? "d MMMM"
+        return (pattern.firstIndex(of: "d") ?? pattern.startIndex) < (pattern.firstIndex(of: "M") ?? pattern.endIndex)
+    }()
+}
+
+extension Season {
+    /// "15 Mar – 24 Dec", or "all year", in the phone's language.
+    var text: String {
+        if isAllYear { return String(localized: "all year") }
+        let show = { (d: (month: Int, day: Int)) -> String in
+            let date = Calendar(identifier: .gregorian).date(from: DateComponents(year: 2024, month: d.month, day: d.day, hour: 12)) ?? .now
+            return date.formatted(.dateTime.day().month(.abbreviated))
+        }
+        return "\(show(start)) – \(show(end))"
     }
 }
 

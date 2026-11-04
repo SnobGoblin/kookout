@@ -28,3 +28,21 @@ check("station: promoted P, one picks X", majorityStation(["X", "P", "P"], "P"),
 check("station: promoted P, all three pick X", majorityStation(["X", "X", "X"], "P"), "X");
 check("station: tie keeps the current one", majorityStation(["X", "Y", "P", "P", "X", "Y"].slice(0, 4), "P"), "P");
 check("station: X and Y tie, current not among them", majorityStation(["X", "Y"], "P"), "P");
+
+// The community's season: the days more than half have in theirs (null: all year), as one stretch.
+import { majoritySeason, inSeason, cleanSeason, defaultSeason } from "./src/season.js";
+const N = { from: "03-15", to: "12-24" };
+check("season: everyone has the default", majoritySeason([N, N, N], N), N);
+check("season: 2 of 3 all year", majoritySeason([null, null, N], N), null);
+check("season: median-like ends", majoritySeason([{ from: "04-01", to: "10-31" }, N, { from: "05-01", to: "09-30" }], N), { from: "04-01", to: "10-31" });
+check("season: over New Year", majoritySeason([{ from: "11-01", to: "03-31" }, { from: "11-15", to: "03-15" }, { from: "10-15", to: "04-15" }], null),
+  { from: "11-01", to: "03-31" });
+check("season: 2 of 3 surf all winter too", majoritySeason([null, null, N, N, { from: "01-01", to: "12-31" }], N), null);
+check("in season, Oslo 15 Mar", inSeason(N, Date.parse("2026-03-14T23:30:00Z"), "Europe/Oslo"), true);
+check("out of season, Oslo 25 Dec", inSeason(N, Date.parse("2026-12-25T10:00:00Z"), "Europe/Oslo"), false);
+check("over New Year: 2 Jan", inSeason({ from: "11-01", to: "03-31" }, Date.parse("2027-01-02T10:00:00Z"), "Europe/Oslo"), true);
+check("clean: all year is null", cleanSeason({ from: "01-01", to: "12-31" }), null);
+check("clean: nonsense", cleanSeason({ from: "13-01", to: "12-31" }), null);
+check("default: Oslo wing", defaultSeason(59.9, "wing"), N);
+check("default: Fuerteventura", defaultSeason(28.7, "surf"), null);
+check("default: Hemsedal powder", defaultSeason(60.8, "powder"), null);

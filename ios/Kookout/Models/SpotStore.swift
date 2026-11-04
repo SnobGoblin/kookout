@@ -40,6 +40,7 @@ final class SpotStore {
                 if let forecast { forecasts[id] = forecast; failed.remove(id) } else { failed.insert(id) }
             }
         }
+        WidgetBridge.save(forecasts: forecasts, spots: spots)
     }
 
     func refresh(_ spot: Spot) async {
@@ -47,6 +48,7 @@ final class SpotStore {
             forecasts[spot.id] = try await KookoutAPI.analyse(spot, units: Settings.shared.wind.rawValue,
                                                               waveUnit: Settings.shared.wave.rawValue)
             failed.remove(spot.id)
+            WidgetBridge.save(forecasts: forecasts, spots: spots)
         } catch {
             failed.insert(spot.id)
         }
@@ -116,6 +118,7 @@ final class SpotStore {
             print("Couldn't save spots: \(error)")
         }
         Notifications.shared.update(spots: spots)
+        WidgetBridge.update(spots: spots)
     }
 }
 
@@ -153,6 +156,7 @@ final class Settings {
     private func save(_ value: Any, _ key: String) {
         UserDefaults.standard.set(value, forKey: key)
         Notifications.shared.syncSoon()
+        WidgetBridge.settingsChanged()
     }
 
     private init() {
