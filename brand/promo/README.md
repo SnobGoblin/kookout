@@ -21,7 +21,7 @@ Files here:
 
 | # | Time | Picture | Narrator (deep, slow, deadpan) | Sound |
 |---|---|---|---|---|
-| 1 | 0–3.2 s | Black, then chrome 80s title "THE WIND" with a lens flare. | "Wind. Doesn't wait, bro." | Low synth hit |
+| 1 | 0–3.2 s | A gust line races across the fjord toward a little jetty with a plain red pennant; a wave slaps over the jetty on "bro" (shot 1; the old neon 80s title clashed with the 3D look and is only the fallback now). | "Wind. Doesn't wait, bro." | Wind |
 | 2 | 3.2–10.6 s | **Gary** at 06:12 at the kitchen table, buried under pop-up charts of made-up metrics: "Secondary swell median", "Gust-to-lull variance (adj.)", "Seagull drift index: NE-ish", "Moon × tide phase: Waxing-ish", "Wind confidence index 63 %", "Kites on webcam 3: 2 (1 lost)", "Swell period, 4th model". His eyes go round. | "Gary loves his charts. Secondary swell median. Seagull drift index. Respect." | Pop, pop, pop |
 | 2b | 10.6–17.4 s | Gary in a long meeting. Behind him, through the window, wings fly past on a perfect afternoon. He turns around just as the last one disappears. | "But Gary also has, like… a job. And the wind came… in the afternoon." | Meeting murmur, a seagull |
 | 3 | 17.4–24 s | **Kai** the otter, dozing in a hammock between two pines. The phone on his belly lights up; the notification ("Home spot · Tomorrow 2–6 PM good") pops out of it and floats above his head. Swoosh. He slides his sunglasses down to look, slow grin. | "Kai? Kai just waited for the swoosh. Swoosh means condish." | **Kookout swoosh** |
@@ -86,7 +86,9 @@ coast animals; their eyes may be drawn round with the pupil "looking out", like 
 2. **Gary**, an over-analysing Atlantic puffin: black and white, the striped orange beak, red eye rings, wide
    anxious eyes, light blue shirt and navy tie. Funny and likeable, never a loser: he gets his ride in the end.
 
-Shots (still first, then "animate this image"; a new chat each; save in `generated/`). Gemini ignores lengths, so
+Shots (still first, then "animate this image"; a new chat each; save in `generated/`).
+0. `shot-1.mp4` (scene 1): no characters; a windy fjord, a gust line racing toward a jetty, a flag snapping. Ask for a
+   plain single-colour flag (Gemini likes to add crosses or text) and an empty sky in the upper third for the captions. Gemini ignores lengths, so
 ask anyway and I cut what I need. The phone screens, cards and notifications are drawn by me.
 1. `shot-2a.mp4` (scene 2, ~8 s), from `gary-master.png`: Gary at the kitchen table at dawn, delighted with his laptop
    and charts, leaning closer and closer, eyes darting between screen and papers. Static camera. Keep the space

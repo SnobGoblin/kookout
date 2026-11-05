@@ -391,6 +391,13 @@ func sparkle(_ c: CGContext, _ p: CGPoint, _ r: CGFloat, alpha: CGFloat) {
 // MARK: - Scene 1: 80s title, "In a world…"
 
 func scene1(_ c: CGContext, _ t: CGFloat) {
+    if let plate = plates["scene1"] {
+        // The gust over the fjord; the captions sit in the open sky, where the later scenes put theirs too.
+        plate.draw(c, t)
+        caption(c, "Wind.", y: 1560, size: 110, appear: ramp(t, 0.6, 1.0))
+        caption(c, "Doesn't wait, bro.", y: 1430, size: 90, appear: ramp(t, 1.5, 1.9), color: orange)
+        return
+    }
     let horizon: CGFloat = 860
     gradient(c, [rgb(0x0B0420), rgb(0x4A1450)], from: H, to: horizon)
     // The sun, striped at the bottom
@@ -1075,6 +1082,9 @@ struct Plate {
 }
 
 let plates: [String: Plate] = ([
+    // Shot 1 (no reference): a gust line races across the fjord toward a jetty with a plain red pennant (0.5–3 s),
+    // and a wave slaps over the jetty at 3.5 s, just after "…bro."; camera still.
+    "scene1": Plate("brand/promo/generated/shot-1.mp4", from: 0.6, length: 3.2, cue: 0.6),
     // Shot 3 from Gemini (720 × 1280, 10 s, made from kai-master.jpg): the phone lights up at 1.0 s and he grins by
     // 3 s; the camera doesn't move.
     "scene3": Plate("brand/promo/generated/shot-3.mp4", from: 0.3, length: 4.0, cue: 1.0,
