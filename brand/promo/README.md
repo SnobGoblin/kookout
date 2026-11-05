@@ -27,7 +27,7 @@ Files here:
 | 3 | 17.4–24 s | **Kai** the otter, dozing in a hammock between two pines. The phone on his belly lights up; the notification ("Home spot · Tomorrow 2–6 PM good") pops out of it and floats above his head. Swoosh. He slides his sunglasses down to look, slow grin. | "Kai? Kai just waited for the swoosh. Swoosh means condish." | **Kookout swoosh** |
 | 3b | 24–28.2 s | Kai's Lock Screen, close up: under the clock, Kookout's **Lock Screen widget** (rectangular: "Home spot **now**", "The reef 14–18", "Ski hill Sat"; circular: wind icon and a tick), glowing; then the rectangular one pops out large enough to read. Drawn by me, exactly as the 1.1 widget looks. | "No app to open. Just… glance." | Soft chime |
 | 4 | 28.2–34.2 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder when your spots are firing. Your favourite sites do the rest." | Taps |
-| 5 | 34.2–39.2 s | Kai on the water at Home spot, flying on the foil, sun out. Gary rides past him, also grinning, phone in a waterproof pouch. | "When… and where. I think." | Water, wind |
+| 5 | 34.2–39.2 s | Kai on the water at Home spot, flying on the foil, waving. Gary passes behind his wing in the other direction and grins back (shot 5, slowed to 0.66×). | "When… and where. I think." | Water, wind |
 | 6 | 39.2–43.2 s | End card (exists in `promo.swift`): the eyes look left, right, out; KOOKOUT; "Know when your spots are good." / "Free on the App Store · kookout.no" | "Kookout. Go get your sesh." | Swoosh |
 
 On-screen captions follow the narrator line for line, since most people watch muted. Everything that matters
@@ -96,8 +96,10 @@ ask anyway and I cut what I need. The phone screens, cards and notifications are
    round, too late.
 3. `shot-4.mp4` (scene 4, ~6 s), from `kai-master.jpg`: Kai, relaxed in the hammock, scrolling on his phone with
    one paw, nodding slowly, content. Screen facing him.
-4. `riders.png`, then `shot-5.mp4` (scene 5, ~5 s), from both masters: Kai and Gary wing foiling side by side on a
-   sunny fjord, flying on hydrofoils, proper stance (knees bent, leaning on the wing), both grinning.
+4. `riders-passing.png`, then `shot-5.mp4` (scene 5), from `kai-riding.png` and `gary-riding.png`: they ride in
+   **opposite directions** (side by side, Gemini mirrors the wings, so the wind blows from two sides), Kai in front
+   going right to left and waving, Gary about twenty metres behind going left to right, with **open water between
+   them**: wings that overlap in the still get their depth order wrong. Check every overlap before animating.
 
 Tools: Midjourney or Ideogram for the images; Runway, Kling, Veo or Sora for image-to-video (keep the reference
 image so the characters stay the same between shots). Check each tool's terms for commercial use. Put the results in

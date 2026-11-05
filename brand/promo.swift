@@ -898,6 +898,7 @@ func cloud(_ c: CGContext, _ p: CGPoint, _ s: CGFloat) {
 }
 
 func scene5(_ c: CGContext, _ t: CGFloat) {
+    if let plate = plates["scene5"] { plate.draw(c, t); scene5Captions(c, t); return }
     gradient(c, [rgb(0x4FAEE6), rgb(0xC4E8F8)], from: H, to: 820)
 
     let sun = P(860, 1170)
@@ -972,6 +973,10 @@ func scene5(_ c: CGContext, _ t: CGFloat) {
         c.restoreGState()
     }
 
+    scene5Captions(c, t)
+}
+
+func scene5Captions(_ c: CGContext, _ t: CGFloat) {
     caption(c, "When… and where.", y: 1560, size: 96, appear: ramp(t, 0.4, 0.8))
     caption(c, "I think.", y: 1430, size: 100, appear: ramp(t, 2.8, 3.1), color: orange)
 }
@@ -1017,16 +1022,22 @@ struct Plate {
     let size: CGSize
     let from: Double, length: Double, cue: Double
     let anchor: [(t: Double, p: CGPoint)]
+    /// Playback speed; below 1 the source frames are cross-faded so slow motion stays smooth.
+    let speed: Double
+    let frameRate: Double
 
-    init?(_ path: String, from: Double, length: Double, cue: Double, anchor: [(t: Double, p: CGPoint)] = []) {
+    init?(_ path: String, from: Double, length: Double, cue: Double, speed: Double = 1,
+          anchor: [(t: Double, p: CGPoint)] = []) {
         guard FileManager.default.fileExists(atPath: path) else { return nil }
         let asset = AVURLAsset(url: URL(fileURLWithPath: path))
         generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
         generator.requestedTimeToleranceBefore = .zero
         generator.requestedTimeToleranceAfter = .zero
-        size = asset.tracks(withMediaType: .video).first?.naturalSize ?? CGSize(width: 720, height: 1280)
-        self.from = from; self.length = length; self.cue = cue; self.anchor = anchor
+        let track = asset.tracks(withMediaType: .video).first
+        size = track?.naturalSize ?? CGSize(width: 720, height: 1280)
+        frameRate = Double(track?.nominalFrameRate ?? 24)
+        self.from = from; self.length = length; self.cue = cue; self.speed = speed; self.anchor = anchor
     }
 
     private func fit(_ t: CGFloat) -> (scale: CGFloat, origin: CGPoint) {
@@ -1035,17 +1046,24 @@ struct Plate {
     }
 
     func draw(_ c: CGContext, _ t: CGFloat) {
-        let at = from + max(0, min(Double(t), length - 0.05))
-        guard let image = try? generator.copyCGImage(at: CMTime(seconds: at, preferredTimescale: 600), actualTime: nil)
-        else { return }
+        let at = from + max(0, min(Double(t), length - 0.05)) * speed
         let (s, o) = fit(t)
+        let rect = CGRect(x: o.x, y: o.y, width: size.width * s, height: size.height * s)
         c.interpolationQuality = .high
-        c.draw(image, in: CGRect(x: o.x, y: o.y, width: size.width * s, height: size.height * s))
+        func frame(_ i: Double) -> CGImage? {
+            try? generator.copyCGImage(at: CMTime(seconds: (i + 0.5) / frameRate, preferredTimescale: 6000), actualTime: nil)
+        }
+        let index = (at * frameRate).rounded(.down), blend = at * frameRate - index
+        guard let image = frame(index) else { return }
+        c.draw(image, in: rect)
+        if speed < 1, blend > 0.02, let next = frame(index + 1) {
+            c.saveGState(); c.setAlpha(blend); c.draw(next, in: rect); c.restoreGState()
+        }
     }
 
     /// The tracked point, in the video's coordinates (y up).
     func point(_ t: CGFloat) -> CGPoint {
-        let at = from + max(0, min(Double(t), length))
+        let at = from + max(0, min(Double(t), length)) * speed
         var p = anchor.first?.p ?? .zero
         for (a, b) in zip(anchor, anchor.dropFirst()) where at >= a.t {
             let f = CGFloat(min(1, (at - a.t) / (b.t - a.t)))
@@ -1068,6 +1086,10 @@ let plates: [String: Plate] = ([
     "scene2": Plate("brand/promo/generated/shot-2b.mp4", from: 0, length: 6.8, cue: 0),
     // Shot 4 (from kai-master.jpg): Kai scrolling on his phone, nodding; camera still.
     "scene4": Plate("brand/promo/generated/shot-4.mp4", from: 0.5, length: 6.0, cue: 0.5),
+    // Shot 5 (from riders-passing.png): Kai waves, Gary passes behind his wing (1–2.5 s) and comes out on the right;
+    // the camera drifts left with Kai. Only the first 3.3 s, slowed to fill the scene: after that Gary rides into
+    // Instagram's button column.
+    "scene5": Plate("brand/promo/generated/shot-5.mp4", from: 0, length: 5.0, cue: 0, speed: 0.66),
 ] as [String: Plate?]).compactMapValues { $0 }
 
 /// How long scene 3 holds the shot's first frame (Kai dozing, camera still), so the phone lights up just after the
