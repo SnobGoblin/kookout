@@ -476,6 +476,7 @@ func metricCard(_ c: CGContext, _ i: Int, appear: CGFloat, _ t: CGFloat) {
 }
 
 func scene2a(_ c: CGContext, _ t: CGFloat) {
+    if let plate = plates["scene2a"] { plate.draw(c, t); scene2aOverlay(c, t); return }
     background(c, rgb(0x2E3F4B))
     // Dawn through the window, a lamp, coffee
     let win = CGRect(x: 640, y: 1120, width: 300, height: 330)
@@ -500,6 +501,10 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
     fill(c, puffin, ellipse(P(380, 560), 60, 34))
     fill(c, puffin, ellipse(P(700, 560), 60, 34))
 
+    scene2aOverlay(c, t)
+}
+
+func scene2aOverlay(_ c: CGContext, _ t: CGFloat) {
     // "Secondary swell median" at 2.5 s, "Seagull drift index" at 4.6 s; the others pile in around them
     let lands: [CGFloat] = [2.5, 3.5, 4.6, 5.1, 5.4, 5.7, 6.0]
     for i in metrics.indices { metricCard(c, i, appear: ramp(t, lands[i], lands[i] + 0.25), t) }
@@ -509,9 +514,18 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
     caption(c, "Respect.", y: 500, size: 110, appear: ramp(t, 6.6, 6.9))
 }
 
-// MARK: - Scene 2: Gary in a meeting, the good wind behind him
+func scene2Captions(_ c: CGContext, _ t: CGFloat) {
+    if t < 3.9 {
+        caption(c, "But Gary also has…", y: 1580, size: 90, appear: ramp(t, 0.3, 0.6))
+        caption(c, "like… a job.", y: 1470, size: 96, appear: ramp(t, 2.2, 2.5), color: orange)
+    } else {
+        caption(c, "The wind came…", y: 1580, size: 96, appear: ramp(t, 4.0, 4.3))
+        caption(c, "in the afternoon.", y: 1470, size: 96, appear: ramp(t, 5.6, 5.9), color: orange)
+    }
+}
 
 func scene2(_ c: CGContext, _ t: CGFloat) {
+    if let plate = plates["scene2"] { plate.draw(c, t); scene2Captions(c, t); return }
     background(c, rgb(0xDDE3E6))
     // The window: a sunny fjord, wings gliding past
     c.saveGState()
@@ -560,13 +574,7 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     fill(c, puffin, ellipse(P(330, 560), 60, 34))
     fill(c, puffin, ellipse(P(750, 560), 60, 34))
 
-    if t < 3.9 {
-        caption(c, "But Gary also has…", y: 1580, size: 90, appear: ramp(t, 0.3, 0.6))
-        caption(c, "like… a job.", y: 1470, size: 96, appear: ramp(t, 2.2, 2.5), color: orange)
-    } else {
-        caption(c, "The wind came…", y: 1580, size: 96, appear: ramp(t, 4.0, 4.3))
-        caption(c, "in the afternoon.", y: 1470, size: 96, appear: ramp(t, 5.6, 5.9), color: orange)
-    }
+    scene2Captions(c, t)
 }
 
 // MARK: - Scene 3: Kai floating on his back, the swoosh
@@ -784,7 +792,64 @@ func card(_ c: CGContext, _ r: CGRect, _ kind: Int, _ t: CGFloat) {
          color: navy, align: 0)
 }
 
+/// Kai's phone with his favourite sites swiping by (generic wind map, station, webcam), then "Going tomorrow"; drawn
+/// around (540, 860), 600 × 1180. `hands` adds his paws holding it.
+func sitesPhone(_ c: CGContext, _ t: CGFloat, swipes: (CGFloat, CGFloat), going goingAt: CGFloat, hands: Bool) {
+    if hands {
+        for i in 0..<3 {
+            fill(c, otterDark, ellipse(P(845, 560 + CGFloat(i) * 115), 52, 40))
+            fill(c, otterDark, ellipse(P(235, 600 + CGFloat(i) * 115), 52, 40))
+        }
+    }
+    let phone = CGRect(x: 240, y: 270, width: 600, height: 1180)
+    fill(c, rgb(0x0B0F12), rr(phone, 96))
+    let screen = phone.insetBy(dx: 22, dy: 22)
+    c.saveGState()
+    c.addPath(rr(screen, 76)); c.clip()
+    fill(c, rgb(0xEEF2F4), CGPath(rect: screen, transform: nil))
+    let swipe = smooth(ramp(t, swipes.0, swipes.0 + 0.35)) + smooth(ramp(t, swipes.1, swipes.1 + 0.35))
+    for kind in 0..<3 {
+        let x = 540 + (CGFloat(kind) - swipe) * 600
+        card(c, CGRect(x: x - 250, y: 420, width: 500, height: 880), kind, t)
+    }
+    let going = ramp(t, goingAt, goingAt + 0.3)
+    if going > 0 {
+        let chip = CGRect(x: 290, y: 440, width: 500, height: 90)
+        c.saveGState()
+        c.translateBy(x: chip.midX, y: chip.midY); c.scaleBy(x: pop(going), y: pop(going)); c.translateBy(x: -chip.midX, y: -chip.midY)
+        fill(c, orange, rr(chip, 45))
+        text(c, "Going tomorrow, 2–6 PM", x: chip.midX, y: chip.midY - 14, size: 40, weight: 800, color: white,
+             maxWidth: chip.width - 50)
+        c.restoreGState()
+    }
+    c.restoreGState()
+    fill(c, rgb(0x000000), rr(CGRect(x: 455, y: 1360, width: 170, height: 50), 25))
+    if hands { fill(c, otter, ellipse(P(250, 520), 48, 92)) }
+}
+
+func scene4Captions(_ c: CGContext, _ t: CGFloat) {
+    caption(c, "Kookout taps you when your spots are firing.", y: 1600, size: 80, appear: ramp(t, 0.2, 0.6))
+    caption(c, "Your favourite sites do the rest.", y: 1500, size: 76, appear: ramp(t, 3.6, 4.0), color: orange)
+}
+
 func scene4(_ c: CGContext, _ t: CGFloat) {
+    if let plate = plates["scene4"] {
+        // Kai scrolling in the hammock; his screen floats beside him (right, over the water, clear of his face) on "Your favourite sites…"
+        plate.draw(c, t)
+        let show = ramp(t, 3.5, 3.9)
+        if show > 0 {
+            let k = 0.45 * pop(show)
+            c.saveGState()
+            c.translateBy(x: 800, y: 1150); c.scaleBy(x: k, y: k); c.rotate(by: -0.05); c.translateBy(x: -540, y: -860)
+            c.setShadow(offset: CGSize(width: 0, height: -24), blur: 50, color: rgb(0x000000, 0.4))
+            c.beginTransparencyLayer(auxiliaryInfo: nil)
+            sitesPhone(c, t, swipes: (4.3, 4.9), going: 5.4, hands: false)
+            c.endTransparencyLayer()
+            c.restoreGState()
+        }
+        scene4Captions(c, t)
+        return
+    }
     let center = P(540, 860)
     background(c, sea)
     for i in 0..<18 {
@@ -798,42 +863,14 @@ func scene4(_ c: CGContext, _ t: CGFloat) {
     }
     c.saveGState()
     c.translateBy(x: 580, y: 990); c.scaleBy(x: 0.76, y: 0.76); c.translateBy(x: -540, y: -860)
-    for i in 0..<3 {
-        fill(c, otterDark, ellipse(P(845, 560 + CGFloat(i) * 115), 52, 40))
-        fill(c, otterDark, ellipse(P(235, 600 + CGFloat(i) * 115), 52, 40))
-    }
-    let phone = CGRect(x: 240, y: 270, width: 600, height: 1180)
-    fill(c, rgb(0x0B0F12), rr(phone, 96))
-    let screen = phone.insetBy(dx: 22, dy: 22)
-    c.saveGState()
-    c.addPath(rr(screen, 76)); c.clip()
-    fill(c, rgb(0xEEF2F4), CGPath(rect: screen, transform: nil))
-    let swipe = smooth(ramp(t, 0.9, 1.25)) + smooth(ramp(t, 1.9, 2.25))
-    for kind in 0..<3 {
-        let x = 540 + (CGFloat(kind) - swipe) * 600
-        card(c, CGRect(x: x - 250, y: 420, width: 500, height: 880), kind, t)
-    }
-    let going = ramp(t, 2.8, 3.1)
-    if going > 0 {
-        let chip = CGRect(x: 290, y: 440, width: 500, height: 90)
-        c.saveGState()
-        c.translateBy(x: chip.midX, y: chip.midY); c.scaleBy(x: pop(going), y: pop(going)); c.translateBy(x: -chip.midX, y: -chip.midY)
-        fill(c, orange, rr(chip, 45))
-        text(c, "Going tomorrow, 2–6 PM", x: chip.midX, y: chip.midY - 14, size: 40, weight: 800, color: white,
-             maxWidth: chip.width - 50)
-        c.restoreGState()
-    }
-    c.restoreGState()
-    fill(c, rgb(0x000000), rr(CGRect(x: 455, y: 1360, width: 170, height: 50), 25))
-    fill(c, otter, ellipse(P(250, 520), 48, 92))
+    sitesPhone(c, t, swipes: (0.9, 1.9), going: 2.8, hands: true)
     c.restoreGState()
 
     // Kai in the corner, nodding along
     let nod = 10 * sin(t * 7)
     face(c, P(210, 610 + nod), 150, .kai, lids: 0.3, look: P(0.7, 0.6), mouth: .smile, shades: 1)
 
-    caption(c, "Kookout taps you when your spots are firing.", y: 1600, size: 80, appear: ramp(t, 0.2, 0.6))
-    caption(c, "Your favourite sites do the rest.", y: 1500, size: 76, appear: ramp(t, 3.6, 4.0), color: orange)
+    scene4Captions(c, t)
 }
 
 // MARK: - Scene 5: both out on the water at the home spot
@@ -1025,6 +1062,12 @@ let plates: [String: Plate] = ([
     "scene3": Plate("brand/promo/generated/shot-3.mp4", from: 0.3, length: 4.0, cue: 1.0,
                     anchor: [(1.0, P(398, 668)), (2.0, P(370, 660)), (3.0, P(365, 655)), (3.5, P(385, 668)),
                              (4.3, P(400, 690))]),
+    // Shot 2a (made from gary-master.png): Gary at the kitchen table at dawn, typing and nodding; camera still.
+    "scene2a": Plate("brand/promo/generated/shot-2a.mp4", from: 0.3, length: 7.4, cue: 0.3),
+    // Shot 2b (from gary-meeting.png): the wings pass the window from 2 s, he turns round at 6 s ("…in the afternoon").
+    "scene2": Plate("brand/promo/generated/shot-2b.mp4", from: 0, length: 6.8, cue: 0),
+    // Shot 4 (from kai-master.jpg): Kai scrolling on his phone, nodding; camera still.
+    "scene4": Plate("brand/promo/generated/shot-4.mp4", from: 0.5, length: 6.0, cue: 0.5),
 ] as [String: Plate?]).compactMapValues { $0 }
 
 /// How long scene 3 holds the shot's first frame (Kai dozing, camera still), so the phone lights up just after the
