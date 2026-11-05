@@ -4,7 +4,7 @@
 // Writes brand/promo/kookout-cartoon.mp4. With a folder, also writes a PNG of a few frames there, to look at.
 // This is the animatic for the script in brand/promo/README.md: captions stand in for the narrator.
 //
-//   1. 0–3 s    80s title "THE WIND": "In a world… where the wind waits for no one…"
+//   1. 0–3 s    80s title "THE WIND": "Wind… doesn't wait."
 //   2. 3–7 s    Gary the puffin at dawn, buried in made-up metrics ("secondary swell median"). Verdict: …maybe?
 //   3. 7–10 s   Gary in a meeting; behind him, wings glide past the window. He turns round too late.
 //   4. 10–14 s  Kai the otter asleep, floating on his back; "Home spot: Tomorrow 2–6 PM good" (swoosh); he lifts his sunglasses
@@ -423,8 +423,8 @@ func scene1(_ c: CGContext, _ t: CGFloat) {
     let glint = ramp(t, 0.8, 1.6)
     sparkle(c, P(mix(160, 920, glint), 1390), 90, alpha: sin(glint * .pi))
 
-    caption(c, "In a world…", y: 680, size: 84, appear: ramp(t, 0.6, 1.0))
-    caption(c, "where the wind waits for no one…", y: 570, size: 64, appear: ramp(t, 1.3, 1.7), color: orange)
+    caption(c, "Wind…", y: 680, size: 110, appear: ramp(t, 0.6, 1.0))
+    caption(c, "doesn't wait.", y: 560, size: 90, appear: ramp(t, 1.5, 1.9), color: orange)
 }
 
 // MARK: - Scene 2a: Gary's morning analysis, buried in made-up metrics
@@ -493,7 +493,7 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
 
     caption(c, "He studied the secondary", y: 1600, size: 84, appear: ramp(t, 0.2, 0.6))
     caption(c, "swell median…", y: 1490, size: 84, appear: ramp(t, 0.5, 0.9), color: orange)
-    caption(c, "Verdict: …maybe?", y: 500, size: 90, appear: ramp(t, 3.0, 3.3))
+    caption(c, "Verdict: maybe.", y: 500, size: 90, appear: ramp(t, 3.0, 3.3))
 }
 
 // MARK: - Scene 2: Gary in a meeting, the good wind behind him
@@ -715,7 +715,7 @@ func scene3b(_ c: CGContext, _ t: CGFloat) {
     }
 
     caption(c, "No app to open.", y: 1600, size: 90, appear: ramp(t, 0.2, 0.6))
-    caption(c, "Just glance.", y: 1490, size: 90, appear: ramp(t, 0.9, 1.3), color: orange)
+    caption(c, "Just… glance.", y: 1490, size: 90, appear: ramp(t, 0.9, 1.3), color: orange)
 }
 
 // MARK: - Scene 4: Kai fills in the details on his favourite sites
