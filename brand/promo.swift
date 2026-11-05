@@ -20,11 +20,17 @@ import Foundation
 
 let W: CGFloat = 1080, H: CGFloat = 1920
 let fps: Int32 = 30
-let duration: CGFloat = 30
+let duration: CGFloat = 47
 let fade: CGFloat = 0.35
 // Instagram Reels covers these (px): keep captions and anything that matters out of them
 let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
-var swooshes: [Double] { [10 + (plates["scene3"].map { $0.cue - $0.from } ?? 0.6), 26.1] }   // when the swoosh plays (s)
+// Scene 3's swoosh plays right after the narrator says "swoosh" (see scene3Lead); the second opens the end card.
+var swooshes: [Double] { [21.2 + (plates["scene3"].map { Double(scene3Lead) + $0.cue - $0.from } ?? 0.6), 43.1] }
+// The narrator ("Kookout narrator 2" in ElevenLabs): one take per line, placed so each scene's beats land on the words.
+let voice: [(file: String, at: Double)] = [
+    ("vo-1.take-a", 0.5), ("vo-2.take-a", 3.5), ("vo-2b.take-a", 14.7), ("vo-3.take-a", 21.5), ("vo-3b.take-a", 28.1),
+    ("vo-4.take-a", 32.3), ("vo-5.take-b", 38.3), ("vo-6.take-a", 43.9),
+]
 
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
     CGColor(red: CGFloat(hex >> 16 & 0xFF) / 255, green: CGFloat(hex >> 8 & 0xFF) / 255,
@@ -480,7 +486,7 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
     tie.addLines(between: [P(540, 820), P(515, 600), P(540, 560), P(565, 600)]); tie.closeSubpath()
     fill(c, navy, tie)
     fill(c, puffin, CGPath(rect: CGRect(x: 505, y: 820, width: 70, height: 70), transform: nil))
-    let dizzy = ramp(t, 1.2, 2.0)
+    let dizzy = ramp(t, 8.0, 9.0)
     face(c, P(540, 980), 125, .gary, look: P(dizzy * cos(t * 9), dizzy * sin(t * 9)),
          mouth: dizzy > 0.5 ? .o : .flat)
     fill(c, rgb(0x3B4A55), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: 540), transform: nil))
@@ -489,11 +495,13 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
     fill(c, puffin, ellipse(P(380, 560), 60, 34))
     fill(c, puffin, ellipse(P(700, 560), 60, 34))
 
-    for i in metrics.indices { metricCard(c, i, appear: ramp(t, 0.3 + CGFloat(i) * 0.38, 0.55 + CGFloat(i) * 0.38), t) }
+    // "Secondary swell median" 3.9 s, "Gust-to-lull variance" 6.0 s, "Seagull drift index" 8.1 s, then the rest pile in
+    let lands: [CGFloat] = [3.9, 6.0, 8.1, 8.7, 9.0, 9.3, 9.6]
+    for i in metrics.indices { metricCard(c, i, appear: ramp(t, lands[i], lands[i] + 0.25), t) }
 
-    caption(c, "This is Gary.", y: 1600, size: 96, appear: ramp(t, 0.2, 0.6))
-    caption(c, "Gary loves his charts.", y: 1490, size: 84, appear: ramp(t, 0.7, 1.1), color: orange)
-    caption(c, "Respect.", y: 500, size: 110, appear: ramp(t, 3.0, 3.3))
+    caption(c, "This is Gary.", y: 1600, size: 96, appear: ramp(t, 0.3, 0.7))
+    caption(c, "Gary loves his charts.", y: 1490, size: 84, appear: ramp(t, 1.8, 2.2), color: orange)
+    caption(c, "Respect.", y: 500, size: 110, appear: ramp(t, 10.0, 10.3))
 }
 
 // MARK: - Scene 2: Gary in a meeting, the good wind behind him
@@ -514,7 +522,7 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     hills.addQuadCurve(to: P(1020, 1000), control: P(800, 1070)); hills.closeSubpath()
     fill(c, rgb(0x4E8C7A), hills)
     fill(c, rgb(0x3A93C9), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: 1002), transform: nil))
-    for (i, start) in [-0.2, 0.5, 1.2].enumerated() {
+    for (i, start) in [3.4, 4.1, 4.8].enumerated() {
         let x = mix(-150, 1250, (t - CGFloat(start)) / 1.9)
         let by = 900 + CGFloat(i) * 25 + 6 * sin(t * 3 + CGFloat(i))
         foiler(c, x: x, by: by, scale: 0.28 - CGFloat(i) * 0.03, t, who: i == 1 ? .kai : .gary)
@@ -525,7 +533,7 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     c.restoreGState()
 
     // Gary, bored, then turning round too late
-    let turn = smooth(ramp(t, 2.1, 2.4))
+    let turn = smooth(ramp(t, 6.2, 6.5))
     fill(c, shirt, rr(CGRect(x: 380, y: 480, width: 320, height: 360), 120))
     let tie = CGMutablePath()
     tie.addLines(between: [P(540, 820), P(515, 600), P(540, 560), P(565, 600)]); tie.closeSubpath()
@@ -547,12 +555,12 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     fill(c, puffin, ellipse(P(330, 560), 60, 34))
     fill(c, puffin, ellipse(P(750, 560), 60, 34))
 
-    if t < 1.4 {
-        caption(c, "But Gary also has…", y: 1580, size: 90, appear: ramp(t, 0.1, 0.4))
-        caption(c, "like… a job.", y: 1470, size: 96, appear: ramp(t, 0.6, 0.9), color: orange)
+    if t < 3.9 {
+        caption(c, "But Gary also has…", y: 1580, size: 90, appear: ramp(t, 0.3, 0.6))
+        caption(c, "like… a job.", y: 1470, size: 96, appear: ramp(t, 2.2, 2.5), color: orange)
     } else {
-        caption(c, "The wind came…", y: 1580, size: 96, appear: ramp(t, 1.4, 1.7))
-        caption(c, "in the afternoon.", y: 1470, size: 96, appear: ramp(t, 1.8, 2.1), color: orange)
+        caption(c, "The wind came…", y: 1580, size: 96, appear: ramp(t, 4.0, 4.3))
+        caption(c, "in the afternoon.", y: 1470, size: 96, appear: ramp(t, 5.6, 5.9), color: orange)
     }
 }
 
@@ -720,7 +728,7 @@ func scene3b(_ c: CGContext, _ t: CGFloat) {
     }
 
     caption(c, "No app to open.", y: 1600, size: 90, appear: ramp(t, 0.2, 0.6))
-    caption(c, "Just… glance.", y: 1490, size: 90, appear: ramp(t, 0.9, 1.3), color: orange)
+    caption(c, "Just… glance.", y: 1490, size: 90, appear: ramp(t, 2.0, 2.4), color: orange)
 }
 
 // MARK: - Scene 4: Kai fills in the details on his favourite sites
@@ -820,7 +828,7 @@ func scene4(_ c: CGContext, _ t: CGFloat) {
     face(c, P(210, 610 + nod), 150, .kai, lids: 0.3, look: P(0.7, 0.6), mouth: .smile, shades: 1)
 
     caption(c, "Kookout taps you when your spots are firing.", y: 1600, size: 80, appear: ramp(t, 0.2, 0.6))
-    caption(c, "Your favourite sites do the rest.", y: 1500, size: 76, appear: ramp(t, 1.2, 1.6), color: orange)
+    caption(c, "Your favourite sites do the rest.", y: 1500, size: 76, appear: ramp(t, 3.6, 4.0), color: orange)
 }
 
 // MARK: - Scene 5: both out on the water at the home spot
@@ -923,7 +931,7 @@ func scene5(_ c: CGContext, _ t: CGFloat) {
     }
 
     caption(c, "When… and where.", y: 1560, size: 96, appear: ramp(t, 0.4, 0.8))
-    caption(c, "I think.", y: 1430, size: 100, appear: ramp(t, 1.8, 2.2), color: orange)
+    caption(c, "I think.", y: 1430, size: 100, appear: ramp(t, 2.8, 3.1), color: orange)
 }
 
 // MARK: - Scene 6: end card
@@ -1014,11 +1022,16 @@ let plates: [String: Plate] = ([
                              (4.3, P(400, 690))]),
 ] as [String: Plate?]).compactMapValues { $0 }
 
+/// How long scene 3 holds the shot's first frame (Kai dozing, camera still), so the phone lights up just after the
+/// narrator says "…waited for the swoosh."
+let scene3Lead: CGFloat = 2.5
+
 /// Scene 3 on a generated shot: the notification pops out of the phone, curves up over the water beside Kai (never
 /// over his face: his grin is the payoff) and floats above, trailing bubbles.
 func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
-    plate.draw(c, t)
-    let phone = plate.point(t), cue = CGFloat(plate.cue - plate.from)
+    let shot = t - scene3Lead
+    plate.draw(c, shot)
+    let phone = plate.point(shot), cue = scene3Lead + CGFloat(plate.cue - plate.from)
     let out = ramp(t, cue, cue + 0.45), rise = smooth(ramp(t, cue, cue + 0.7))
     let top = P(640, 1590 + 6 * sin(t * 2.4)), bend = P(1150, 820)
     func path(_ u: CGFloat) -> CGPoint {                 // phone → round the left of his face → above his head
@@ -1052,15 +1065,21 @@ func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
         c.endTransparencyLayer()
         c.restoreGState()
     }
-    caption(c, "Kai?", y: 590, size: 100, appear: ramp(t, 0.2, 0.5))
-    caption(c, "Kai just waited for the swoosh.", y: 485, size: 84, appear: ramp(t, 1.9, 2.3), color: orange)
+    if t < 3.6 {
+        caption(c, "Kai?", y: 590, size: 100, appear: ramp(t, 0.3, 0.6))
+        caption(c, "Kai just waited for the swoosh.", y: 485, size: 84, appear: ramp(t, 1.4, 1.8), color: orange)
+    } else {
+        caption(c, "Swoosh means", y: 590, size: 100, appear: ramp(t, 3.6, 3.9))
+        caption(c, "condish.", y: 485, size: 100, appear: ramp(t, 4.6, 4.9), color: orange)
+    }
 }
 
 // MARK: - Timeline and output
 
 let scenes: [(name: String, start: CGFloat, end: CGFloat, draw: (CGContext, CGFloat) -> Void)] = [
-    ("scene1", 0, 3, scene1), ("scene2a", 3, 7, scene2a), ("scene2", 7, 10, scene2), ("scene3", 10, 14, scene3),
-    ("scene3b", 14, 17, scene3b), ("scene4", 17, 21, scene4), ("scene5", 21, 26, scene5), ("scene6", 26, duration, scene6),
+    ("scene1", 0, 3.2, scene1), ("scene2a", 3.2, 14.4, scene2a), ("scene2", 14.4, 21.2, scene2),
+    ("scene3", 21.2, 27.8, scene3), ("scene3b", 27.8, 32, scene3b), ("scene4", 32, 38, scene4), ("scene5", 38, 43, scene5),
+    ("scene6", 43, duration, scene6),
 ]
 
 // Arguments: [--only <scene>] [folder for check frames]
@@ -1085,7 +1104,7 @@ func frame(_ c: CGContext, _ t: CGFloat) {
 }
 
 let checks = arguments.last.flatMap { $0.hasPrefix("--") || $0 == only ? nil : URL(fileURLWithPath: $0) }
-let checkTimes: [CGFloat] = only == nil ? [2.0, 6.6, 12.9, 15.0, 16.5, 20.2, 24.5, 28.5]
+let checkTimes: [CGFloat] = only == nil ? [2.0, 9.0, 13.5, 16.0, 20.5, 25.5, 29.5, 36.5, 41.5, 45.5]
                                         : stride(from: span.from, to: span.to, by: 0.5).map { $0 }
 
 let output = URL(fileURLWithPath: "brand/promo/kookout-\(only ?? "cartoon").mp4")
@@ -1142,7 +1161,7 @@ writer.finishWriting { written.signal() }
 written.wait()
 guard writer.status == .completed else { fatalError("Writing failed: \(String(describing: writer.error))") }
 
-// Add the swooshes and write the MP4
+// Add the swooshes and the narrator, and write the MP4
 let video = AVURLAsset(url: silent)
 let swoosh = AVURLAsset(url: URL(fileURLWithPath: "brand/swoosh.caf"))
 let length = CMTime(value: CMTimeValue(frameCount), timescale: fps)
@@ -1155,7 +1174,22 @@ for at in swooshes.map({ $0 - Double(span.from) }) where at >= 0 && at < Double(
     try audioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: swoosh.duration),
                                    of: swoosh.tracks(withMediaType: .audio)[0], at: CMTime(seconds: at, preferredTimescale: 600))
 }
+let voiceTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)!
+voiceTrack.insertEmptyTimeRange(CMTimeRange(start: .zero, duration: length))
+for line in voice {
+    let at = line.at - Double(span.from)
+    guard at >= 0, at < Double(span.to - span.from) else { continue }
+    let take = AVURLAsset(url: URL(fileURLWithPath: "brand/promo/vo/\(line.file).mp3"))
+    guard let source = take.tracks(withMediaType: .audio).first else { continue }
+    try voiceTrack.insertTimeRange(CMTimeRange(start: .zero, duration: take.duration), of: source,
+                                   at: CMTime(seconds: at, preferredTimescale: 600))
+}
+let mix = AVMutableAudioMix()
+let swooshLevel = AVMutableAudioMixInputParameters(track: audioTrack)
+swooshLevel.setVolume(0.5, at: .zero)
+mix.inputParameters = [swooshLevel]
 let export = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality)!
+export.audioMix = mix
 export.outputURL = output
 export.outputFileType = .mp4
 export.timeRange = CMTimeRange(start: .zero, duration: length)
