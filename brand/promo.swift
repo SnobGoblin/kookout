@@ -24,7 +24,7 @@ let duration: CGFloat = 30
 let fade: CGFloat = 0.35
 // Instagram Reels covers these (px): keep captions and anything that matters out of them
 let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
-let swooshes: [Double] = [10.6, 26.1]                      // when the swoosh plays (s)
+var swooshes: [Double] { [10 + (plates["scene3"] == nil ? 0.6 : 1.0), 26.1] }   // when the swoosh plays (s)
 
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
     CGColor(red: CGFloat(hex >> 16 & 0xFF) / 255, green: CGFloat(hex >> 8 & 0xFF) / 255,
@@ -553,7 +553,21 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
 
 // MARK: - Scene 3: Kai floating on his back, the swoosh
 
+/// The Kookout notification, drawn in an 840 × 250 box at the origin.
+func notificationCard(_ c: CGContext) {
+    let banner = CGRect(x: 0, y: 0, width: 840, height: 250)
+    fill(c, rgb(0xFFFFFF, 0.96), rr(banner, 56))
+    let icon = CGRect(x: banner.minX + 34, y: banner.midY - 76, width: 152, height: 152)
+    fill(c, navy, rr(icon, 36))
+    eyes(c, P(icon.midX, icon.midY), width: 118)
+    text(c, "Home spot", x: banner.minX + 216, y: banner.midY + 22, size: 62, weight: 800, color: rgb(0x111111), align: 0)
+    text(c, "now", x: banner.maxX - 40, y: banner.midY + 22, size: 44, weight: 500, color: rgb(0x777777), align: 1)
+    text(c, "Tomorrow 2–6 PM good", x: banner.minX + 216, y: banner.midY - 58, size: 54, weight: 500,
+         color: rgb(0x222222), align: 0, maxWidth: banner.width - 250)
+}
+
 func scene3(_ c: CGContext, _ t: CGFloat) {
+    if let plate = plates["scene3"] { scene3(c, t, on: plate); return }
     gradient(c, [rgb(0x4FAEE6), rgb(0xC4E8F8)], from: H, to: 900)
     // The far shore with a few pines, then the water
     let shore = CGMutablePath()
@@ -606,14 +620,10 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
         let tail = CGMutablePath()
         tail.addLines(between: [P(520, banner.minY + 10), P(600, banner.minY + 10), P(590, banner.minY - 160)]); tail.closeSubpath()
         fill(c, rgb(0xFFFFFF, 0.96), tail)
-        fill(c, rgb(0xFFFFFF, 0.96), rr(banner, 56))
-        let icon = CGRect(x: banner.minX + 34, y: banner.midY - 76, width: 152, height: 152)
-        fill(c, navy, rr(icon, 36))
-        eyes(c, P(icon.midX, icon.midY), width: 118)
-        text(c, "Home spot", x: banner.minX + 216, y: banner.midY + 22, size: 62, weight: 800, color: rgb(0x111111), align: 0)
-        text(c, "now", x: banner.maxX - 40, y: banner.midY + 22, size: 44, weight: 500, color: rgb(0x777777), align: 1)
-        text(c, "Tomorrow 2–6 PM good", x: banner.minX + 216, y: banner.midY - 58, size: 54, weight: 500,
-             color: rgb(0x222222), align: 0, maxWidth: banner.width - 250)
+        c.saveGState()
+        c.translateBy(x: banner.minX, y: banner.minY)
+        notificationCard(c)
+        c.restoreGState()
         c.endTransparencyLayer()
         c.restoreGState()
     }
@@ -941,14 +951,120 @@ func scene6(_ c: CGContext, _ t: CGFloat) {
     }
 }
 
+// MARK: - Video plates: generated shots under our overlays
+
+/// A generated shot used as a scene's picture. `from` and `length` pick the part of the clip (s); after it, its last
+/// frame holds with a slow push-in. `anchor` tracks a point in the clip (the phone), in its pixels from the top left,
+/// so overlays can follow it.
+struct Plate {
+    let generator: AVAssetImageGenerator
+    let size: CGSize
+    let from: Double, length: Double
+    let anchor: [(t: Double, p: CGPoint)]
+
+    init?(_ path: String, from: Double, length: Double, anchor: [(t: Double, p: CGPoint)] = []) {
+        guard FileManager.default.fileExists(atPath: path) else { return nil }
+        let asset = AVURLAsset(url: URL(fileURLWithPath: path))
+        generator = AVAssetImageGenerator(asset: asset)
+        generator.appliesPreferredTrackTransform = true
+        generator.requestedTimeToleranceBefore = .zero
+        generator.requestedTimeToleranceAfter = .zero
+        size = asset.tracks(withMediaType: .video).first?.naturalSize ?? CGSize(width: 720, height: 1280)
+        self.from = from; self.length = length; self.anchor = anchor
+    }
+
+    private func fit(_ t: CGFloat) -> (scale: CGFloat, origin: CGPoint) {
+        let s = max(W / size.width, H / size.height) * (1 + 0.025 * max(0, t - CGFloat(length)))
+        return (s, P((W - size.width * s) / 2, (H - size.height * s) / 2))
+    }
+
+    func draw(_ c: CGContext, _ t: CGFloat) {
+        let at = from + max(0, min(Double(t), length - 0.05))
+        guard let image = try? generator.copyCGImage(at: CMTime(seconds: at, preferredTimescale: 600), actualTime: nil)
+        else { return }
+        let (s, o) = fit(t)
+        c.interpolationQuality = .high
+        c.draw(image, in: CGRect(x: o.x, y: o.y, width: size.width * s, height: size.height * s))
+    }
+
+    /// The tracked point, in the video's coordinates (y up).
+    func point(_ t: CGFloat) -> CGPoint {
+        let at = from + max(0, min(Double(t), length))
+        var p = anchor.first?.p ?? .zero
+        for (a, b) in zip(anchor, anchor.dropFirst()) where at >= a.t {
+            let f = CGFloat(min(1, (at - a.t) / (b.t - a.t)))
+            p = P(mix(a.p.x, b.p.x, f), mix(a.p.y, b.p.y, f))
+        }
+        let (s, o) = fit(t)
+        return P(o.x + p.x * s, o.y + (size.height - p.y) * s)
+    }
+}
+
+let plates: [String: Plate] = ([
+    // Gemini's style test (four styles, 2.5 s each), the warm 3D one: the phone lights up at 5.9 s, the part ends at 7.45 s
+    "scene3": Plate("brand/promo/generated/style-tests.mp4", from: 5.0, length: 2.45,
+                    anchor: [(5.9, P(366, 746)), (6.4, P(370, 748)), (6.9, P(358, 760)), (7.4, P(347, 785))]),
+] as [String: Plate?]).compactMapValues { $0 }
+
+/// Scene 3 on a generated shot: the notification pops out of the phone, curves up past Kai's face (never over it:
+/// his grin is the payoff) and floats above his head, trailing bubbles.
+func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
+    plate.draw(c, t)
+    let phone = plate.point(t)
+    let out = ramp(t, 1.0, 1.45), rise = smooth(ramp(t, 1.0, 1.7))
+    let top = P(540, 1555 + 8 * sin(t * 2.4)), bend = P(150, 1150)
+    func path(_ u: CGFloat) -> CGPoint {                 // phone → round the left of his face → above his head
+        let v = 1 - u
+        return P(v * v * phone.x + 2 * v * u * bend.x + u * u * top.x, v * v * phone.y + 2 * v * u * bend.y + u * u * top.y)
+    }
+    if out > 0 {
+        let card = path(rise)
+        let space = CGColorSpace(name: CGColorSpace.sRGB)!
+        let glow = CGGradient(colorsSpace: space, colors: [rgb(0xFFFFFF, 0.4 * clamp(out * 2)), rgb(0xBFF3FF, 0)] as CFArray,
+                              locations: [0, 1])!
+        c.drawRadialGradient(glow, startCenter: card, startRadius: 0, endCenter: card, endRadius: 380, options: [])
+        for i in 0..<14 {
+            let age = fract(CGFloat(i) / 14 + t * 0.6)
+            guard age < rise else { continue }
+            let q = path(age)
+            let r = 5 + 9 * noise(i)
+            let wobble = P(q.x + 18 * sin(CGFloat(i) * 2 + t * 3), q.y)
+            fill(c, rgb(0xFFFFFF, 0.3 * (1 - age / max(rise, 0.01))), circle(wobble, r))
+            stroke(c, rgb(0xFFFFFF, 0.8 * (1 - age / max(rise, 0.01))), 2, circle(wobble, r))
+        }
+        let k = mix(0.12, 0.66, pop(out))
+        c.saveGState()
+        c.translateBy(x: card.x, y: card.y)
+        c.rotate(by: mix(0.3, -0.03, rise))
+        c.scaleBy(x: k, y: k)
+        c.translateBy(x: -420, y: -125)
+        c.setShadow(offset: CGSize(width: 0, height: -18), blur: 40, color: rgb(0x000000, 0.35))
+        c.beginTransparencyLayer(auxiliaryInfo: nil)
+        notificationCard(c)
+        c.endTransparencyLayer()
+        c.restoreGState()
+    }
+    caption(c, "Kai…", y: 590, size: 100, appear: ramp(t, 0.2, 0.5))
+    caption(c, "just waited for the swoosh.", y: 485, size: 84, appear: ramp(t, 1.9, 2.3), color: orange)
+}
+
 // MARK: - Timeline and output
 
-let scenes: [(start: CGFloat, end: CGFloat, draw: (CGContext, CGFloat) -> Void)] = [
-    (0, 3, scene1), (3, 7, scene2a), (7, 10, scene2), (10, 14, scene3), (14, 17, scene3b), (17, 21, scene4),
-    (21, 26, scene5), (26, duration, scene6),
+let scenes: [(name: String, start: CGFloat, end: CGFloat, draw: (CGContext, CGFloat) -> Void)] = [
+    ("scene1", 0, 3, scene1), ("scene2a", 3, 7, scene2a), ("scene2", 7, 10, scene2), ("scene3", 10, 14, scene3),
+    ("scene3b", 14, 17, scene3b), ("scene4", 17, 21, scene4), ("scene5", 21, 26, scene5), ("scene6", 26, duration, scene6),
 ]
 
+// Arguments: [--only <scene>] [folder for check frames]
+let arguments = Array(CommandLine.arguments.dropFirst())
+let only = arguments.firstIndex(of: "--only").map { arguments[$0 + 1] }
+let span: (from: CGFloat, to: CGFloat) = only.map { name in
+    guard let s = scenes.first(where: { $0.name == name }) else { fatalError("No scene called \(name)") }
+    return (s.start, s.end)
+} ?? (0, duration)
+
 func frame(_ c: CGContext, _ t: CGFloat) {
+    if let only, let scene = scenes.first(where: { $0.name == only }) { scene.draw(c, t - scene.start); return }
     for (i, scene) in scenes.enumerated() where t >= scene.start - (i == 0 ? 0 : fade) && t < scene.end + 0.001 {
         let a = i == 0 ? 1 : clamp((t - (scene.start - fade)) / fade)
         c.saveGState()
@@ -960,10 +1076,11 @@ func frame(_ c: CGContext, _ t: CGFloat) {
     }
 }
 
-let checks = CommandLine.arguments.count > 1 ? URL(fileURLWithPath: CommandLine.arguments[1]) : nil
-let checkTimes: [CGFloat] = [2.0, 6.6, 12.9, 15.0, 16.5, 20.2, 24.5, 28.5]
+let checks = arguments.last.flatMap { $0.hasPrefix("--") || $0 == only ? nil : URL(fileURLWithPath: $0) }
+let checkTimes: [CGFloat] = only == nil ? [2.0, 6.6, 12.9, 15.0, 16.5, 20.2, 24.5, 28.5]
+                                        : stride(from: span.from, to: span.to, by: 0.5).map { $0 }
 
-let output = URL(fileURLWithPath: "brand/promo/kookout-cartoon.mp4")
+let output = URL(fileURLWithPath: "brand/promo/kookout-\(only ?? "cartoon").mp4")
 try FileManager.default.createDirectory(at: output.deletingLastPathComponent(), withIntermediateDirectories: true)
 let silent = FileManager.default.temporaryDirectory.appendingPathComponent("kookout-promo-silent.mov")
 try? FileManager.default.removeItem(at: silent)
@@ -982,7 +1099,7 @@ writer.add(input)
 writer.startWriting()
 writer.startSession(atSourceTime: .zero)
 
-let frameCount = Int(duration * CGFloat(fps))
+let frameCount = Int((span.to - span.from) * CGFloat(fps))
 let srgb = CGColorSpace(name: CGColorSpace.sRGB)!
 for f in 0..<frameCount {
     while !input.isReadyForMoreMediaData { Thread.sleep(forTimeInterval: 0.002) }
@@ -993,7 +1110,7 @@ for f in 0..<frameCount {
     let c = CGContext(data: CVPixelBufferGetBaseAddress(pb), width: Int(W), height: Int(H), bitsPerComponent: 8,
                       bytesPerRow: CVPixelBufferGetBytesPerRow(pb), space: srgb,
                       bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue)!
-    let t = CGFloat(f) / CGFloat(fps)
+    let t = span.from + CGFloat(f) / CGFloat(fps)
     frame(c, t)
     if let checks, checkTimes.contains(where: { abs($0 - t) < 0.5 / CGFloat(fps) }) {
         // Check frames show what Instagram Reels covers: top bar, caption and audio at the bottom, buttons on the right
@@ -1026,7 +1143,7 @@ let videoTrack = composition.addMutableTrack(withMediaType: .video, preferredTra
 try videoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: length), of: video.tracks(withMediaType: .video)[0], at: .zero)
 let audioTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)!
 audioTrack.insertEmptyTimeRange(CMTimeRange(start: .zero, duration: length))
-for at in swooshes {
+for at in swooshes.map({ $0 - Double(span.from) }) where at >= 0 && at < Double(span.to - span.from) {
     try audioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: swoosh.duration),
                                    of: swoosh.tracks(withMediaType: .audio)[0], at: CMTime(seconds: at, preferredTimescale: 600))
 }
