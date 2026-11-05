@@ -21,7 +21,7 @@ Files here:
 | # | Time | Picture | Narrator (deep, slow, deadpan) | Sound |
 |---|---|---|---|---|
 | 1 | 0–3 s | Black, then chrome 80s title "THE WIND" with a lens flare. | "Wind… doesn't wait." | Low synth hit |
-| 2 | 3–7 s | **Gary** at 06:12 at the kitchen table, buried under pop-up charts of made-up metrics: "Secondary swell median", "Gust-to-lull variance (adj.)", "Ferry wake ETA 14:52 ± 3", "Moon × tide phase: Waxing-ish", "Wind confidence index 63 %", "Kites on webcam 3: 2 (1 lost)", "Swell period, 4th model". His eyes go round. | "Gary studied the secondary swell median. The gust-to-lull variance. The ferry wake ETA. (beat) Verdict: maybe." | Pop, pop, pop |
+| 2 | 3–7 s | **Gary** at 06:12 at the kitchen table, buried under pop-up charts of made-up metrics: "Secondary swell median", "Gust-to-lull variance (adj.)", "Seagull drift index: NE-ish", "Moon × tide phase: Waxing-ish", "Wind confidence index 63 %", "Kites on webcam 3: 2 (1 lost)", "Swell period, 4th model". His eyes go round. | "Gary studied the secondary swell median. The gust-to-lull variance. The seagull drift index. (beat) Verdict: maybe." | Pop, pop, pop |
 | 2b | 7–10 s | Gary in a long meeting. Behind him, through the window, wings fly past on a perfect afternoon. He turns around just as the last one disappears. | "The wind came… in the afternoon." | Meeting murmur, a seagull |
 | 3 | 10–14 s | **Kai** the otter, dozing in a hammock between two pines. The phone on his belly lights up; the notification ("Home spot · Tomorrow 2–6 PM good") pops out of it and floats above his head. Swoosh. He slides his sunglasses down to look, slow grin. | "Kai… just waited for the swoosh." | **Kookout swoosh** |
 | 3b | 14–17 s | Kai's Lock Screen, close up: under the clock, Kookout's **Lock Screen widget** (rectangular: "Home spot **now**", "The reef 14–18", "Ski hill Sat"; circular: wind icon and a tick), glowing; then the rectangular one pops out large enough to read. Drawn by me, exactly as the 1.1 widget looks. | "No app to open. Just… glance." | Soft chime |
@@ -49,7 +49,7 @@ real person (no creator's voice, name or catchphrases); if we ever want a known 
 
 Lines (one file each, so they can be timed against the picture):
 1. `vo-1.mp3`: "Wind… doesn't wait."
-2. `vo-2.mp3`: "Gary studied the secondary swell median. The gust-to-lull variance. The ferry wake ETA." (beat)
+2. `vo-2.mp3`: "Gary studied the secondary swell median. The gust-to-lull variance. The seagull drift index." (beat)
    "Verdict: maybe."
 3. `vo-2b.mp3`: "The wind came… in the afternoon."
 4. `vo-3.mp3`: "Kai… just waited for the swoosh."

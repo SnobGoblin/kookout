@@ -433,7 +433,7 @@ func scene1(_ c: CGContext, _ t: CGFloat) {
 let metrics: [(name: String, value: String?, at: CGPoint, tilt: CGFloat)] = [
     ("Secondary swell median", nil, P(270, 1270), -0.06),
     ("Gust-to-lull variance (adj.)", nil, P(790, 1250), 0.05),
-    ("Ferry wake ETA", "14:52 ± 3", P(250, 960), 0.04),
+    ("Seagull drift index", "NE-ish", P(250, 960), 0.04),
     ("Moon × tide phase", "Waxing-ish", P(800, 930), -0.05),
     ("Wind confidence index", "63 %", P(290, 640), 0.06),
     ("Kites on webcam 3", "2 (1 lost)", P(780, 640), -0.04),
