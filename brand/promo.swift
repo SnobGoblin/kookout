@@ -24,7 +24,7 @@ let duration: CGFloat = 30
 let fade: CGFloat = 0.35
 // Instagram Reels covers these (px): keep captions and anything that matters out of them
 let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
-var swooshes: [Double] { [10 + (plates["scene3"] == nil ? 0.6 : 1.0), 26.1] }   // when the swoosh plays (s)
+var swooshes: [Double] { [10 + (plates["scene3"].map { $0.cue - $0.from } ?? 0.6), 26.1] }   // when the swoosh plays (s)
 
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
     CGColor(red: CGFloat(hex >> 16 & 0xFF) / 255, green: CGFloat(hex >> 8 & 0xFF) / 255,
@@ -955,14 +955,15 @@ func scene6(_ c: CGContext, _ t: CGFloat) {
 
 /// A generated shot used as a scene's picture. `from` and `length` pick the part of the clip (s); after it, its last
 /// frame holds with a slow push-in. `anchor` tracks a point in the clip (the phone), in its pixels from the top left,
-/// so overlays can follow it.
+/// so overlays can follow it. `cue` is when the key moment happens in the clip (the phone lights up). Shots are used
+/// whole: anything wrong in them (burned-in text, fake screens) is fixed by regenerating, never by cropping.
 struct Plate {
     let generator: AVAssetImageGenerator
     let size: CGSize
-    let from: Double, length: Double
+    let from: Double, length: Double, cue: Double
     let anchor: [(t: Double, p: CGPoint)]
 
-    init?(_ path: String, from: Double, length: Double, anchor: [(t: Double, p: CGPoint)] = []) {
+    init?(_ path: String, from: Double, length: Double, cue: Double, anchor: [(t: Double, p: CGPoint)] = []) {
         guard FileManager.default.fileExists(atPath: path) else { return nil }
         let asset = AVURLAsset(url: URL(fileURLWithPath: path))
         generator = AVAssetImageGenerator(asset: asset)
@@ -970,7 +971,7 @@ struct Plate {
         generator.requestedTimeToleranceBefore = .zero
         generator.requestedTimeToleranceAfter = .zero
         size = asset.tracks(withMediaType: .video).first?.naturalSize ?? CGSize(width: 720, height: 1280)
-        self.from = from; self.length = length; self.anchor = anchor
+        self.from = from; self.length = length; self.cue = cue; self.anchor = anchor
     }
 
     private func fit(_ t: CGFloat) -> (scale: CGFloat, origin: CGPoint) {
@@ -1001,8 +1002,9 @@ struct Plate {
 }
 
 let plates: [String: Plate] = ([
-    // Gemini's style test (four styles, 2.5 s each), the warm 3D one: the phone lights up at 5.9 s, the part ends at 7.45 s
-    "scene3": Plate("brand/promo/generated/style-tests.mp4", from: 5.0, length: 2.45,
+    // Until a clean shot 3 exists: Gemini's style test (four styles, 2.5 s each), the warm 3D one. The phone lights up
+    // at 5.9 s; the part ends at 7.45 s.
+    "scene3": Plate("brand/promo/generated/style-tests.mp4", from: 5.0, length: 2.45, cue: 5.9,
                     anchor: [(5.9, P(366, 746)), (6.4, P(370, 748)), (6.9, P(358, 760)), (7.4, P(347, 785))]),
 ] as [String: Plate?]).compactMapValues { $0 }
 
@@ -1010,9 +1012,9 @@ let plates: [String: Plate] = ([
 /// his grin is the payoff) and floats above his head, trailing bubbles.
 func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
     plate.draw(c, t)
-    let phone = plate.point(t)
-    let out = ramp(t, 1.0, 1.45), rise = smooth(ramp(t, 1.0, 1.7))
-    let top = P(540, 1555 + 8 * sin(t * 2.4)), bend = P(150, 1150)
+    let phone = plate.point(t), cue = CGFloat(plate.cue - plate.from)
+    let out = ramp(t, cue, cue + 0.45), rise = smooth(ramp(t, cue, cue + 0.7))
+    let top = P(560, 1592 + 6 * sin(t * 2.4)), bend = P(150, 1150)
     func path(_ u: CGFloat) -> CGPoint {                 // phone → round the left of his face → above his head
         let v = 1 - u
         return P(v * v * phone.x + 2 * v * u * bend.x + u * u * top.x, v * v * phone.y + 2 * v * u * bend.y + u * u * top.y)
@@ -1032,7 +1034,7 @@ func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
             fill(c, rgb(0xFFFFFF, 0.3 * (1 - age / max(rise, 0.01))), circle(wobble, r))
             stroke(c, rgb(0xFFFFFF, 0.8 * (1 - age / max(rise, 0.01))), 2, circle(wobble, r))
         }
-        let k = mix(0.12, 0.66, pop(out))
+        let k = mix(0.12, 0.56, pop(out))
         c.saveGState()
         c.translateBy(x: card.x, y: card.y)
         c.rotate(by: mix(0.3, -0.03, rise))
