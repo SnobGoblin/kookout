@@ -819,7 +819,7 @@ func scene4(_ c: CGContext, _ t: CGFloat) {
     let nod = 10 * sin(t * 7)
     face(c, P(210, 610 + nod), 150, .kai, lids: 0.3, look: P(0.7, 0.6), mouth: .smile, shades: 1)
 
-    caption(c, "Kookout taps you on the shoulder.", y: 1600, size: 80, appear: ramp(t, 0.2, 0.6))
+    caption(c, "Kookout taps you when your spots are firing.", y: 1600, size: 80, appear: ramp(t, 0.2, 0.6))
     caption(c, "Your favourite sites do the rest.", y: 1500, size: 76, appear: ramp(t, 1.2, 1.6), color: orange)
 }
 

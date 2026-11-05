@@ -24,9 +24,9 @@ Files here:
 | 1 | 0–3 s | Black, then chrome 80s title "THE WIND" with a lens flare. | "Wind. Doesn't wait, bro." | Low synth hit |
 | 2 | 3–7 s | **Gary** at 06:12 at the kitchen table, buried under pop-up charts of made-up metrics: "Secondary swell median", "Gust-to-lull variance (adj.)", "Seagull drift index: NE-ish", "Moon × tide phase: Waxing-ish", "Wind confidence index 63 %", "Kites on webcam 3: 2 (1 lost)", "Swell period, 4th model". His eyes go round. | "This is Gary. Gary loves his charts. Secondary swell median. Gust-to-lull variance. Seagull drift index. Respect." | Pop, pop, pop |
 | 2b | 7–10 s | Gary in a long meeting. Behind him, through the window, wings fly past on a perfect afternoon. He turns around just as the last one disappears. | "But Gary also has, like… a job. And the wind came… in the afternoon." | Meeting murmur, a seagull |
-| 3 | 10–14 s | **Kai** the otter, dozing in a hammock between two pines. The phone on his belly lights up; the notification ("Home spot · Tomorrow 2–6 PM good") pops out of it and floats above his head. Swoosh. He slides his sunglasses down to look, slow grin. | "Kai? Kai just waited for the swoosh." | **Kookout swoosh** |
+| 3 | 10–14 s | **Kai** the otter, dozing in a hammock between two pines. The phone on his belly lights up; the notification ("Home spot · Tomorrow 2–6 PM good") pops out of it and floats above his head. Swoosh. He slides his sunglasses down to look, slow grin. | "Kai? Kai just waited for the swoosh. Swoosh means condish." | **Kookout swoosh** |
 | 3b | 14–17 s | Kai's Lock Screen, close up: under the clock, Kookout's **Lock Screen widget** (rectangular: "Home spot **now**", "The reef 14–18", "Ski hill Sat"; circular: wind icon and a tick), glowing; then the rectangular one pops out large enough to read. Drawn by me, exactly as the 1.1 widget looks. | "No app to open. Just… glance." | Soft chime |
-| 4 | 17–21 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder. Your favourite sites do the rest." | Taps |
+| 4 | 17–21 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder when your spots are firing. Your favourite sites do the rest." | Taps |
 | 5 | 21–26 s | Kai on the water at Home spot, flying on the foil, sun out. Gary rides past him, also grinning, phone in a waterproof pouch. | "When… and where. I think." | Water, wind |
 | 6 | 26–30 s | End card (exists in `promo.swift`): the eyes look left, right, out; KOOKOUT; "Know when your spots are good." / "Free on the App Store · kookout.no" | "Kookout. Go get your sesh." | Swoosh |
 
@@ -45,7 +45,8 @@ The register: a young Californian surfer, slow and lazy, warm and quietly stoked
 anything** (phrases trail off with a half-amused questioning lilt). Light surf slang ("bro", "condish", "sesh"),
 at most one per line; never a real person's catchphrases.
 
-The voice is saved in ElevenLabs as **"Kookout narrator"** (made with Voice Design, then remixed at low strength).
+The voice is saved in ElevenLabs as **"Kookout narrator 2"** (Voice Design, then remixed at low strength from
+"Kookout narrator").
 Never clone or imitate a real person; if we ever want a known voice, we hire that person. Write pauses with full
 stops and commas, never a stand-alone "…" (ElevenLabs may voice it as a syllable). Slow lines down with Text to
 Speech's speed slider rather than by rewriting them.
@@ -55,9 +56,9 @@ Lines (one file each, so they can be timed against the picture):
 2. `vo-2.mp3`: "This is Gary. Gary loves his charts. Secondary swell median. Gust-to-lull variance. Seagull drift
    index. Respect."
 3. `vo-2b.mp3`: "But Gary also has, like, a job. And the wind came. In the afternoon."
-4. `vo-3.mp3`: "Kai? Kai just waited for the swoosh."
+4. `vo-3.mp3`: "Kai? Kai just waited for the swoosh. Swoosh means condish."
 5. `vo-3b.mp3`: "No app to open. Just. Glance."
-6. `vo-4.mp3`: "Kookout taps you on the shoulder. Your favourite sites do the rest."
+6. `vo-4.mp3`: "Kookout taps you on the shoulder when your spots are firing. Your favourite sites do the rest."
 7. `vo-5.mp3`: "When, and where. I think."
 8. `vo-6.mp3`: "Kookout. Go get your sesh."
 
