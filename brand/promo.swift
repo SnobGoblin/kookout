@@ -491,7 +491,7 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
 
     for i in metrics.indices { metricCard(c, i, appear: ramp(t, 0.3 + CGFloat(i) * 0.38, 0.55 + CGFloat(i) * 0.38), t) }
 
-    caption(c, "He studied the secondary", y: 1600, size: 84, appear: ramp(t, 0.2, 0.6))
+    caption(c, "Gary studied the secondary", y: 1600, size: 84, appear: ramp(t, 0.2, 0.6))
     caption(c, "swell median…", y: 1490, size: 84, appear: ramp(t, 0.5, 0.9), color: orange)
     caption(c, "Verdict: maybe.", y: 500, size: 90, appear: ramp(t, 3.0, 3.3))
 }
