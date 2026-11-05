@@ -1007,19 +1007,20 @@ struct Plate {
 }
 
 let plates: [String: Plate] = ([
-    // Until a clean shot 3 exists: Gemini's style test (four styles, 2.5 s each), the warm 3D one. The phone lights up
-    // at 5.9 s; the part ends at 7.45 s.
-    "scene3": Plate("brand/promo/generated/style-tests.mp4", from: 5.0, length: 2.45, cue: 5.9,
-                    anchor: [(5.9, P(366, 746)), (6.4, P(370, 748)), (6.9, P(358, 760)), (7.4, P(347, 785))]),
+    // Shot 3 from Gemini (720 × 1280, 10 s, made from kai-master.jpg): the phone lights up at 1.0 s and he grins by
+    // 3 s; the camera doesn't move.
+    "scene3": Plate("brand/promo/generated/shot-3.mp4", from: 0.3, length: 4.0, cue: 1.0,
+                    anchor: [(1.0, P(398, 668)), (2.0, P(370, 660)), (3.0, P(365, 655)), (3.5, P(385, 668)),
+                             (4.3, P(400, 690))]),
 ] as [String: Plate?]).compactMapValues { $0 }
 
-/// Scene 3 on a generated shot: the notification pops out of the phone, curves up past Kai's face (never over it:
-/// his grin is the payoff) and floats above his head, trailing bubbles.
+/// Scene 3 on a generated shot: the notification pops out of the phone, curves up over the water beside Kai (never
+/// over his face: his grin is the payoff) and floats above, trailing bubbles.
 func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
     plate.draw(c, t)
     let phone = plate.point(t), cue = CGFloat(plate.cue - plate.from)
     let out = ramp(t, cue, cue + 0.45), rise = smooth(ramp(t, cue, cue + 0.7))
-    let top = P(560, 1592 + 6 * sin(t * 2.4)), bend = P(150, 1150)
+    let top = P(640, 1590 + 6 * sin(t * 2.4)), bend = P(1150, 820)
     func path(_ u: CGFloat) -> CGPoint {                 // phone → round the left of his face → above his head
         let v = 1 - u
         return P(v * v * phone.x + 2 * v * u * bend.x + u * u * top.x, v * v * phone.y + 2 * v * u * bend.y + u * u * top.y)
