@@ -423,8 +423,8 @@ func scene1(_ c: CGContext, _ t: CGFloat) {
     let glint = ramp(t, 0.8, 1.6)
     sparkle(c, P(mix(160, 920, glint), 1390), 90, alpha: sin(glint * .pi))
 
-    caption(c, "Wind…", y: 680, size: 110, appear: ramp(t, 0.6, 1.0))
-    caption(c, "doesn't wait.", y: 560, size: 90, appear: ramp(t, 1.5, 1.9), color: orange)
+    caption(c, "Wind.", y: 680, size: 110, appear: ramp(t, 0.6, 1.0))
+    caption(c, "Doesn't wait, bro.", y: 560, size: 90, appear: ramp(t, 1.5, 1.9), color: orange)
 }
 
 // MARK: - Scene 2a: Gary's morning analysis, buried in made-up metrics
@@ -491,9 +491,9 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
 
     for i in metrics.indices { metricCard(c, i, appear: ramp(t, 0.3 + CGFloat(i) * 0.38, 0.55 + CGFloat(i) * 0.38), t) }
 
-    caption(c, "Gary studied the secondary", y: 1600, size: 84, appear: ramp(t, 0.2, 0.6))
-    caption(c, "swell median…", y: 1490, size: 84, appear: ramp(t, 0.5, 0.9), color: orange)
-    caption(c, "Verdict: maybe.", y: 500, size: 90, appear: ramp(t, 3.0, 3.3))
+    caption(c, "This is Gary.", y: 1600, size: 96, appear: ramp(t, 0.2, 0.6))
+    caption(c, "Gary loves his charts.", y: 1490, size: 84, appear: ramp(t, 0.7, 1.1), color: orange)
+    caption(c, "Respect.", y: 500, size: 110, appear: ramp(t, 3.0, 3.3))
 }
 
 // MARK: - Scene 2: Gary in a meeting, the good wind behind him
@@ -547,8 +547,13 @@ func scene2(_ c: CGContext, _ t: CGFloat) {
     fill(c, puffin, ellipse(P(330, 560), 60, 34))
     fill(c, puffin, ellipse(P(750, 560), 60, 34))
 
-    caption(c, "The wind came", y: 1580, size: 96, appear: ramp(t, 0.2, 0.6))
-    caption(c, "in the afternoon.", y: 1470, size: 96, appear: ramp(t, 0.6, 1.0), color: orange)
+    if t < 1.4 {
+        caption(c, "But Gary also has…", y: 1580, size: 90, appear: ramp(t, 0.1, 0.4))
+        caption(c, "like… a job.", y: 1470, size: 96, appear: ramp(t, 0.6, 0.9), color: orange)
+    } else {
+        caption(c, "The wind came…", y: 1580, size: 96, appear: ramp(t, 1.4, 1.7))
+        caption(c, "in the afternoon.", y: 1470, size: 96, appear: ramp(t, 1.8, 2.1), color: orange)
+    }
 }
 
 // MARK: - Scene 3: Kai floating on his back, the swoosh
@@ -628,8 +633,8 @@ func scene3(_ c: CGContext, _ t: CGFloat) {
         c.restoreGState()
     }
 
-    caption(c, "Kai…", y: 1560, size: 110, appear: ramp(t, 1.2, 1.5))
-    caption(c, "just waited for the swoosh.", y: 1440, size: 90, appear: ramp(t, 1.9, 2.3), color: orange)
+    caption(c, "Kai?", y: 1560, size: 110, appear: ramp(t, 1.2, 1.5))
+    caption(c, "Kai just waited for the swoosh.", y: 1440, size: 90, appear: ramp(t, 1.9, 2.3), color: orange)
 }
 
 // MARK: - Scene 3b: the Lock Screen widget (Kookout 1.1)
@@ -917,8 +922,8 @@ func scene5(_ c: CGContext, _ t: CGFloat) {
         c.restoreGState()
     }
 
-    caption(c, "Kookout tells you when…", y: 1560, size: 96, appear: ramp(t, 0.4, 0.8))
-    caption(c, "…and where.", y: 1430, size: 110, appear: ramp(t, 1.6, 2.0), color: orange)
+    caption(c, "When… and where.", y: 1560, size: 96, appear: ramp(t, 0.4, 0.8))
+    caption(c, "I think.", y: 1430, size: 100, appear: ramp(t, 1.8, 2.2), color: orange)
 }
 
 // MARK: - Scene 6: end card
@@ -1046,8 +1051,8 @@ func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
         c.endTransparencyLayer()
         c.restoreGState()
     }
-    caption(c, "Kai…", y: 590, size: 100, appear: ramp(t, 0.2, 0.5))
-    caption(c, "just waited for the swoosh.", y: 485, size: 84, appear: ramp(t, 1.9, 2.3), color: orange)
+    caption(c, "Kai?", y: 590, size: 100, appear: ramp(t, 0.2, 0.5))
+    caption(c, "Kai just waited for the swoosh.", y: 485, size: 84, appear: ramp(t, 1.9, 2.3), color: orange)
 }
 
 // MARK: - Timeline and output
