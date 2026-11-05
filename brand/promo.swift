@@ -20,16 +20,21 @@ import Foundation
 
 let W: CGFloat = 1080, H: CGFloat = 1920
 let fps: Int32 = 30
-let duration: CGFloat = 47
+let duration: CGFloat = 43.2
 let fade: CGFloat = 0.35
 // Instagram Reels covers these (px): keep captions and anything that matters out of them
 let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
 // Scene 3's swoosh plays right after the narrator says "swoosh" (see scene3Lead); the second opens the end card.
-var swooshes: [Double] { [21.2 + (plates["scene3"].map { Double(scene3Lead) + $0.cue - $0.from } ?? 0.6), 43.1] }
+var swooshes: [Double] { [17.4 + (plates["scene3"].map { Double(scene3Lead) + $0.cue - $0.from } ?? 0.6), 39.3] }
 // The narrator ("Kookout narrator 2" in ElevenLabs): one take per line, placed so each scene's beats land on the words.
-let voice: [(file: String, at: Double)] = [
-    ("vo-1.take-a", 0.5), ("vo-2.take-a", 3.5), ("vo-2b.take-a", 14.7), ("vo-3.take-a", 21.5), ("vo-3b.take-a", 28.1),
-    ("vo-4.take-a", 32.3), ("vo-5.take-b", 38.3), ("vo-6.take-a", 43.9),
+// `parts` (s, within the take) plays only those sentences, with a 0.2 s breath between them; nil plays the whole take.
+let voice: [(file: String, at: Double, parts: [(Double, Double)]?)] = [
+    ("vo-1.take-a", 0.5, nil),
+    // "Gary loves his charts. Secondary swell median. Seagull drift index. Respect." (the take also has "This is
+    // Gary." and "Gust-to-lull variance.", cut for length)
+    ("vo-2.take-a", 3.5, [(1.40, 3.30), (3.50, 5.40), (7.64, 9.42), (9.64, 10.64)]),
+    ("vo-2b.take-a", 10.9, nil), ("vo-3.take-a", 17.7, nil), ("vo-3b.take-a", 24.3, nil), ("vo-4.take-a", 28.5, nil),
+    ("vo-5.take-b", 34.5, nil), ("vo-6.take-a", 40.1, nil),
 ]
 
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
@@ -486,7 +491,7 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
     tie.addLines(between: [P(540, 820), P(515, 600), P(540, 560), P(565, 600)]); tie.closeSubpath()
     fill(c, navy, tie)
     fill(c, puffin, CGPath(rect: CGRect(x: 505, y: 820, width: 70, height: 70), transform: nil))
-    let dizzy = ramp(t, 8.0, 9.0)
+    let dizzy = ramp(t, 5.0, 5.8)
     face(c, P(540, 980), 125, .gary, look: P(dizzy * cos(t * 9), dizzy * sin(t * 9)),
          mouth: dizzy > 0.5 ? .o : .flat)
     fill(c, rgb(0x3B4A55), CGPath(rect: CGRect(x: 0, y: 0, width: W, height: 540), transform: nil))
@@ -495,13 +500,13 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
     fill(c, puffin, ellipse(P(380, 560), 60, 34))
     fill(c, puffin, ellipse(P(700, 560), 60, 34))
 
-    // "Secondary swell median" 3.9 s, "Gust-to-lull variance" 6.0 s, "Seagull drift index" 8.1 s, then the rest pile in
-    let lands: [CGFloat] = [3.9, 6.0, 8.1, 8.7, 9.0, 9.3, 9.6]
+    // "Secondary swell median" at 2.5 s, "Seagull drift index" at 4.6 s; the others pile in around them
+    let lands: [CGFloat] = [2.5, 3.5, 4.6, 5.1, 5.4, 5.7, 6.0]
     for i in metrics.indices { metricCard(c, i, appear: ramp(t, lands[i], lands[i] + 0.25), t) }
 
-    caption(c, "This is Gary.", y: 1600, size: 96, appear: ramp(t, 0.3, 0.7))
-    caption(c, "Gary loves his charts.", y: 1490, size: 84, appear: ramp(t, 1.8, 2.2), color: orange)
-    caption(c, "Respect.", y: 500, size: 110, appear: ramp(t, 10.0, 10.3))
+    caption(c, "Gary loves", y: 1600, size: 96, appear: ramp(t, 0.4, 0.8))
+    caption(c, "his charts.", y: 1490, size: 96, appear: ramp(t, 1.0, 1.4), color: orange)
+    caption(c, "Respect.", y: 500, size: 110, appear: ramp(t, 6.6, 6.9))
 }
 
 // MARK: - Scene 2: Gary in a meeting, the good wind behind him
@@ -1077,9 +1082,9 @@ func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
 // MARK: - Timeline and output
 
 let scenes: [(name: String, start: CGFloat, end: CGFloat, draw: (CGContext, CGFloat) -> Void)] = [
-    ("scene1", 0, 3.2, scene1), ("scene2a", 3.2, 14.4, scene2a), ("scene2", 14.4, 21.2, scene2),
-    ("scene3", 21.2, 27.8, scene3), ("scene3b", 27.8, 32, scene3b), ("scene4", 32, 38, scene4), ("scene5", 38, 43, scene5),
-    ("scene6", 43, duration, scene6),
+    ("scene1", 0, 3.2, scene1), ("scene2a", 3.2, 10.6, scene2a), ("scene2", 10.6, 17.4, scene2),
+    ("scene3", 17.4, 24, scene3), ("scene3b", 24, 28.2, scene3b), ("scene4", 28.2, 34.2, scene4),
+    ("scene5", 34.2, 39.2, scene5), ("scene6", 39.2, duration, scene6),
 ]
 
 // Arguments: [--only <scene>] [folder for check frames]
@@ -1104,7 +1109,7 @@ func frame(_ c: CGContext, _ t: CGFloat) {
 }
 
 let checks = arguments.last.flatMap { $0.hasPrefix("--") || $0 == only ? nil : URL(fileURLWithPath: $0) }
-let checkTimes: [CGFloat] = only == nil ? [2.0, 9.0, 13.5, 16.0, 20.5, 25.5, 29.5, 36.5, 41.5, 45.5]
+let checkTimes: [CGFloat] = only == nil ? [2.0, 6.0, 8.5, 9.8, 16.0, 21.5, 26.0, 32.0, 37.0, 41.5]
                                         : stride(from: span.from, to: span.to, by: 0.5).map { $0 }
 
 let output = URL(fileURLWithPath: "brand/promo/kookout-\(only ?? "cartoon").mp4")
@@ -1181,8 +1186,13 @@ for line in voice {
     guard at >= 0, at < Double(span.to - span.from) else { continue }
     let take = AVURLAsset(url: URL(fileURLWithPath: "brand/promo/vo/\(line.file).mp3"))
     guard let source = take.tracks(withMediaType: .audio).first else { continue }
-    try voiceTrack.insertTimeRange(CMTimeRange(start: .zero, duration: take.duration), of: source,
-                                   at: CMTime(seconds: at, preferredTimescale: 600))
+    var cursor = at
+    for (from, to) in line.parts ?? [(0, take.duration.seconds)] {
+        try voiceTrack.insertTimeRange(CMTimeRange(start: CMTime(seconds: from, preferredTimescale: 44100),
+                                                   end: CMTime(seconds: to, preferredTimescale: 44100)), of: source,
+                                       at: CMTime(seconds: cursor, preferredTimescale: 44100))
+        cursor += to - from + 0.2
+    }
 }
 let mix = AVMutableAudioMix()
 let swooshLevel = AVMutableAudioMixInputParameters(track: audioTrack)

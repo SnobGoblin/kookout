@@ -1,6 +1,6 @@
 # Kookout promo: cartoon
 
-A 9:16 social video, about 47 s (cut to the narration; to be trimmed), for Instagram/Facebook wing foil and surf groups and later the kookout.no landing
+A 9:16 social video, about 43 s (cut to the narration), for Instagram/Facebook wing foil and surf groups and later the kookout.no landing
 page. Cartoon only (warm 3D animated-film look), with a very deep, slow, deadpan narrator: calm understatement
 against Gary's chaos.
 
@@ -22,13 +22,13 @@ Files here:
 | # | Time | Picture | Narrator (deep, slow, deadpan) | Sound |
 |---|---|---|---|---|
 | 1 | 0–3.2 s | Black, then chrome 80s title "THE WIND" with a lens flare. | "Wind. Doesn't wait, bro." | Low synth hit |
-| 2 | 3.2–14.4 s | **Gary** at 06:12 at the kitchen table, buried under pop-up charts of made-up metrics: "Secondary swell median", "Gust-to-lull variance (adj.)", "Seagull drift index: NE-ish", "Moon × tide phase: Waxing-ish", "Wind confidence index 63 %", "Kites on webcam 3: 2 (1 lost)", "Swell period, 4th model". His eyes go round. | "This is Gary. Gary loves his charts. Secondary swell median. Gust-to-lull variance. Seagull drift index. Respect." | Pop, pop, pop |
-| 2b | 14.4–21.2 s | Gary in a long meeting. Behind him, through the window, wings fly past on a perfect afternoon. He turns around just as the last one disappears. | "But Gary also has, like… a job. And the wind came… in the afternoon." | Meeting murmur, a seagull |
-| 3 | 21.2–27.8 s | **Kai** the otter, dozing in a hammock between two pines. The phone on his belly lights up; the notification ("Home spot · Tomorrow 2–6 PM good") pops out of it and floats above his head. Swoosh. He slides his sunglasses down to look, slow grin. | "Kai? Kai just waited for the swoosh. Swoosh means condish." | **Kookout swoosh** |
-| 3b | 27.8–32 s | Kai's Lock Screen, close up: under the clock, Kookout's **Lock Screen widget** (rectangular: "Home spot **now**", "The reef 14–18", "Ski hill Sat"; circular: wind icon and a tick), glowing; then the rectangular one pops out large enough to read. Drawn by me, exactly as the 1.1 widget looks. | "No app to open. Just… glance." | Soft chime |
-| 4 | 32–38 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder when your spots are firing. Your favourite sites do the rest." | Taps |
-| 5 | 38–43 s | Kai on the water at Home spot, flying on the foil, sun out. Gary rides past him, also grinning, phone in a waterproof pouch. | "When… and where. I think." | Water, wind |
-| 6 | 43–47 s | End card (exists in `promo.swift`): the eyes look left, right, out; KOOKOUT; "Know when your spots are good." / "Free on the App Store · kookout.no" | "Kookout. Go get your sesh." | Swoosh |
+| 2 | 3.2–10.6 s | **Gary** at 06:12 at the kitchen table, buried under pop-up charts of made-up metrics: "Secondary swell median", "Gust-to-lull variance (adj.)", "Seagull drift index: NE-ish", "Moon × tide phase: Waxing-ish", "Wind confidence index 63 %", "Kites on webcam 3: 2 (1 lost)", "Swell period, 4th model". His eyes go round. | "Gary loves his charts. Secondary swell median. Seagull drift index. Respect." | Pop, pop, pop |
+| 2b | 10.6–17.4 s | Gary in a long meeting. Behind him, through the window, wings fly past on a perfect afternoon. He turns around just as the last one disappears. | "But Gary also has, like… a job. And the wind came… in the afternoon." | Meeting murmur, a seagull |
+| 3 | 17.4–24 s | **Kai** the otter, dozing in a hammock between two pines. The phone on his belly lights up; the notification ("Home spot · Tomorrow 2–6 PM good") pops out of it and floats above his head. Swoosh. He slides his sunglasses down to look, slow grin. | "Kai? Kai just waited for the swoosh. Swoosh means condish." | **Kookout swoosh** |
+| 3b | 24–28.2 s | Kai's Lock Screen, close up: under the clock, Kookout's **Lock Screen widget** (rectangular: "Home spot **now**", "The reef 14–18", "Ski hill Sat"; circular: wind icon and a tick), glowing; then the rectangular one pops out large enough to read. Drawn by me, exactly as the 1.1 widget looks. | "No app to open. Just… glance." | Soft chime |
+| 4 | 28.2–34.2 s | Kai, now sitting up, swipes through his favourite sites on the phone (generic wind map, station graph, webcam), nods, and puts a pin in tomorrow. | "Kookout taps you on the shoulder when your spots are firing. Your favourite sites do the rest." | Taps |
+| 5 | 34.2–39.2 s | Kai on the water at Home spot, flying on the foil, sun out. Gary rides past him, also grinning, phone in a waterproof pouch. | "When… and where. I think." | Water, wind |
+| 6 | 39.2–43.2 s | End card (exists in `promo.swift`): the eyes look left, right, out; KOOKOUT; "Know when your spots are good." / "Free on the App Store · kookout.no" | "Kookout. Go get your sesh." | Swoosh |
 
 On-screen captions follow the narrator line for line, since most people watch muted. Everything that matters
 stays inside Instagram's Reels safe zone: clear of the top 250 px, the bottom 450 px and the right 140 px (buttons);
