@@ -86,16 +86,18 @@ coast animals; their eyes may be drawn round with the pupil "looking out", like 
 2. **Gary**, an over-analysing Atlantic puffin: black and white, the striped orange beak, red eye rings, wide
    anxious eyes, light blue shirt and navy tie. Funny and likeable, never a loser: he gets his ride in the end.
 
-Shots (image first, then image-to-video, 3–5 s each):
-1. Shot 2: "Gary at a desk in a glass-walled meeting room, bored; behind him through a big window a sunny fjord with
-   orange wing-foil wings gliding past." Motion: wings glide past behind him; he turns around too late.
-2. Shot 3: from `kai-master.jpg`: "Animate this image. Camera completely still, 4 seconds. 0–1 s he dozes; at 1 s the
-   phone screen (facing him) lights up with a plain cyan glow on his face; 1–2 s he slides his sunglasses down his
-   nose with one paw to look; 2–4 s a big happy grin." The notification popping out is drawn by me.
-3. Shot 4: "Kai sitting in the hammock looking at his phone, relaxed, nodding." Motion: small nods, thumb swipes.
-   (The phone screens are drawn by me.)
-4. Shot 5: "Kai wing foiling on a sunny fjord, flying above the water on a hydrofoil board, holding an orange wing,
-   big smile; Gary riding behind him, also smiling." Motion: they glide left to right, spray from the foil masts.
+Shots (still first, then "animate this image"; a new chat each; save in `generated/`). Gemini ignores lengths, so
+ask anyway and I cut what I need. The phone screens, cards and notifications are drawn by me.
+1. `shot-2a.mp4` (scene 2, ~8 s), from `gary-master.png`: Gary at the kitchen table at dawn, delighted with his laptop
+   and charts, leaning closer and closer, eyes darting between screen and papers. Static camera. Keep the space
+   above him empty (the metric cards land there).
+2. `gary-meeting.png`, then `shot-2b.mp4` (scene 2b, ~7 s): Gary bored in a glass-walled meeting room, a big window
+   behind him onto a windy, sunny fjord; wing foilers with orange wings glide past behind him; at the end he turns
+   round, too late.
+3. `shot-4.mp4` (scene 4, ~6 s), from `kai-master.jpg`: Kai, relaxed in the hammock, scrolling on his phone with
+   one paw, nodding slowly, content. Screen facing him.
+4. `riders.png`, then `shot-5.mp4` (scene 5, ~5 s), from both masters: Kai and Gary wing foiling side by side on a
+   sunny fjord, flying on hydrofoils, proper stance (knees bent, leaning on the wing), both grinning.
 
 Tools: Midjourney or Ideogram for the images; Runway, Kling, Veo or Sora for image-to-video (keep the reference
 image so the characters stay the same between shots). Check each tool's terms for commercial use. Put the results in
