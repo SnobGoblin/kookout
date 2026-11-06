@@ -7,9 +7,8 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
-**Status (3 Nov 2026):** version 1.0 (build 19, submitted 19 Oct) came back 3 Nov with Guideline 2.1(b) "Information Needed": Apple read "free for the first 2,000 users" as a free trial with a paywall. Replied the same day (no IAP, no trial, everything free) and removed that wording from the listing in all 7 languages; resubmitted 3 Nov 11:07, "Waiting for Review" (manual release). Build 18 is also out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
-https://testflight.apple.com/join/4wm11wAG), with the "N other riders follow this spot" line and the founding-user
-number (shows only in App Store installs); older builds expired. Plan: get on the App Store (testing has slowed;
+**Status (3 Nov 2026):** version 1.0 (build 19, submitted 19 Oct) came back 3 Nov with Guideline 2.1(b) "Information Needed": Apple read "free for the first 2,000 users" as a free trial with a paywall. Replied the same day (no IAP, no trial, everything free) and removed that wording from the listing in all 7 languages; resubmitted 3 Nov 11:07, "Waiting for Review" (manual release). TestFlight testers ("Family plus a couple guys", 6 testers; public link
+https://testflight.apple.com/join/4wm11wAG) have 1.1 build 20 since 6 Nov (widget, seasons); older builds expired. Plan: get on the App Store (testing has slowed;
 more users needed). App Store texts (7 languages), privacy label answers and review notes are in `appstore/`;
 framed screenshots in `appstore/framed`. EU status: non-trader. Not built yet: subscription/paywall.
 
@@ -152,7 +151,8 @@ Founding users: numbers come only from App Store installs (TestFlight/Xcode have
 (the 3 spots good soonest; tested on Christian's iPhone 16 Pro, hourly refresh confirmed 20 Oct) and seasons (see
 Decisions). MARKETING_VERSION 1.1, build 20. **Deploy the relay from `release/1.1` until it is merged:** a deploy
 from main drops `/widget` and seasons (that happened 3 Nov). Seasons in D1 via `relay/migrate-season.sql` (done).
-Left: TestFlight (ask first); submit after 1.0 is approved. It should be out well before 24 Dec (apps on 1.0 get
+On TestFlight since 6 Nov (build 20, uploaded from the `release-1.1` worktree). Left: submit after 1.0 is approved
+(What's New in `appstore/whats-new-1.1.md`). It should be out well before 24 Dec (apps on 1.0 get
 notifications all winter).
 
 Later: the landing page (see Reminders), the subscription and paywall (StoreKit, App Store Connect, tax/bank;
