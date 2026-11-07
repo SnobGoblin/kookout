@@ -1107,8 +1107,9 @@ let plates: [String: Plate] = ([
     // Shot 2a, 2D (from shot-2a-still.jpg, pink dawn): Gary types, eyes darting between laptop and charts, blinks;
     // camera still. The upper half is plain wall and window, where the metric cards land.
     "scene2a": Plate("brand/promo/generated/shot-2a.mp4", from: 0.3, length: 4.9, cue: 0.3),
-    // Shot 2b (from gary-meeting.png): the wings pass the window from 2 s, he turns round at 6 s ("…in the afternoon").
-    "scene2": Plate("brand/promo/generated/shot-2b.mp4", from: 2.6, length: 3.7, cue: 2.6),
+    // Shot 2b, 2D (from shot-2b-still.jpg, midday): three riders cross the window left to right from 1 s to 6.2 s,
+    // Gary drops his wing at 6.25 s and has turned to the window by 7.2 s, too late.
+    "scene2": Plate("brand/promo/generated/shot-2b.mp4", from: 3.5, length: 3.7, cue: 3.5),
     // Shot 4 (from kai-master.jpg): Kai scrolling on his phone, nodding; camera still.
     "scene4": Plate("brand/promo/generated/shot-4.mp4", from: 0.5, length: 5.8, cue: 0.5),
     // Shot 5 (from riders-passing.png): Kai waves, Gary passes behind his wing (1–2.5 s) and comes out on the right;
