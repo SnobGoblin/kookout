@@ -12,7 +12,7 @@ that he also has a job. Kookout tells him when it's worth opening them. (All the
 
 **Post only once Kookout 1.1 is in the App Store**: the Lock Screen widget (scene 4) comes with 1.1.
 
-## 0. Status (7 Nov 2026) and next steps
+## 0. Status (7 Nov 2026, afternoon) and next steps
 
 How we got here:
 1. A first version (43 s) was made on warm 3D shots from Gemini. Feedback: it "looks super AI and thus tacky", and
@@ -42,51 +42,63 @@ How we got here:
    reference frames are in `generated/3d/`): **scene 1** (gust, splash over the jetty 2.5 s in), **scene 2a** (Gary at
    the kitchen table at pink dawn; the metric cards bury him up to the beak by "Respect.", as the script wants),
    **scene 2b** (three riders cross the meeting-room window, he turns on "…a job."; small riders seen from behind
-   came out right). `onTwos` is still `false` while scenes 3–5 play 3D clips (held drawings would make those jerky).
-8. Scene 3's still is done (`generated/shot-3-still.jpg`, phone at about the old `anchor`); its animation was refused:
-   Gemini's video limit was reached on 7 Nov after three clips. Prompt (attach the still, Portrait):
+   came out right), **scene 3** and **scene 4** (7 Nov, below). `onTwos` is still `false` while scene 5 plays the 3D
+   clip (held drawings would make it jerky).
+8. Scene 3 (done 7 Nov): animated from `shot-3-still.jpg` with the prompt below. Kai stays on-model, the phone shows
+   only its back, no text. Gemini took it slower than asked: asleep to 1.75 s, eyes open at 2 s, paw on the sunglasses
+   and a peek over them 3.5–5.5 s, open grin 5.9–7.2 s, then he dozes off again (the last frame has his eyes shut).
+   So the plate plays from 1.5 s at **1.3×** (`speed`; the swoosh/pop timing now divides by it) and the grin lands
+   on "…condish."; the phone barely moves (anchor ≈ 400, 668 clip px). The notification pops out below his chin and
+   passes right of his face, through the button column only in flight. Prompt (attach the still, Portrait):
    "Animate this image as the first frame. Camera still, no zoom or pan. Keep the flat 2D screen-print look exactly:
    bold black outlines, flat colours, no added shading or 3D depth. The otter dozes for one second, then the phone in
    his paws lights up: a soft glow on his face from the screen, which faces him (we never see the screen). He wakes,
    slides his sunglasses down his nose with one paw, peeks over them at the phone, and a slow, happy grin spreads
    across his face. The phone stays in his paws in the same place the whole time. The hammock sways gently, the water
    sparkles. No text, letters, numbers, logos or captions anywhere."
-9. Scene 4: a separate still came back as a near copy of scene 3, eyes shut, with teal water
-   (`generated/shot-4-still-rejected.jpg`). Plan: animate scene 4 from the **last frame of shot 3** (Kai awake,
-   grinning), which also gives continuity: "he scrolls on the phone with one paw, nodding slowly, content".
-10. Scene 5's still failed on Kai again (`generated/riders-passing-2d-rejected.jpg`): square to the camera, upright,
-   holding a rod that sticks out of the wing, the wing beside him tip-down; a logo on his vest; his waving paw in
-   Instagram's button column. Gary (small, from behind) came out nearly right. Pattern so far: Gemini draws riders
-   well when they are small and seen from behind or the side, and fails every time Kai faces the camera. Options:
-   (a) Kai in profile riding right to left, turning only his head to wave at Gary (not at the viewer); (b) give
-   Gemini a photo of a real wing foiler in the right pose as a pose reference (e.g. one of Christian riding);
-   (c) both.
-   Second try, with Christian's photo as a pose reference (`generated/pose-photo.jpg`, his family riding; the
-   rightmost rider cropped and mirrored to ride right to left: `generated/pose-ref.jpg`), Kai in back three-quarter
-   view, Gary small near the horizon (`generated/riders-passing-2d-rejected-2.jpg`): the body pose got better
-   (sideways, knees bent, leaning back), but the wing came out as an orange kayak shape held at waist height with
-   both paws on one handle. Gary (small, blue wing overhead) passed again. Next options, for Christian to choose:
-   (A) **stylise the photo itself**: give Gemini a crop of the photo with the two right-hand riders and ask it to
-   redraw exactly that picture in the style with the riders replaced by Kai and Gary (wing and board geometry come
-   from the photo, so they should be right); this changes the beat from "pass each other" to "ride together", which
-   still fits "When, and where. I think."; (B) keep "pass each other": stylise only the mirrored single-rider crop
-   as Kai, and ask for Gary small near the horizon riding the other way, like the second try.
+9. Scene 4 (done 7 Nov): a separate still had come back as a near copy of scene 3 with teal water
+   (`generated/shot-4-still-rejected.jpg`). Instead `shot-4-still.jpg` is **shot 3 at 6.63 s**, the frame scene 3
+   ends on (eyes open, grinning; shot 3's real last frame has him asleep again, so it was not used), which makes the
+   cut seamless. Animated with the scrolling prompt: phone in one paw, back towards us, the other paw taps and
+   scrolls, content, blinks; camera still. Plays from 0 s. The sites screen (drawn by `promo.swift`, upper right)
+   stays clear of his face and inside the safe zone.
+10. Scene 5 is **not done**. Earlier tries failed on Kai (`generated/riders-passing-2d-rejected.jpg`,
+   `riders-passing-2d-rejected-2.jpg`): square to the camera, or the wing as a kayak shape at waist height. Pattern:
+   Gemini draws riders well when small and seen from behind or the side, and fails whenever Kai faces the camera.
    **Chosen (7 Nov): A, ride together.** Reference: `generated/pose-two-riders.jpg` (the two right-hand riders of
    the photo, uncropped otherwise, watermark left out); left rider → Gary, right rider → Kai, both riding left to
    right. The script's scene 5 becomes "Kai and Gary ride side by side; Kai waves".
+   **Option A tried three times on 7 Nov, all rejected** (no video spent; one clip of the day's quota is left):
+   (1) `riders-together-rejected-1.jpg`, the prompt from the task: both wings drawn as stiff shells/kayaks held like
+   shields, no leading-edge arc or strut, text-like marks on both masts, Kai square to the camera, his wing to 94 %
+   of the width. (2) `-2.jpg`, with a longer wing description: wings held straight overhead like umbrellas, Kai
+   standing square with straight legs, wing tip at 97 % of the width; Gary good (knees bent, foil visible).
+   (3) `-3.jpg`, "seen from the side, never from the front", "smaller, left 80 %": bodies side-on and Kai's grin
+   good, but both wings held like **windsurf sails** (vertical, rider behind, one hand on one handle, tip near the
+   water), a **cream paper border** round the picture, houses left on the hillside, Kai's wing at 93 %.
+   Conclusion: the 530 × 380 photo is too weak a reference against Gemini's idea of "wing"; it keeps the riders'
+   placement but never the wing geometry. Options for Christian:
+   (A2) a bigger, sharper reference: the full-resolution original photo, or a single clear frame of one rider, and
+   ask for one rider at a time (Kai alone, Gary added in a second edit pass: "add a puffin rider behind him");
+   (A3) edit-in-place: give Gemini rejected-3 (bodies right) and ask only to "change the wings to …, held above and
+   in front, both hands on the strut" and "remove the border and the houses" (small edits often hold better than a
+   full regeneration);
+   (C) drop the faces-to-camera beat: riders small and from the side/behind (which Gemini draws right), Kai's wave
+   read from the silhouette, and let the narrator carry "When, and where".
 
 Claude can drive Gemini in Christian's Chrome (Claude in Chrome): new chat, "Upload & tools" → Create image / Create
 video, aspect ratio 9:16 / Portrait, then attach through the page's `image/*` file input (no file dialog), type the
 prompt as one paragraph (a line break sends it), send, and download with "Download full size image" / "Download
 video" (lands in ~/Downloads). Video generation sometimes answers "full capacity, try again later"; retrying a few
-minutes later worked.
+minutes later worked. The + menu often ignores the first click after the aspect-ratio menu (click again), and the
+`image/*` input is easiest to find by giving it an aria-label from JavaScript first. One "Create image" chat can take
+several attachments in one upload; their order is kept.
 
 Next:
-1. Scene 3's animation once the video limit resets; check it, re-measure the phone `anchor` and `cue` (light-up
-   time), cut in.
-2. Scene 4 from shot 3's last frame; scene 5 with option (a)/(b) above, still first.
-3. When all six are 2D: set `onTwos = true` in `promo.swift` (each drawing held for two frames, 12 a second, like
+1. Scene 5: Christian picks A2, A3 or C above; still first, check close up, then the video (one clip a day).
+2. When all six are 2D: set `onTwos = true` in `promo.swift` (each drawing held for two frames, 12 a second, like
    hand-drawn animation, which takes out the floaty AI motion), keep `grain`, render the whole cut, check frames.
+3. Optionally slow scene 3 back to 1× if the 1.3× reads rushed on a phone (then the grin comes after "condish.").
 4. Optionally restyle my code-drawn parts to match (metric cards, notification, widget, end card are flat already).
 5. Cover image for the Reel: a frame of the opening shot.
 

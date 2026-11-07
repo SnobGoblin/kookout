@@ -28,7 +28,7 @@ let onTwos = false
 // Instagram Reels covers these (px): keep captions and anything that matters out of them
 let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
 // Scene 3's swoosh plays right after the narrator says "swoosh" (see scene3Lead); the second opens the end card.
-var swooshes: [Double] { [11.4 + (plates["scene3"].map { Double(scene3Lead) + $0.cue - $0.from } ?? 0.6), 26.7] }
+var swooshes: [Double] { [11.4 + (plates["scene3"].map { Double(scene3Lead) + ($0.cue - $0.from) / $0.speed } ?? 0.6), 26.7] }
 // The narrator ("Kookout narrator 2" in ElevenLabs): one take per line, placed so each scene's beats land on the words.
 // `parts` (s, within the take) plays only those sentences, with a 0.2 s breath between them; nil plays the whole take.
 let voice: [(file: String, at: Double, parts: [(Double, Double)]?)] = [
@@ -1099,19 +1099,21 @@ let plates: [String: Plate] = ([
     // from 3 s, a wave splashes over the jetty at 4.1–4.3 s (2.5 s into the scene, just after "…bro."); camera still.
     // It splashes again at 8 s and 9.5 s (unused).
     "scene1": Plate("brand/promo/generated/shot-1.mp4", from: 1.6, length: 2.8, cue: 1.6),
-    // Shot 3 from Gemini (720 × 1280, 10 s, made from kai-master.jpg): the phone lights up at 1.0 s and he grins by
-    // 3 s; the camera doesn't move.
-    "scene3": Plate("brand/promo/generated/shot-3.mp4", from: 0.3, length: 4.0, cue: 1.0,
-                    anchor: [(1.0, P(398, 668)), (2.0, P(370, 660)), (3.0, P(365, 655)), (3.5, P(385, 668)),
-                             (4.3, P(400, 690))]),
+    // Shot 3, 2D (from shot-3-still.jpg, sunset): asleep until 1.75 s, eyes open at 2 s, paw to the sunglasses and a
+    // peek over them 3.5–5.5 s, open grin 5.9–7.2 s; the phone barely moves and its screen is never seen. Gemini took
+    // it slower than asked, so it plays from 1.5 s at 1.3× (the grin lands on "…condish."); camera still.
+    "scene3": Plate("brand/promo/generated/shot-3.mp4", from: 1.5, length: 4.0, cue: 1.75, speed: 1.3,
+                    anchor: [(1.5, P(402, 665)), (2.5, P(405, 670)), (3.5, P(397, 670)), (4.5, P(402, 670)),
+                             (5.5, P(397, 670)), (6.5, P(410, 660))]),
     // Shot 2a, 2D (from shot-2a-still.jpg, pink dawn): Gary types, eyes darting between laptop and charts, blinks;
     // camera still. The upper half is plain wall and window, where the metric cards land.
     "scene2a": Plate("brand/promo/generated/shot-2a.mp4", from: 0.3, length: 4.9, cue: 0.3),
     // Shot 2b, 2D (from shot-2b-still.jpg, midday): three riders cross the window left to right from 1 s to 6.2 s,
     // Gary drops his wing at 6.25 s and has turned to the window by 7.2 s, too late.
     "scene2": Plate("brand/promo/generated/shot-2b.mp4", from: 3.5, length: 3.7, cue: 3.5),
-    // Shot 4 (from kai-master.jpg): Kai scrolling on his phone, nodding; camera still.
-    "scene4": Plate("brand/promo/generated/shot-4.mp4", from: 0.5, length: 5.8, cue: 0.5),
+    // Shot 4, 2D (from shot-4-still.jpg = shot 3 at 6.63 s, the frame scene 3 ends on): Kai holds the phone in one
+    // paw (we see only its back) and taps and scrolls with the other, content, blinks now and then; camera still.
+    "scene4": Plate("brand/promo/generated/shot-4.mp4", from: 0.0, length: 5.8, cue: 0.0),
     // Shot 5 (from riders-passing.png): Kai waves, Gary passes behind his wing (1–2.5 s) and comes out on the right;
     // the camera drifts left with Kai. Real speed; Gary reaches Instagram's button column only in the last 0.5 s,
     // on his way out of the picture.
@@ -1127,7 +1129,7 @@ let scene3Lead: CGFloat = 1.6
 func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
     let shot = t - scene3Lead
     plate.draw(c, shot)
-    let phone = plate.point(shot), cue = scene3Lead + CGFloat(plate.cue - plate.from)
+    let phone = plate.point(shot), cue = scene3Lead + CGFloat((plate.cue - plate.from) / plate.speed)
     let out = ramp(t, cue, cue + 0.45), rise = smooth(ramp(t, cue, cue + 0.7))
     let top = P(640, 1590 + 6 * sin(t * 2.4)), bend = P(1150, 820)
     func path(_ u: CGFloat) -> CGPoint {                 // phone → round the left of his face → above his head
