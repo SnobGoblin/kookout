@@ -32,15 +32,21 @@ How we got here:
    stood square to the camera, legs straight, holding the wing at his side with one paw like a shield, the wing
    hanging tip-down and catching no wind, shaped like a shell instead of an inflated wing. Riders spot that at once.
 
+6. Gary's 2D sheet is done: `generated/gary-2d.jpg` (five poses, first take). Small flaws to steer around in shot
+   prompts: his eyes read a little sly rather than wide and eager (say "wide eager eyes"), the laptop lid has a
+   round logo-like dot (say "plain laptop lid, no logo"), and the seated pose is drawn smaller than the others.
+   A first riding test of Kai (`generated/kai-2d-riding-rejected.jpg`) failed like his sheet's fifth pose: square
+   to the camera, both paws on one grip, the wing upright beside him like a shield. Riding is left to the scene 5
+   still, with the riding pose text; a pure side view is the fallback if it fails again.
+
 Next:
-1. Gary's 2D sheet (prompt in section 3), saved as `generated/gary-2d.jpg`.
-2. The six shots in 2D (section 3), each from the style image plus the character sheet(s), still first, checked,
+1. The six shots in 2D (section 3), each from the style image plus the character sheet(s), still first, checked,
    then animated.
-3. Cut them in: set `onTwos = true` in `promo.swift` (each drawing held for two frames, 12 a second, like
+2. Cut them in: set `onTwos = true` in `promo.swift` (each drawing held for two frames, 12 a second, like
    hand-drawn animation, which takes out the floaty AI motion), keep `grain`, re-check the plate timings (`from`,
    `cue`, scene 3's phone `anchor`) against the new shots, render, check frames.
-4. Optionally restyle my code-drawn parts to match (metric cards, notification, widget, end card are flat already).
-5. Cover image for the Reel: a frame of the opening shot.
+3. Optionally restyle my code-drawn parts to match (metric cards, notification, widget, end card are flat already).
+4. Cover image for the Reel: a frame of the opening shot.
 
 Files here:
 1. `README.md`: this plan (script, voice-over, prompts).
