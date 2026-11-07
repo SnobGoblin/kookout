@@ -1104,7 +1104,8 @@ let plates: [String: Plate] = ([
     "scene3": Plate("brand/promo/generated/shot-3.mp4", from: 0.3, length: 4.0, cue: 1.0,
                     anchor: [(1.0, P(398, 668)), (2.0, P(370, 660)), (3.0, P(365, 655)), (3.5, P(385, 668)),
                              (4.3, P(400, 690))]),
-    // Shot 2a (made from gary-master.png): Gary at the kitchen table at dawn, typing and nodding; camera still.
+    // Shot 2a, 2D (from shot-2a-still.jpg, pink dawn): Gary types, eyes darting between laptop and charts, blinks;
+    // camera still. The upper half is plain wall and window, where the metric cards land.
     "scene2a": Plate("brand/promo/generated/shot-2a.mp4", from: 0.3, length: 4.9, cue: 0.3),
     // Shot 2b (from gary-meeting.png): the wings pass the window from 2 s, he turns round at 6 s ("…in the afternoon").
     "scene2": Plate("brand/promo/generated/shot-2b.mp4", from: 2.6, length: 3.7, cue: 2.6),
