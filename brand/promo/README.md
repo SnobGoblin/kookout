@@ -124,8 +124,11 @@ Next:
 3. Optionally restyle my code-drawn parts to match (metric cards, notification, widget, end card are flat already).
 4. Cover image: done (7 Nov), `swift -O brand/promo.swift --cover <checkfolder>` writes `kookout-cover.png` (1080 ×
    1920): the opening shot at the splash (2.5 s), Kookout's eyes and "Wind. / Doesn't wait, bro." in the sky, all
-   inside the middle 3:4 that the profile grid shows. Upload it as the Reel's cover ("Edit cover" → "Add from
-   camera roll"); Instagram's own frame picker would only give a frame without the eyes.
+   inside the middle 3:4 that the profile grid shows. The first version's eyes blended into the sky (the O's holes
+   showed sky behind the white pupils); of five fixes (`--cover 1…5`: navy holes, cartoon eyes, navy rim, navy tile,
+   logo pill over the water) Christian chose **3, a navy rim round the O's like the captions, with navy holes**.
+   Upload it as the Reel's cover ("Edit cover" → "Add from camera roll"); Instagram's own frame picker would only
+   give a frame without the eyes.
 
 Files here:
 1. `README.md`: this plan (script, voice-over, prompts).

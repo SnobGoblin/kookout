@@ -1226,20 +1226,54 @@ let grainTiles: [CGImage] = (0..<6).map { seed in
 // --cover: the Reel's cover image (brand/promo/kookout-cover.png): the opening shot at the splash, Kookout's eyes and
 // the first line in the open sky. The profile grid shows only the middle 3:4 (1080 × 1440), so everything that
 // matters sits inside it; the check folder gets a copy with the grid crop and Reels' covered areas shaded.
+let coverOption = arguments.firstIndex(of: "--cover").flatMap { $0 + 1 < arguments.count ? Int(arguments[$0 + 1]) : nil }
+let coverStyle = coverOption ?? 3                                          // Christian chose 3 (7 Nov)
+let coverName = coverOption == nil ? "kookout-cover" : "kookout-cover-\(coverStyle)"
 if arguments.contains("--cover"), let plate = plates["scene1"] {
     let c = CGContext(data: nil, width: Int(W), height: Int(H), bitsPerComponent: 8, bytesPerRow: 0, space: srgb,
                       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
     plate.draw(c, 2.5)
-    eyes(c, P(W / 2, 1595), width: 340)
-    caption(c, "Wind.", y: 1390, size: 130, appear: 1)
-    caption(c, "Doesn't wait, bro.", y: 1262, size: 100, appear: 1, color: orange)
+    // The eyes on a blue sky: the O's holes show sky, so the white pupils got lost (0, the first version). Options
+    // (`--cover N` writes kookout-cover-N.png; plain `--cover` writes kookout-cover.png in the chosen style 3): 1 navy in the O's (like the app icon); 2 cartoon eyes (white with navy pupils); 3 a navy rim
+    // round the O's, like the captions, plus navy holes; 4 on a navy tile; 5 no eyes in the sky, a navy pill with the
+    // eyes and KOOKOUT over the water instead.
+    let eyesAt = P(W / 2, 1595), eyesWidth: CGFloat = 340
+    func rim(_ width: CGFloat) {
+        let box = oo.path.boundingBoxOfPath, k = eyesWidth / box.width
+        c.saveGState()
+        c.translateBy(x: eyesAt.x - box.midX * k, y: eyesAt.y - box.midY * k); c.scaleBy(x: k, y: k)
+        stroke(c, navy, width / k, oo.path)
+        c.restoreGState()
+    }
+    switch coverStyle {
+    case 1: eyes(c, eyesAt, width: eyesWidth, sclera: navy)
+    case 2: eyes(c, eyesAt, width: eyesWidth, pupil: navy, sclera: white)
+    case 3: rim(22); eyes(c, eyesAt, width: eyesWidth, sclera: navy)
+    case 4:
+        let tile = CGRect(x: W / 2 - 200, y: 1520, width: 400, height: 160)  // above "Wind.", below the grid's top
+        fill(c, navy, rr(tile, 44))
+        eyes(c, P(tile.midX, tile.midY), width: 300)
+    case 5:
+        let pill = CGRect(x: W / 2 - 300, y: 520, width: 600, height: 230)
+        fill(c, navy, rr(pill, 56))
+        eyes(c, P(W / 2, pill.midY + 30), width: 300)
+        let box = name.path.boundingBoxOfPath, k = 300 / box.width
+        c.saveGState()
+        c.translateBy(x: W / 2 - box.midX * k, y: pill.minY + 40 - box.minY * k); c.scaleBy(x: k, y: k)
+        fill(c, white, name.path)
+        c.restoreGState()
+    default: eyes(c, eyesAt, width: eyesWidth)
+    }
+    let textDrop: CGFloat = coverStyle == 5 ? 90 : 0                    // without eyes above, the lines sit higher
+    caption(c, "Wind.", y: 1390 + textDrop, size: 130, appear: 1)
+    caption(c, "Doesn't wait, bro.", y: 1262 + textDrop, size: 100, appear: 1, color: orange)
     c.saveGState()
     c.setBlendMode(.overlay); c.setAlpha(grain * 2.5)
     c.draw(grainTiles[0], in: CGRect(x: 0, y: 0, width: W, height: H))
     c.restoreGState()
     let image = c.makeImage()!
     try NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])!
-        .write(to: URL(fileURLWithPath: "brand/promo/kookout-cover.png"))
+        .write(to: URL(fileURLWithPath: "brand/promo/\(coverName).png"))
     if let checks {
         let gridTop = (H - W * 4 / 3) / 2
         for r in [CGRect(x: 0, y: 0, width: W, height: gridTop), CGRect(x: 0, y: H - gridTop, width: W, height: gridTop)] {
@@ -1251,9 +1285,9 @@ if arguments.contains("--cover"), let plate = plates["scene1"] {
             fill(c, rgb(0xFF0000, 0.3), CGPath(rect: r, transform: nil))
         }
         try NSBitmapImageRep(cgImage: c.makeImage()!).representation(using: .png, properties: [:])!
-            .write(to: checks.appendingPathComponent("cover-check.png"))
+            .write(to: checks.appendingPathComponent("\(coverName)-check.png"))
     }
-    print("wrote brand/promo/kookout-cover.png")
+    print("wrote brand/promo/\(coverName).png")
     exit(0)
 }
 
