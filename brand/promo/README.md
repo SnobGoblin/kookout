@@ -122,7 +122,10 @@ Next:
 1. Christian watches the full 2D cut (`kookout-cartoon.mp4`, on twos, 7 Nov) on his phone.
 2. Optionally slow scene 3 back to 1× if the 1.3× reads rushed on a phone (then the grin comes after "condish.").
 3. Optionally restyle my code-drawn parts to match (metric cards, notification, widget, end card are flat already).
-4. Cover image for the Reel: a frame of the opening shot.
+4. Cover image: done (7 Nov), `swift -O brand/promo.swift --cover <checkfolder>` writes `kookout-cover.png` (1080 ×
+   1920): the opening shot at the splash (2.5 s), Kookout's eyes and "Wind. / Doesn't wait, bro." in the sky, all
+   inside the middle 3:4 that the profile grid shows. Upload it as the Reel's cover ("Edit cover" → "Add from
+   camera roll"); Instagram's own frame picker would only give a frame without the eyes.
 
 Files here:
 1. `README.md`: this plan (script, voice-over, prompts).

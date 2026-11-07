@@ -1181,7 +1181,7 @@ let scenes: [(name: String, start: CGFloat, end: CGFloat, draw: (CGContext, CGFl
     ("scene6", 26.6, duration, scene6),
 ]
 
-// Arguments: [--only <scene>] [folder for check frames]
+// Arguments: [--only <scene> | --cover] [folder for check frames]
 let arguments = Array(CommandLine.arguments.dropFirst())
 let only = arguments.firstIndex(of: "--only").map { arguments[$0 + 1] }
 let span: (from: CGFloat, to: CGFloat) = only.map { name in
@@ -1206,6 +1206,57 @@ let checks = arguments.last.flatMap { $0.hasPrefix("--") || $0 == only ? nil : U
 let checkTimes: [CGFloat] = only == nil ? [2.0, 6.5, 10.0, 13.5, 16.0, 18.0, 21.5, 25.5, 29.0]
                                         : stride(from: span.from, to: span.to, by: 0.5).map { $0 }
 
+let srgb = CGColorSpace(name: CGColorSpace.sRGB)!
+/// Six half-resolution noise tiles, cycled frame by frame and drawn with overlay blending (coarser grain, like film).
+let grainTiles: [CGImage] = (0..<6).map { seed in
+    let w = Int(W) / 2, h = Int(H) / 2
+    var state = UInt64(seed + 1) &* 0x9E3779B97F4A7C15
+    var pixels = [UInt8](repeating: 0, count: w * h)
+    for i in pixels.indices {
+        state ^= state << 13; state ^= state >> 7; state ^= state << 17
+        let a = Int(state & 0xFF), b = Int(state >> 8 & 0xFF)          // two samples: a softer, near-Gaussian spread
+        pixels[i] = UInt8((a + b) / 2)
+    }
+    let provider = CGDataProvider(data: Data(pixels) as CFData)!
+    return CGImage(width: w, height: h, bitsPerComponent: 8, bitsPerPixel: 8, bytesPerRow: w,
+                   space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGBitmapInfo(rawValue: 0), provider: provider,
+                   decode: nil, shouldInterpolate: true, intent: .defaultIntent)!
+}
+
+// --cover: the Reel's cover image (brand/promo/kookout-cover.png): the opening shot at the splash, Kookout's eyes and
+// the first line in the open sky. The profile grid shows only the middle 3:4 (1080 × 1440), so everything that
+// matters sits inside it; the check folder gets a copy with the grid crop and Reels' covered areas shaded.
+if arguments.contains("--cover"), let plate = plates["scene1"] {
+    let c = CGContext(data: nil, width: Int(W), height: Int(H), bitsPerComponent: 8, bytesPerRow: 0, space: srgb,
+                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+    plate.draw(c, 2.5)
+    eyes(c, P(W / 2, 1595), width: 340)
+    caption(c, "Wind.", y: 1390, size: 130, appear: 1)
+    caption(c, "Doesn't wait, bro.", y: 1262, size: 100, appear: 1, color: orange)
+    c.saveGState()
+    c.setBlendMode(.overlay); c.setAlpha(grain * 2.5)
+    c.draw(grainTiles[0], in: CGRect(x: 0, y: 0, width: W, height: H))
+    c.restoreGState()
+    let image = c.makeImage()!
+    try NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])!
+        .write(to: URL(fileURLWithPath: "brand/promo/kookout-cover.png"))
+    if let checks {
+        let gridTop = (H - W * 4 / 3) / 2
+        for r in [CGRect(x: 0, y: 0, width: W, height: gridTop), CGRect(x: 0, y: H - gridTop, width: W, height: gridTop)] {
+            fill(c, rgb(0x000000, 0.55), CGPath(rect: r, transform: nil))
+        }
+        for r in [CGRect(x: 0, y: H - instagramTop, width: W, height: instagramTop),
+                  CGRect(x: 0, y: 0, width: W, height: instagramBottom),
+                  CGRect(x: W - instagramRight, y: instagramBottom, width: instagramRight, height: 650)] {
+            fill(c, rgb(0xFF0000, 0.3), CGPath(rect: r, transform: nil))
+        }
+        try NSBitmapImageRep(cgImage: c.makeImage()!).representation(using: .png, properties: [:])!
+            .write(to: checks.appendingPathComponent("cover-check.png"))
+    }
+    print("wrote brand/promo/kookout-cover.png")
+    exit(0)
+}
+
 let output = URL(fileURLWithPath: "brand/promo/kookout-\(only ?? "cartoon").mp4")
 try FileManager.default.createDirectory(at: output.deletingLastPathComponent(), withIntermediateDirectories: true)
 let silent = FileManager.default.temporaryDirectory.appendingPathComponent("kookout-promo-silent.mov")
@@ -1226,22 +1277,6 @@ writer.startWriting()
 writer.startSession(atSourceTime: .zero)
 
 let frameCount = Int((span.to - span.from) * CGFloat(fps))
-/// Six half-resolution noise tiles, cycled frame by frame and drawn with overlay blending (coarser grain, like film).
-let grainTiles: [CGImage] = (0..<6).map { seed in
-    let w = Int(W) / 2, h = Int(H) / 2
-    var state = UInt64(seed + 1) &* 0x9E3779B97F4A7C15
-    var pixels = [UInt8](repeating: 0, count: w * h)
-    for i in pixels.indices {
-        state ^= state << 13; state ^= state >> 7; state ^= state << 17
-        let a = Int(state & 0xFF), b = Int(state >> 8 & 0xFF)          // two samples: a softer, near-Gaussian spread
-        pixels[i] = UInt8((a + b) / 2)
-    }
-    let provider = CGDataProvider(data: Data(pixels) as CFData)!
-    return CGImage(width: w, height: h, bitsPerComponent: 8, bitsPerPixel: 8, bytesPerRow: w,
-                   space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGBitmapInfo(rawValue: 0), provider: provider,
-                   decode: nil, shouldInterpolate: true, intent: .defaultIntent)!
-}
-let srgb = CGColorSpace(name: CGColorSpace.sRGB)!
 for f in 0..<frameCount {
     while !input.isReadyForMoreMediaData { Thread.sleep(forTimeInterval: 0.002) }
     var buffer: CVPixelBuffer?
