@@ -38,15 +38,44 @@ How we got here:
    A first riding test of Kai (`generated/kai-2d-riding-rejected.jpg`) failed like his sheet's fifth pose: square
    to the camera, both paws on one grip, the wing upright beside him like a shield. Riding is left to the scene 5
    still, with the riding pose text; a pure side view is the fallback if it fails again.
+7. Shots done in 2D and cut in (each `generated/shot-N-still.jpg` → `generated/shot-N.mp4`; the 3D clips and their
+   reference frames are in `generated/3d/`): **scene 1** (gust, splash over the jetty 2.5 s in), **scene 2a** (Gary at
+   the kitchen table at pink dawn; the metric cards bury him up to the beak by "Respect.", as the script wants),
+   **scene 2b** (three riders cross the meeting-room window, he turns on "…a job."; small riders seen from behind
+   came out right). `onTwos` is still `false` while scenes 3–5 play 3D clips (held drawings would make those jerky).
+8. Scene 3's still is done (`generated/shot-3-still.jpg`, phone at about the old `anchor`); its animation was refused:
+   Gemini's video limit was reached on 7 Nov after three clips. Prompt (attach the still, Portrait):
+   "Animate this image as the first frame. Camera still, no zoom or pan. Keep the flat 2D screen-print look exactly:
+   bold black outlines, flat colours, no added shading or 3D depth. The otter dozes for one second, then the phone in
+   his paws lights up: a soft glow on his face from the screen, which faces him (we never see the screen). He wakes,
+   slides his sunglasses down his nose with one paw, peeks over them at the phone, and a slow, happy grin spreads
+   across his face. The phone stays in his paws in the same place the whole time. The hammock sways gently, the water
+   sparkles. No text, letters, numbers, logos or captions anywhere."
+9. Scene 4: a separate still came back as a near copy of scene 3, eyes shut, with teal water
+   (`generated/shot-4-still-rejected.jpg`). Plan: animate scene 4 from the **last frame of shot 3** (Kai awake,
+   grinning), which also gives continuity: "he scrolls on the phone with one paw, nodding slowly, content".
+10. Scene 5's still failed on Kai again (`generated/riders-passing-2d-rejected.jpg`): square to the camera, upright,
+   holding a rod that sticks out of the wing, the wing beside him tip-down; a logo on his vest; his waving paw in
+   Instagram's button column. Gary (small, from behind) came out nearly right. Pattern so far: Gemini draws riders
+   well when they are small and seen from behind or the side, and fails every time Kai faces the camera. Options:
+   (a) Kai in profile riding right to left, turning only his head to wave at Gary (not at the viewer); (b) give
+   Gemini a photo of a real wing foiler in the right pose as a pose reference (e.g. one of Christian riding);
+   (c) both.
+
+Claude can drive Gemini in Christian's Chrome (Claude in Chrome): new chat, "Upload & tools" → Create image / Create
+video, aspect ratio 9:16 / Portrait, then attach through the page's `image/*` file input (no file dialog), type the
+prompt as one paragraph (a line break sends it), send, and download with "Download full size image" / "Download
+video" (lands in ~/Downloads). Video generation sometimes answers "full capacity, try again later"; retrying a few
+minutes later worked.
 
 Next:
-1. The six shots in 2D (section 3), each from the style image plus the character sheet(s), still first, checked,
-   then animated.
-2. Cut them in: set `onTwos = true` in `promo.swift` (each drawing held for two frames, 12 a second, like
-   hand-drawn animation, which takes out the floaty AI motion), keep `grain`, re-check the plate timings (`from`,
-   `cue`, scene 3's phone `anchor`) against the new shots, render, check frames.
-3. Optionally restyle my code-drawn parts to match (metric cards, notification, widget, end card are flat already).
-4. Cover image for the Reel: a frame of the opening shot.
+1. Scene 3's animation once the video limit resets; check it, re-measure the phone `anchor` and `cue` (light-up
+   time), cut in.
+2. Scene 4 from shot 3's last frame; scene 5 with option (a)/(b) above, still first.
+3. When all six are 2D: set `onTwos = true` in `promo.swift` (each drawing held for two frames, 12 a second, like
+   hand-drawn animation, which takes out the floaty AI motion), keep `grain`, render the whole cut, check frames.
+4. Optionally restyle my code-drawn parts to match (metric cards, notification, widget, end card are flat already).
+5. Cover image for the Reel: a frame of the opening shot.
 
 Files here:
 1. `README.md`: this plan (script, voice-over, prompts).
