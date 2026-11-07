@@ -4,14 +4,13 @@
 // Writes brand/promo/kookout-cartoon.mp4. With a folder, also writes a PNG of a few frames there, to look at.
 // This is the animatic for the script in brand/promo/README.md: captions stand in for the narrator.
 //
-//   1. 0–3 s    80s title "THE WIND": "Wind… doesn't wait."
-//   2. 3–7 s    Gary the puffin at dawn, buried in made-up metrics ("secondary swell median"). Verdict: …maybe?
-//   3. 7–10 s   Gary in a meeting; behind him, wings glide past the window. He turns round too late.
-//   4. 10–14 s  Kai the otter asleep, floating on his back; "Home spot: Tomorrow 2–6 PM good" (swoosh); he lifts his sunglasses
-//   5. 14–17 s  the Lock Screen widget (Kookout 1.1): "No app to open. Just glance at your Lock Screen."
-//   6. 17–21 s  Kai fills in the details on his favourite sites (generic wind map, station, webcam)
-//   7. 21–26 s  Kai and Gary out on the water at the home spot
-//   8. 26–30 s  end card: the logo's eyes look left, right and back, as in the app's splash
+//   1. 0–2.8 s      a gust races across the fjord: "Wind. Doesn't wait, bro."
+//   2. 2.8–7.7 s    Gary the puffin at dawn, buried in made-up metrics: "Gary loves his charts. Seagull drift index. Respect."
+//   3. 7.7–11.4 s   Gary in a meeting; wings glide past the window: "But Gary also has, like, a job."
+//   4. 11.4–17 s    Kai the otter in his hammock; the notification pops out of his phone (swoosh): "…Swoosh means condish."
+//   5. 17–22.8 s    the Lock Screen widget (Kookout 1.1), then his favourite sites: "Kookout taps you on the shoulder…"
+//   6. 22.8–26.6 s  Kai and Gary pass each other on the water: "When, and where. I think."
+//   7. 26.6–30 s    end card: the logo's eyes look left, right and back, as in the app's splash
 
 import AppKit
 import AVFoundation
@@ -20,21 +19,29 @@ import Foundation
 
 let W: CGFloat = 1080, H: CGFloat = 1920
 let fps: Int32 = 30
-let duration: CGFloat = 43.2
+let duration: CGFloat = 30
 let fade: CGFloat = 0.35
+/// Film grain over the whole picture (0 = off): softens the too-clean generated look.
+let grain: CGFloat = 0.10
+/// Show each generated frame for two video frames (12 drawings a second), as hand-drawn animation does; for the 2D shots.
+let onTwos = false
 // Instagram Reels covers these (px): keep captions and anything that matters out of them
 let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
 // Scene 3's swoosh plays right after the narrator says "swoosh" (see scene3Lead); the second opens the end card.
-var swooshes: [Double] { [17.4 + (plates["scene3"].map { Double(scene3Lead) + $0.cue - $0.from } ?? 0.6), 39.3] }
+var swooshes: [Double] { [11.4 + (plates["scene3"].map { Double(scene3Lead) + $0.cue - $0.from } ?? 0.6), 26.7] }
 // The narrator ("Kookout narrator 2" in ElevenLabs): one take per line, placed so each scene's beats land on the words.
 // `parts` (s, within the take) plays only those sentences, with a 0.2 s breath between them; nil plays the whole take.
 let voice: [(file: String, at: Double, parts: [(Double, Double)]?)] = [
-    ("vo-1.take-a", 0.5, nil),
-    // "Gary loves his charts. Secondary swell median. Seagull drift index. Respect." (the take also has "This is
-    // Gary." and "Gust-to-lull variance.", cut for length)
-    ("vo-2.take-a", 3.5, [(1.40, 3.30), (3.50, 5.40), (7.64, 9.42), (9.64, 10.64)]),
-    ("vo-2b.take-a", 10.9, nil), ("vo-3.take-a", 17.7, nil), ("vo-3b.take-a", 24.3, nil), ("vo-4.take-a", 28.5, nil),
-    ("vo-5.take-b", 34.5, nil), ("vo-6.take-a", 40.1, nil),
+    // The 30 s cut keeps whole sentences only; what's left out is noted per line.
+    ("vo-1.take-a", 0.3, nil),
+    // "Gary loves his charts. Seagull drift index. Respect." (out: "This is Gary.", "Secondary swell median.",
+    // "Gust-to-lull variance.")
+    ("vo-2.take-a", 2.95, [(1.50, 3.20), (7.74, 9.32), (9.74, 10.50)]),
+    ("vo-2b.take-a", 7.9, [(0, 3.12)]),                     // "But Gary also has, like, a job." (out: "And the wind came. In the afternoon.")
+    ("vo-3.take-a", 11.6, [(1.0, 2.95)]),                  // "Kai just waited for the swoosh." (out: "Kai?"), then the swoosh
+    ("vo-3.take-a", 14.4, [(3.30, 5.70)]),                 // "Swoosh means condish."
+    ("vo-4.take-a", 17.2, nil),                            // (out: line 3b, "No app to open. Just. Glance.")
+    ("vo-5.take-b", 23.0, nil), ("vo-6.take-a", 27.4, nil),
 ]
 
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
@@ -394,8 +401,8 @@ func scene1(_ c: CGContext, _ t: CGFloat) {
     if let plate = plates["scene1"] {
         // The gust over the fjord; the captions sit in the open sky, where the later scenes put theirs too.
         plate.draw(c, t)
-        caption(c, "Wind.", y: 1560, size: 110, appear: ramp(t, 0.6, 1.0))
-        caption(c, "Doesn't wait, bro.", y: 1430, size: 90, appear: ramp(t, 1.5, 1.9), color: orange)
+        caption(c, "Wind.", y: 1560, size: 110, appear: ramp(t, 0.35, 0.7))
+        caption(c, "Doesn't wait, bro.", y: 1430, size: 90, appear: ramp(t, 1.4, 1.75), color: orange)
         return
     }
     let horizon: CGFloat = 860
@@ -512,23 +519,18 @@ func scene2a(_ c: CGContext, _ t: CGFloat) {
 }
 
 func scene2aOverlay(_ c: CGContext, _ t: CGFloat) {
-    // "Secondary swell median" at 2.5 s, "Seagull drift index" at 4.6 s; the others pile in around them
-    let lands: [CGFloat] = [2.5, 3.5, 4.6, 5.1, 5.4, 5.7, 6.0]
+    // "Seagull drift index" lands as it's said (2.1 s); the others pile in around it
+    let lands: [CGFloat] = [1.0, 1.6, 2.1, 2.6, 2.9, 3.2, 3.5]
     for i in metrics.indices { metricCard(c, i, appear: ramp(t, lands[i], lands[i] + 0.25), t) }
 
-    caption(c, "Gary loves", y: 1600, size: 96, appear: ramp(t, 0.4, 0.8))
-    caption(c, "his charts.", y: 1490, size: 96, appear: ramp(t, 1.0, 1.4), color: orange)
-    caption(c, "Respect.", y: 500, size: 110, appear: ramp(t, 6.6, 6.9))
+    caption(c, "Gary loves", y: 1600, size: 96, appear: ramp(t, 0.15, 0.5))
+    caption(c, "his charts.", y: 1490, size: 96, appear: ramp(t, 0.9, 1.25), color: orange)
+    caption(c, "Respect.", y: 500, size: 110, appear: ramp(t, 3.85, 4.1))
 }
 
 func scene2Captions(_ c: CGContext, _ t: CGFloat) {
-    if t < 3.9 {
-        caption(c, "But Gary also has…", y: 1580, size: 90, appear: ramp(t, 0.3, 0.6))
-        caption(c, "like… a job.", y: 1470, size: 96, appear: ramp(t, 2.2, 2.5), color: orange)
-    } else {
-        caption(c, "The wind came…", y: 1580, size: 96, appear: ramp(t, 4.0, 4.3))
-        caption(c, "in the afternoon.", y: 1470, size: 96, appear: ramp(t, 5.6, 5.9), color: orange)
-    }
+    caption(c, "But Gary also has…", y: 1580, size: 90, appear: ramp(t, 0.25, 0.55))
+    caption(c, "like… a job.", y: 1470, size: 96, appear: ramp(t, 2.1, 2.4), color: orange)
 }
 
 func scene2(_ c: CGContext, _ t: CGFloat) {
@@ -696,7 +698,9 @@ func lockWidget(_ c: CGContext, origin: CGPoint, size: CGFloat) {
     }
 }
 
-func scene3b(_ c: CGContext, _ t: CGFloat) {
+func scene3b(_ c: CGContext, _ t: CGFloat) { scene3b(c, t, captions: true) }
+
+func scene3b(_ c: CGContext, _ t: CGFloat, captions: Bool) {
     let center = P(540, 860)
     background(c, sea)
     for i in 0..<18 {
@@ -747,6 +751,7 @@ func scene3b(_ c: CGContext, _ t: CGFloat) {
         c.restoreGState()
     }
 
+    guard captions else { return }
     caption(c, "No app to open.", y: 1600, size: 90, appear: ramp(t, 0.2, 0.6))
     caption(c, "Just… glance.", y: 1490, size: 90, appear: ramp(t, 2.0, 2.4), color: orange)
 }
@@ -841,8 +846,15 @@ func scene4Captions(_ c: CGContext, _ t: CGFloat) {
 
 func scene4(_ c: CGContext, _ t: CGFloat) {
     if let plate = plates["scene4"] {
-        // Kai scrolling in the hammock; his screen floats beside him (right, over the water, clear of his face) on "Your favourite sites…"
+        // "Kookout taps you on the shoulder…" over the Lock Screen widget, then Kai scrolling in the hammock; his screen
+        // floats beside him (right, over the water, clear of his face) on "Your favourite sites…"
         plate.draw(c, t)
+        let widget = 1 - ramp(t, 3.1, 3.5)
+        if widget > 0 {
+            c.saveGState(); c.setAlpha(widget); c.beginTransparencyLayer(auxiliaryInfo: nil)
+            scene3b(c, t, captions: false)
+            c.endTransparencyLayer(); c.restoreGState()
+        }
         let show = ramp(t, 3.5, 3.9)
         if show > 0 {
             let k = 0.45 * pop(show)
@@ -984,8 +996,8 @@ func scene5(_ c: CGContext, _ t: CGFloat) {
 }
 
 func scene5Captions(_ c: CGContext, _ t: CGFloat) {
-    caption(c, "When… and where.", y: 1560, size: 96, appear: ramp(t, 0.4, 0.8))
-    caption(c, "I think.", y: 1430, size: 100, appear: ramp(t, 2.8, 3.1), color: orange)
+    caption(c, "When… and where.", y: 1560, size: 96, appear: ramp(t, 0.3, 0.65))
+    caption(c, "I think.", y: 1430, size: 100, appear: ramp(t, 2.75, 3.05), color: orange)
 }
 
 // MARK: - Scene 6: end card
@@ -1053,6 +1065,7 @@ struct Plate {
     }
 
     func draw(_ c: CGContext, _ t: CGFloat) {
+        let t = onTwos ? (t * 12).rounded(.down) / 12 : t
         let at = from + max(0, min(Double(t), length - 0.05)) * speed
         let (s, o) = fit(t)
         let rect = CGRect(x: o.x, y: o.y, width: size.width * s, height: size.height * s)
@@ -1063,7 +1076,7 @@ struct Plate {
         let index = (at * frameRate).rounded(.down), blend = at * frameRate - index
         guard let image = frame(index) else { return }
         c.draw(image, in: rect)
-        if speed < 1, blend > 0.02, let next = frame(index + 1) {
+        if speed < 1, !onTwos, blend > 0.02, let next = frame(index + 1) {
             c.saveGState(); c.setAlpha(blend); c.draw(next, in: rect); c.restoreGState()
         }
     }
@@ -1084,27 +1097,27 @@ struct Plate {
 let plates: [String: Plate] = ([
     // Shot 1 (no reference): a gust line races across the fjord toward a jetty with a plain red pennant (0.5–3 s),
     // and a wave slaps over the jetty at 3.5 s, just after "…bro."; camera still.
-    "scene1": Plate("brand/promo/generated/shot-1.mp4", from: 0.6, length: 3.2, cue: 0.6),
+    "scene1": Plate("brand/promo/generated/shot-1.mp4", from: 0.9, length: 2.8, cue: 0.9),
     // Shot 3 from Gemini (720 × 1280, 10 s, made from kai-master.jpg): the phone lights up at 1.0 s and he grins by
     // 3 s; the camera doesn't move.
     "scene3": Plate("brand/promo/generated/shot-3.mp4", from: 0.3, length: 4.0, cue: 1.0,
                     anchor: [(1.0, P(398, 668)), (2.0, P(370, 660)), (3.0, P(365, 655)), (3.5, P(385, 668)),
                              (4.3, P(400, 690))]),
     // Shot 2a (made from gary-master.png): Gary at the kitchen table at dawn, typing and nodding; camera still.
-    "scene2a": Plate("brand/promo/generated/shot-2a.mp4", from: 0.3, length: 7.4, cue: 0.3),
+    "scene2a": Plate("brand/promo/generated/shot-2a.mp4", from: 0.3, length: 4.9, cue: 0.3),
     // Shot 2b (from gary-meeting.png): the wings pass the window from 2 s, he turns round at 6 s ("…in the afternoon").
-    "scene2": Plate("brand/promo/generated/shot-2b.mp4", from: 0, length: 6.8, cue: 0),
+    "scene2": Plate("brand/promo/generated/shot-2b.mp4", from: 2.6, length: 3.7, cue: 2.6),
     // Shot 4 (from kai-master.jpg): Kai scrolling on his phone, nodding; camera still.
-    "scene4": Plate("brand/promo/generated/shot-4.mp4", from: 0.5, length: 6.0, cue: 0.5),
+    "scene4": Plate("brand/promo/generated/shot-4.mp4", from: 0.5, length: 5.8, cue: 0.5),
     // Shot 5 (from riders-passing.png): Kai waves, Gary passes behind his wing (1–2.5 s) and comes out on the right;
-    // the camera drifts left with Kai. Only the first 3.3 s, slowed to fill the scene: after that Gary rides into
-    // Instagram's button column.
-    "scene5": Plate("brand/promo/generated/shot-5.mp4", from: 0, length: 5.0, cue: 0, speed: 0.66),
+    // the camera drifts left with Kai. Real speed; Gary reaches Instagram's button column only in the last 0.5 s,
+    // on his way out of the picture.
+    "scene5": Plate("brand/promo/generated/shot-5.mp4", from: 0.2, length: 3.8, cue: 0.2),
 ] as [String: Plate?]).compactMapValues { $0 }
 
 /// How long scene 3 holds the shot's first frame (Kai dozing, camera still), so the phone lights up just after the
 /// narrator says "…waited for the swoosh."
-let scene3Lead: CGFloat = 2.5
+let scene3Lead: CGFloat = 1.6
 
 /// Scene 3 on a generated shot: the notification pops out of the phone, curves up over the water beside Kai (never
 /// over his face: his grin is the payoff) and floats above, trailing bubbles.
@@ -1145,21 +1158,21 @@ func scene3(_ c: CGContext, _ t: CGFloat, on plate: Plate) {
         c.endTransparencyLayer()
         c.restoreGState()
     }
-    if t < 3.6 {
-        caption(c, "Kai?", y: 590, size: 100, appear: ramp(t, 0.3, 0.6))
-        caption(c, "Kai just waited for the swoosh.", y: 485, size: 84, appear: ramp(t, 1.4, 1.8), color: orange)
+    if t < 2.9 {
+        caption(c, "Kai just waited", y: 590, size: 100, appear: ramp(t, 0.25, 0.55))
+        caption(c, "for the swoosh.", y: 485, size: 100, appear: ramp(t, 1.0, 1.3), color: orange)
     } else {
-        caption(c, "Swoosh means", y: 590, size: 100, appear: ramp(t, 3.6, 3.9))
-        caption(c, "condish.", y: 485, size: 100, appear: ramp(t, 4.6, 4.9), color: orange)
+        caption(c, "Swoosh means", y: 590, size: 100, appear: ramp(t, 3.0, 3.3))
+        caption(c, "condish.", y: 485, size: 100, appear: ramp(t, 4.1, 4.4), color: orange)
     }
 }
 
 // MARK: - Timeline and output
 
 let scenes: [(name: String, start: CGFloat, end: CGFloat, draw: (CGContext, CGFloat) -> Void)] = [
-    ("scene1", 0, 3.2, scene1), ("scene2a", 3.2, 10.6, scene2a), ("scene2", 10.6, 17.4, scene2),
-    ("scene3", 17.4, 24, scene3), ("scene3b", 24, 28.2, scene3b), ("scene4", 28.2, 34.2, scene4),
-    ("scene5", 34.2, 39.2, scene5), ("scene6", 39.2, duration, scene6),
+    ("scene1", 0, 2.8, scene1), ("scene2a", 2.8, 7.7, scene2a), ("scene2", 7.7, 11.4, scene2),
+    ("scene3", 11.4, 17, scene3), ("scene4", 17, 22.8, scene4), ("scene5", 22.8, 26.6, scene5),
+    ("scene6", 26.6, duration, scene6),
 ]
 
 // Arguments: [--only <scene>] [folder for check frames]
@@ -1184,7 +1197,7 @@ func frame(_ c: CGContext, _ t: CGFloat) {
 }
 
 let checks = arguments.last.flatMap { $0.hasPrefix("--") || $0 == only ? nil : URL(fileURLWithPath: $0) }
-let checkTimes: [CGFloat] = only == nil ? [2.0, 6.0, 8.5, 9.8, 16.0, 21.5, 26.0, 32.0, 37.0, 41.5]
+let checkTimes: [CGFloat] = only == nil ? [2.0, 6.5, 10.0, 13.5, 16.0, 18.0, 21.5, 25.5, 29.0]
                                         : stride(from: span.from, to: span.to, by: 0.5).map { $0 }
 
 let output = URL(fileURLWithPath: "brand/promo/kookout-\(only ?? "cartoon").mp4")
@@ -1207,6 +1220,21 @@ writer.startWriting()
 writer.startSession(atSourceTime: .zero)
 
 let frameCount = Int((span.to - span.from) * CGFloat(fps))
+/// Six half-resolution noise tiles, cycled frame by frame and drawn with overlay blending (coarser grain, like film).
+let grainTiles: [CGImage] = (0..<6).map { seed in
+    let w = Int(W) / 2, h = Int(H) / 2
+    var state = UInt64(seed + 1) &* 0x9E3779B97F4A7C15
+    var pixels = [UInt8](repeating: 0, count: w * h)
+    for i in pixels.indices {
+        state ^= state << 13; state ^= state >> 7; state ^= state << 17
+        let a = Int(state & 0xFF), b = Int(state >> 8 & 0xFF)          // two samples: a softer, near-Gaussian spread
+        pixels[i] = UInt8((a + b) / 2)
+    }
+    let provider = CGDataProvider(data: Data(pixels) as CFData)!
+    return CGImage(width: w, height: h, bitsPerComponent: 8, bitsPerPixel: 8, bytesPerRow: w,
+                   space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGBitmapInfo(rawValue: 0), provider: provider,
+                   decode: nil, shouldInterpolate: true, intent: .defaultIntent)!
+}
 let srgb = CGColorSpace(name: CGColorSpace.sRGB)!
 for f in 0..<frameCount {
     while !input.isReadyForMoreMediaData { Thread.sleep(forTimeInterval: 0.002) }
@@ -1219,6 +1247,12 @@ for f in 0..<frameCount {
                       bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue)!
     let t = span.from + CGFloat(f) / CGFloat(fps)
     frame(c, t)
+    if grain > 0 {
+        c.saveGState()
+        c.setBlendMode(.overlay); c.setAlpha(grain * 2.5)
+        c.draw(grainTiles[f % grainTiles.count], in: CGRect(x: 0, y: 0, width: W, height: H))
+        c.restoreGState()
+    }
     if let checks, checkTimes.contains(where: { abs($0 - t) < 0.5 / CGFloat(fps) }) {
         // Check frames show what Instagram Reels covers: top bar, caption and audio at the bottom, buttons on the right
         let check = CGContext(data: nil, width: Int(W), height: Int(H), bitsPerComponent: 8, bytesPerRow: 0, space: srgb,
