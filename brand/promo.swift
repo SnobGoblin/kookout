@@ -1095,9 +1095,10 @@ struct Plate {
 }
 
 let plates: [String: Plate] = ([
-    // Shot 1 (no reference): a gust line races across the fjord toward a jetty with a plain red pennant (0.5–3 s),
-    // and a wave slaps over the jetty at 3.5 s, just after "…bro."; camera still.
-    "scene1": Plate("brand/promo/generated/shot-1.mp4", from: 0.9, length: 2.8, cue: 0.9),
+    // Shot 1, 2D (from shot-1-still.jpg, midday): the gust line runs from the far right toward the jetty, whitecaps
+    // from 3 s, a wave splashes over the jetty at 4.1–4.3 s (2.5 s into the scene, just after "…bro."); camera still.
+    // It splashes again at 8 s and 9.5 s (unused).
+    "scene1": Plate("brand/promo/generated/shot-1.mp4", from: 1.6, length: 2.8, cue: 1.6),
     // Shot 3 from Gemini (720 × 1280, 10 s, made from kai-master.jpg): the phone lights up at 1.0 s and he grins by
     // 3 s; the camera doesn't move.
     "scene3": Plate("brand/promo/generated/shot-3.mp4", from: 0.3, length: 4.0, cue: 1.0,
