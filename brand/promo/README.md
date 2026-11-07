@@ -42,8 +42,8 @@ How we got here:
    reference frames are in `generated/3d/`): **scene 1** (gust, splash over the jetty 2.5 s in), **scene 2a** (Gary at
    the kitchen table at pink dawn; the metric cards bury him up to the beak by "Respect.", as the script wants),
    **scene 2b** (three riders cross the meeting-room window, he turns on "…a job."; small riders seen from behind
-   came out right), **scene 3** and **scene 4** (7 Nov, below). `onTwos` is still `false` while scene 5 plays the 3D
-   clip (held drawings would make it jerky).
+   came out right), **scene 3**, **scene 4** and **scene 5** (7 Nov, below). All shots are 2D now, so `onTwos` is
+   `true` (each drawing held for two frames, 12 a second).
 8. Scene 3 (done 7 Nov): animated from `shot-3-still.jpg` with the prompt below. Kai stays on-model, the phone shows
    only its back, no text. Gemini took it slower than asked: asleep to 1.75 s, eyes open at 2 s, paw on the sunglasses
    and a peek over them 3.5–5.5 s, open grin 5.9–7.2 s, then he dozes off again (the last frame has his eyes shut).
@@ -85,6 +85,20 @@ How we got here:
    full regeneration);
    (C) drop the faces-to-camera beat: riders small and from the side/behind (which Gemini draws right), Kai's wave
    read from the silhouette, and let the narrator carry "When, and where".
+   **Done with A3 (7 Nov, Christian's pick).** Edit 1 on rejected-3 (wing description, border, houses, smaller and
+   further left) only removed the border and houses (`riders-together-a3-1-rejected.jpg`). Edit 2 attached that
+   result plus `pose-two-riders.jpg` and asked to redraw only the wings and arms "like the real wings in the second
+   image", both arms up to the strut: both riders now hold the wing with both hands on the handles, Gary knees bent,
+   Kai grinning (`shot-5-still.jpg`). Wings are still held fairly upright at the side (as riders do on a reach), not
+   overhead. Kai's wingtip reached ~95 % of the width, so the animation prompt asks the camera to travel with the
+   riders and pull back slowly (by 6 s it is ~90 %). Animated in one go (model "Pro", Portrait): "Animate this image
+   as the first frame. Keep the flat 2D screen-print look exactly … The puffin and the otter are wing foiling side by
+   side, gliding smoothly from left to right … The camera travels with them, so they stay in the same place in the
+   picture while the water and the shore slide past from right to left, and the camera slowly pulls back a little …
+   After one second the otter lets go of his wing with his back paw for a moment and waves happily at the camera,
+   grinning, then grabs the wing handle again. The puffin looks across at the otter and laughs …" Kai waves
+   1.5–2.25 s with the other paw still on the wing; the plate plays from 0.6 s, so the wave lands between "When… and
+   where." and "I think." The puffin barely reacts (no visible laugh); acceptable.
 
 Claude can drive Gemini in Christian's Chrome (Claude in Chrome): new chat, "Upload & tools" → Create image / Create
 video, aspect ratio 9:16 / Portrait, then attach through the page's `image/*` file input (no file dialog), type the
@@ -95,12 +109,10 @@ minutes later worked. The + menu often ignores the first click after the aspect-
 several attachments in one upload; their order is kept.
 
 Next:
-1. Scene 5: Christian picks A2, A3 or C above; still first, check close up, then the video (one clip a day).
-2. When all six are 2D: set `onTwos = true` in `promo.swift` (each drawing held for two frames, 12 a second, like
-   hand-drawn animation, which takes out the floaty AI motion), keep `grain`, render the whole cut, check frames.
-3. Optionally slow scene 3 back to 1× if the 1.3× reads rushed on a phone (then the grin comes after "condish.").
-4. Optionally restyle my code-drawn parts to match (metric cards, notification, widget, end card are flat already).
-5. Cover image for the Reel: a frame of the opening shot.
+1. Christian watches the full 2D cut (`kookout-cartoon.mp4`, on twos, 7 Nov) on his phone.
+2. Optionally slow scene 3 back to 1× if the 1.3× reads rushed on a phone (then the grin comes after "condish.").
+3. Optionally restyle my code-drawn parts to match (metric cards, notification, widget, end card are flat already).
+4. Cover image for the Reel: a frame of the opening shot.
 
 Files here:
 1. `README.md`: this plan (script, voice-over, prompts).

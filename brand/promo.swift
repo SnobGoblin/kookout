@@ -24,7 +24,7 @@ let fade: CGFloat = 0.35
 /// Film grain over the whole picture (0 = off): softens the too-clean generated look.
 let grain: CGFloat = 0.10
 /// Show each generated frame for two video frames (12 drawings a second), as hand-drawn animation does; for the 2D shots.
-let onTwos = false
+let onTwos = true
 // Instagram Reels covers these (px): keep captions and anything that matters out of them
 let instagramTop: CGFloat = 250, instagramBottom: CGFloat = 450, instagramRight: CGFloat = 140                                  // crossfade between scenes
 // Scene 3's swoosh plays right after the narrator says "swoosh" (see scene3Lead); the second opens the end card.
@@ -1114,10 +1114,10 @@ let plates: [String: Plate] = ([
     // Shot 4, 2D (from shot-4-still.jpg = shot 3 at 6.63 s, the frame scene 3 ends on): Kai holds the phone in one
     // paw (we see only its back) and taps and scrolls with the other, content, blinks now and then; camera still.
     "scene4": Plate("brand/promo/generated/shot-4.mp4", from: 0.0, length: 5.8, cue: 0.0),
-    // Shot 5 (from riders-passing.png): Kai waves, Gary passes behind his wing (1–2.5 s) and comes out on the right;
-    // the camera drifts left with Kai. Real speed; Gary reaches Instagram's button column only in the last 0.5 s,
-    // on his way out of the picture.
-    "scene5": Plate("brand/promo/generated/shot-5.mp4", from: 0.2, length: 3.8, cue: 0.2),
+    // Shot 5, 2D (from shot-5-still.jpg, sunset: rejected-3 edited twice in Gemini, wings redrawn after Christian's
+    // photo): Gary and Kai foil side by side left to right, the camera travels with them and slowly pulls back (Kai's
+    // wingtip goes from ~95 % to ~90 % of the width); Kai lets go with one paw and waves 1.5–2.25 s.
+    "scene5": Plate("brand/promo/generated/shot-5.mp4", from: 0.6, length: 3.8, cue: 0.6),
 ] as [String: Plate?]).compactMapValues { $0 }
 
 /// How long scene 3 holds the shot's first frame (Kai dozing, camera still), so the phone lights up just after the
