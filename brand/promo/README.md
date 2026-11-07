@@ -99,6 +99,16 @@ How we got here:
    grinning, then grabs the wing handle again. The puffin looks across at the otter and laughs …" Kai waves
    1.5–2.25 s with the other paw still on the wing; the plate plays from 0.6 s, so the wave lands between "When… and
    where." and "I think." The puffin barely reacts (no visible laugh); acceptable.
+   **Redone the same day after Christian's review:** both wings had a handle on the leading edge facing the rider
+   and both riders held it; that doesn't exist. The booms are right (that's where you hold on going upwind). Edits:
+   (1) on `shot-5-still-handles.jpg` (the old still; old clip `shot-5-handles.mp4`): handles gone, but both still
+   gripped the top tube and Kai's boom vanished (`riders-booms-rejected-1.jpg`); (2) a follow-up in the same chat
+   returned the same picture; (3) a fresh chat on (1), phrased as "erase his raised arm … redraw it bent and low,
+   gripping the bar", worked: Gary both hands on his boom, Kai one paw on a redrawn boom and the other waving, top
+   tubes smooth (`shot-5-still.jpg`). Lesson: Gemini edits arms by "erase and redraw", not by "move", and a fresh
+   chat beats a follow-up. Animated with the same prompt plus "the puffin keeps both hands on the bar the whole
+   time … the otter keeps one paw on the bar and waves … for about three seconds … nobody ever touches the thick
+   top edge". Kai waves from 0 to ~2.5 s, so the plate plays from 0 s.
 
 Claude can drive Gemini in Christian's Chrome (Claude in Chrome): new chat, "Upload & tools" → Create image / Create
 video, aspect ratio 9:16 / Portrait, then attach through the page's `image/*` file input (no file dialog), type the

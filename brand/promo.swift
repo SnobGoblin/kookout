@@ -1114,10 +1114,11 @@ let plates: [String: Plate] = ([
     // Shot 4, 2D (from shot-4-still.jpg = shot 3 at 6.63 s, the frame scene 3 ends on): Kai holds the phone in one
     // paw (we see only its back) and taps and scrolls with the other, content, blinks now and then; camera still.
     "scene4": Plate("brand/promo/generated/shot-4.mp4", from: 0.0, length: 5.8, cue: 0.0),
-    // Shot 5, 2D (from shot-5-still.jpg, sunset: rejected-3 edited twice in Gemini, wings redrawn after Christian's
-    // photo): Gary and Kai foil side by side left to right, the camera travels with them and slowly pulls back (Kai's
-    // wingtip goes from ~95 % to ~90 % of the width); Kai lets go with one paw and waves 1.5–2.25 s.
-    "scene5": Plate("brand/promo/generated/shot-5.mp4", from: 0.6, length: 3.8, cue: 0.6),
+    // Shot 5, 2D (from shot-5-still.jpg, sunset; edited in Gemini after Christian's notes: no handles on the leading
+    // edges, Gary both hands on his boom, Kai one paw on his boom and waving): they foil side by side left to right,
+    // the camera travels with them and slowly pulls back; Kai waves from the first frame to ~2.5 s, then holds the
+    // boom with both paws.
+    "scene5": Plate("brand/promo/generated/shot-5.mp4", from: 0.0, length: 3.8, cue: 0.0),
 ] as [String: Plate?]).compactMapValues { $0 }
 
 /// How long scene 3 holds the shot's first frame (Kai dozing, camera still), so the phone lights up just after the
