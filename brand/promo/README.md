@@ -61,6 +61,16 @@ How we got here:
    (a) Kai in profile riding right to left, turning only his head to wave at Gary (not at the viewer); (b) give
    Gemini a photo of a real wing foiler in the right pose as a pose reference (e.g. one of Christian riding);
    (c) both.
+   Second try, with Christian's photo as a pose reference (`generated/pose-photo.jpg`, his family riding; the
+   rightmost rider cropped and mirrored to ride right to left: `generated/pose-ref.jpg`), Kai in back three-quarter
+   view, Gary small near the horizon (`generated/riders-passing-2d-rejected-2.jpg`): the body pose got better
+   (sideways, knees bent, leaning back), but the wing came out as an orange kayak shape held at waist height with
+   both paws on one handle. Gary (small, blue wing overhead) passed again. Next options, for Christian to choose:
+   (A) **stylise the photo itself**: give Gemini a crop of the photo with the two right-hand riders and ask it to
+   redraw exactly that picture in the style with the riders replaced by Kai and Gary (wing and board geometry come
+   from the photo, so they should be right); this changes the beat from "pass each other" to "ride together", which
+   still fits "When, and where. I think."; (B) keep "pass each other": stylise only the mirrored single-rider crop
+   as Kai, and ask for Gary small near the horizon riding the other way, like the second try.
 
 Claude can drive Gemini in Christian's Chrome (Claude in Chrome): new chat, "Upload & tools" → Create image / Create
 video, aspect ratio 9:16 / Portrait, then attach through the page's `image/*` file input (no file dialog), type the
