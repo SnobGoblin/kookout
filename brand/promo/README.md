@@ -71,6 +71,9 @@ How we got here:
    from the photo, so they should be right); this changes the beat from "pass each other" to "ride together", which
    still fits "When, and where. I think."; (B) keep "pass each other": stylise only the mirrored single-rider crop
    as Kai, and ask for Gary small near the horizon riding the other way, like the second try.
+   **Chosen (7 Nov): A, ride together.** Reference: `generated/pose-two-riders.jpg` (the two right-hand riders of
+   the photo, uncropped otherwise, watermark left out); left rider → Gary, right rider → Kai, both riding left to
+   right. The script's scene 5 becomes "Kai and Gary ride side by side; Kai waves".
 
 Claude can drive Gemini in Christian's Chrome (Claude in Chrome): new chat, "Upload & tools" → Create image / Create
 video, aspect ratio 9:16 / Portrait, then attach through the page's `image/*` file input (no file dialog), type the
@@ -103,7 +106,7 @@ Files here:
 | 2b | 7.7–11.4 s | Gary in a meeting; wings glide past the window behind him; he turns round too late. | "But Gary also has, like, a job." | |
 | 3 | 11.4–17 s | **Kai** the otter in his hammock; the notification ("Home spot · Tomorrow 2–6 PM good") pops out of his phone. | "Kai just waited for the swoosh. [swoosh] Swoosh means condish." | **Kookout swoosh** |
 | 4 | 17–22.8 s | The **Lock Screen widget** (1.1, drawn by me), then Kai scrolling his favourite sites, the screen floating beside him. | "Kookout taps you on the shoulder when your spots are firing. Your favourite sites do the rest." | |
-| 5 | 22.8–26.6 s | Kai and Gary pass each other on the water in opposite directions; Kai waves. | "When, and where. I think." | Water, wind |
+| 5 | 22.8–26.6 s | Kai and Gary ride side by side on the water (Gary finally made it); Kai waves. | "When, and where. I think." | Water, wind |
 | 6 | 26.6–30 s | End card: the eyes look left, right, out; KOOKOUT; "Know when your spots are good." / "Free on the App Store · kookout.no" | "Kookout. Go get your sesh." | Swoosh |
 
 The 43 s version also had "This is Gary.", "Secondary swell median.", "And the wind came. In the afternoon.", "Kai?"
