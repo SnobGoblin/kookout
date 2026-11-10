@@ -66,7 +66,7 @@
     .tap p { margin: 0; color: var(--muted); }
 
     /* Widgets and the video (shown from Kookout 1.1) */
-    section[hidden] { display: none !important; }
+    [hidden] { display: none !important; }
     .feature { display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: center; margin: 0 0 56px; }
     .feature h2 { font-size: 1.5rem; margin: 0 0 8px; letter-spacing: -.01em; }
     .feature p { margin: 0 0 10px; color: var(--muted); }
@@ -121,9 +121,9 @@
       <div><h2><span class="dot"></span><span data-i18n="p1h">Every spot has its own rules</span></h2>
         <p data-i18n="p1">An onshore wind is great at one beach and useless at the next. Set the directions, wind, waves or fresh snow that work, spot by spot.</p></div>
       <div><h2><span class="dot"></span><span data-i18n="p2h">Told when it's on</span></h2>
-        <p data-i18n="p2">A swoosh when good conditions come up, a gong when they're gone. Weekend spots only on days off. Nothing at night.</p></div>
+        <p data-i18n="p2">A swoosh when good conditions come up, a gong when they're gone. Nothing at night. Spots that take a day trip or more can be weekend spots: they only count on your days off, and you hear about them days ahead.</p></div>
       <div><h2><span class="dot"></span><span data-i18n="p3h">Made with other riders</span></h2>
-        <p data-i18n="p3">Start with popular spots near you or drop a pin anywhere. See the live wind from a station nearby before you head out.</p></div>
+        <p data-i18n="p3">Start with popular spots near you or drop a pin anywhere. Spots are shared: once three locals follow one, their votes set its wind directions and limits, so it gets more precise the more riders use it. Keep the community's rules or set your own.</p></div>
     </section>
 
     <section class="tap">
@@ -131,9 +131,9 @@
       <p data-i18n="tap">Kookout tells you when it's worth taking a closer look. For the details, like wind maps, measurements, webcams and the local know-how, keep using the sites and apps you already know and like.</p>
     </section>
 
-    <!-- Kookout 1.1: remove "hidden" from these two sections the day 1.1 is in the App Store -->
-    <section class="feature" id="widgets" hidden>
-      <img src="img/widget.jpg" width="480" height="760" loading="lazy" alt="The Kookout widget on the Lock Screen: home spot now, the reef 14–18, ski hill Saturday">
+    <!-- Kookout 1.1: the day 1.1 is in the App Store, remove "hidden" from every data-from="1.1" element and delete the data-before="1.1" ones -->
+    <section class="feature" id="widgets" data-from="1.1" hidden>
+      <img src="img/6-home-widgets.jpg" width="540" height="1174" loading="lazy" alt="Kookout's widget on the Home Screen: the spots that are good soonest">
       <div>
         <h2 data-i18n="wh">Best with the widgets</h2>
         <p data-i18n="w1">Put Kookout on your Home Screen and your Lock Screen. The spots that are good soonest are right there every time you pick up your phone, without opening anything.</p>
@@ -141,7 +141,7 @@
       </div>
     </section>
 
-    <section class="feature" id="video" hidden>
+    <section class="feature" id="video" data-from="1.1" hidden>
       <video controls playsinline preload="none" poster="img/kookout-demo.jpg" width="720" height="1280">
         <source src="img/kookout-demo.mp4" type="video/mp4">
       </video>
@@ -157,6 +157,7 @@
     <img src="img/3-forecast.jpg" width="540" height="1174" loading="lazy" alt="The forecast hour by hour, with the good hours marked">
     <img src="img/4-rules.jpg" width="540" height="1174" loading="lazy" alt="A spot's rules: wind directions and limits">
     <img src="img/5-add-spot.jpg" width="540" height="1174" loading="lazy" alt="Adding a spot: popular spots or a pin anywhere">
+    <img src="img/7-lock-widgets.jpg" width="540" height="1174" loading="lazy" alt="Kookout on the Lock Screen: the spots that are good next" data-from="1.1" hidden>
   </div>
 
   <div class="wrap">
@@ -167,7 +168,9 @@
       <a class="btn" href="mailto:hi@kookout.no?subject=Kookout%20feedback">hi@kookout.no →</a>
     </div>
     <div class="web">
-      <p data-i18n="web">No iPhone? The forecast with the same rules works in your browser too, without notifications.</p>
+      <p><span data-i18n="web">No iPhone? The forecast with the same rules works in your browser too.</span>
+        <span data-i18n="webapp" data-before="1.1">The app adds notifications and community spots that get better as locals vote, with Sign in with Apple to share your own.</span>
+        <span data-i18n="webapp11" data-from="1.1" hidden>The app adds notifications, Home and Lock Screen widgets, and community spots that get better as locals vote, with Sign in with Apple to share your own.</span></p>
       <a class="btn" href="forecast.html" data-i18n="webbtn">Open the web version →</a>
     </div>
     <footer>
@@ -188,9 +191,9 @@ const NB = {
   p1h: "Hver spot har sine egne regler",
   p1: "Pålandsvind er perfekt på én strand og ubrukelig på den neste. Sett retningene, vinden, bølgene eller nysnøen som funker, spot for spot.",
   p2h: "Beskjed når det er på",
-  p2: "Et swoosh når det blir bra, en gong når det forsvinner. Helgespoter bare på fridager. Ingenting om natten.",
+  p2: "Et swoosh når det blir bra, en gong når det forsvinner. Ingenting om natten. Spoter som krever en dagstur eller mer, kan være helgespoter: de teller bare på fridagene dine, og du får vite det flere dager i forveien.",
   p3h: "Laget sammen med andre utøvere",
-  p3: "Start med populære spoter i nærheten, eller sett en nål hvor som helst. Se vinden målt akkurat nå på en stasjon i nærheten før du drar.",
+  p3: "Start med populære spoter i nærheten, eller sett en nål hvor som helst. Spotene deles: når tre lokale følger en spot, avgjør stemmene deres vindretningene og grensene, så den blir mer presis jo flere som bruker den. Bruk fellesskapets regler eller sett dine egne.",
   taph: "Et prikk på skulderen, ikke enda en værside",
   tap: "Kookout sier fra når det er verdt å ta en nærmere titt. For detaljene, som vindkart, målinger, webkameraer og lokalkunnskap, bruker du sidene og appene du allerede kjenner og liker.",
   wh: "Best med widgetene",
@@ -201,7 +204,9 @@ const NB = {
   fbh: "Kookout er nytt, og tilbakemeldingene dine former det.",
   fb: "Noe som ikke stemmer på spoten din, en regel som ikke passer, eller en idé? Si fra. Vi leser alt.",
   sports: "Wingfoil · kite · windsurf · surf · ski",
-  web: "Ikke iPhone? Værmeldingen med de samme reglene finnes i nettleseren også, uten varsler.",
+  web: "Ikke iPhone? Værmeldingen med de samme reglene finnes i nettleseren også.",
+  webapp: "Appen gir deg i tillegg varsler og felles spoter som blir bedre når lokale stemmer, og med Logg på med Apple kan du dele dine egne.",
+  webapp11: "Appen gir deg i tillegg varsler, widgeter på Hjem-skjermen og Låseskjermen, og felles spoter som blir bedre når lokale stemmer, og med Logg på med Apple kan du dele dine egne.",
   webbtn: "Åpne nettversjonen →",
   made: "Laget i Norge av en wingfoiler.",
   data: "Værdata fra Meteorologisk institutt, Kystverket, NOAA med flere.",

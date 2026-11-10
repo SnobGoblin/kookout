@@ -115,8 +115,8 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 
 ## Reminders for Christian (bring these up when the moment comes)
 
-- **The day 1.1 is in the App Store:** on the landing page (`index.html`), remove `hidden` from the two sections
-  marked "Kookout 1.1" (widgets, 30 s video) and push. The promo video may be posted elsewhere from then on too.
+- **The day 1.1 is in the App Store:** on the landing page (`index.html`), remove `hidden` from every
+  `data-from="1.1"` element (widgets, 30 s video, the web box's widget line), delete the `data-before="1.1"` ones, and push. The promo video may be posted elsewhere from then on too.
 - **Before the subscription/paywall goes live:** switch EU trader status to *trader* in App Store Connect (Apple
   then shows an address, phone and email on EU App Store pages). Sort out first: a phone number and postal address
   he's happy to show publicly (PO box or office), and probably an enkeltpersonforetak for tax.
