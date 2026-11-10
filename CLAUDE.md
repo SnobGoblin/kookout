@@ -143,8 +143,10 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 **Open decisions for Christian (nothing below is done until he says so):**
 1. ~~Relay `GET /stats`~~ **Done 10 Nov:** deployed from `release/1.1` (version 018fb777) with Christian's OK.
    `{"riders":19,"spots":26}` (active in 30 days), cached an hour, CORS open; `/widget`, `/analyse`, `/tz` checked after.
-2. **Screenshot 7** (widget) for the 1.1 listing: the current file shows the old Lock Screen; retake with build 21 and
-   add it, or skip it.
+2. **Screenshots 6 and 7** (widgets): **retaken 10 Nov with build 21** (`appstore/framed-6.3/6-home-widgets.png`,
+   `7-lock-widgets.png` on main; also `img/` for the landing page). Real forecasts of Los Lances, Bantham, Westerland,
+   US English. The old 7 had a cut-off inline line and a ghost copy of the widget. **Christian uploads them** in App
+   Store Connect → 1.1 → iPhone 6.3": replace 6, add 7.
 3. **Build 21 to the testers** ("Family plus a couple guys"): optional, one App Store Connect step.
 4. **Submit 1.1:** App Store Connect → 1.1 → Add for Review → Submit (manual release). Promotional text is not
    copied to a new version; it's filled in for 1.1.
