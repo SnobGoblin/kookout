@@ -1,0 +1,30 @@
+# One-off: uploads sternell.com's front page (www/index.htm), passed in base64 as an input.
+# Keeps the previous version as www/index_old3.htm. Run by hand once, then this file is removed again.
+name: Update sternell.com front page
+
+on:
+  workflow_dispatch:
+    inputs:
+      page:
+        description: "index.htm, base64"
+        required: true
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare SFTP
+        run: |
+          mkdir -p ~/.ssh
+          echo "ftp.domeneshop.no ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBKMi4+UHxAA8poPV1eiusD2Yq3CJFxq/zZxIvaDM9OVM3fACBZ+1isJ6cBzd32szU2zdEeyJk3F/C6zR15rYuxA=" >> ~/.ssh/known_hosts
+          sudo apt-get install -y -qq sshpass
+
+      - name: Upload
+        env:
+          SSHPASS: ${{ secrets.FTP_PASSWORD }}
+          PAGE: ${{ inputs.page }}
+        run: |
+          printf '%s' "$PAGE" | base64 -d > index.htm
+          printf 'get www/index.htm index_old3.htm\nput index_old3.htm www/index_old3.htm\nput index.htm www/index.htm\n' > batch.txt
+          sshpass -e sftp -o BatchMode=no -b batch.txt sternell@ftp.domeneshop.no
+          curl -fsS https://sternell.com/index.htm -o live.htm && cmp live.htm index.htm && echo "sternell.com front page updated."
