@@ -10,9 +10,8 @@ The web pages:
    resized from `appstore/framed-6.3`, Apple's official badges in English and Norwegian, `og.jpg` for link previews).
    Two sections wait for Kookout 1.1 behind a `hidden` attribute: the widgets and the 30 s video
    (`img/kookout-demo.mp4`, re-encoded from `brand/promo/kookout-cartoon.mp4` to 720×1280, ~5.6 MB).
-2. **https://kookout.no/forecast.html** and **https://sternell.com/wind/**: the web version (`forecast.html`), a
-   one-page hourly forecast for your spots with good sessions highlighted. sternell.com/wind keeps it as its front
-   page, since people have it bookmarked.
+2. **https://kookout.no/forecast.html**: the web version (`forecast.html`), a one-page hourly forecast for your spots
+   with good sessions highlighted. (Its old address, sternell.com/wind, was deleted on 10 Nov 2026.)
 3. **https://kookout.no/privacy.html**: privacy and support (the App Store and the app link to it).
 
 Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
@@ -169,12 +168,12 @@ Then open http://localhost:8000.
 Automatic: every push to `main` that changes a web file (`index.html`, `forecast.html`, `rules.js`, `privacy.html`,
 `img/`, …) or the workflow itself runs
 [the deploy workflow](.github/workflows/deploy.yml), which uploads the files to Domeneshop with SFTP: kookout.no gets
-`index.html` (landing page), `forecast.html` and `img/`; sternell.com/wind gets `forecast.html` as its `index.html`.
-The FTP passwords are the repository secrets `KOOKOUT_FTP_PASSWORD` and `FTP_PASSWORD`.
+`index.html` (landing page), `forecast.html`, `img/` and the rest. The FTP password is the repository secret
+`KOOKOUT_FTP_PASSWORD`.
 You can also start it by hand under **Actions → Deploy Kookout → Run workflow**.
 
 By hand, from this folder:
 
 ```bash
-printf 'put forecast.html www/wind/index.html\nput rules.js www/wind/rules.js\n' | sftp sternell@ftp.domeneshop.no
+printf 'put index.html www/index.html\nput forecast.html www/forecast.html\nput rules.js www/rules.js\n' | sftp kookout@ftp.domeneshop.no
 ```
