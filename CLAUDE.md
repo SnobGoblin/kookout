@@ -8,8 +8,8 @@ details of each part; this file is the short version plus how we work.
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
 **Status (10 Nov 2026, evening):** **Kookout 1.0 is live on the App Store** (build 19, released 10 Nov; page
-https://apps.apple.com/app/id6822322346, free, 174 countries). **1.1 is not submitted yet:** in App Store Connect it is
-"Prepare for Submission" with **build 21** (replaced build 20 on 10 Nov), What's New and promotional text in all 7
+https://apps.apple.com/app/id6822322346, free, 174 countries). **1.1 was submitted for App Review 10 Nov ~14:15** (manual release, all users at once, no phased release) with
+**build 21** (replaced build 20 on 10 Nov), What's New and promotional text in all 7
 languages, screenshots 6 (Home Screen widget) and 7 (Lock Screen) added. TestFlight: the testers ("Family plus a couple guys", 6; public link
 https://testflight.apple.com/join/4wm11wAG) have 1.1 build 20; build 21 is only in "Just me". The 1.1 code is on
 branch `release/1.1` (worktree `.claude/worktrees/release-1.1`), not merged into main. App Store texts, privacy label
@@ -149,8 +149,9 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
    OK): 1.1 now has 7 iPhone screenshots under English (U.K.), the primary; the other 6 languages use them ("Using
    Existing Assets").
 3. ~~Build 21 to the testers~~: **skipped** (Christian, 10 Nov); testers stay on build 20.
-4. **Submit 1.1:** App Store Connect → 1.1 → Add for Review → Submit (manual release). Promotional text is not
-   copied to a new version; it's filled in for 1.1.
+4. ~~Submit 1.1~~ **Done 10 Nov ~14:15** (Claude in Chrome, Christian's OK): build 21, manual release, "release to all
+   users immediately" (phased release can still be switched on before pressing Release). Review notes got a "New in 1.1"
+   part (widget, seasons; also in `appstore/review-notes.md`). Apple says up to 48 h. **Watch for Apple's email.**
 5. **After Apple approves 1.1 and Christian presses Release:** merge `release/1.1` into main (CLAUDE.md will conflict:
    keep the newest status), then make `index-1.1.html` the live `index.html` (steps further down / in Reminders).
    1.1 should be out well before 24 Dec (apps on 1.0 get alerts all winter).
