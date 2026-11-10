@@ -7,7 +7,7 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
-**Status (3 Nov 2026):** version 1.0 (build 19, submitted 19 Oct) came back 3 Nov with Guideline 2.1(b) "Information Needed": Apple read "free for the first 2,000 users" as a free trial with a paywall. Replied the same day (no IAP, no trial, everything free) and removed that wording from the listing in all 7 languages; resubmitted 3 Nov 11:07 (manual release). After a Developer Support follow-up (case escalated 10 Nov), **1.0 was approved 10 Nov 10:37** ("Pending Developer Release"; Christian presses Release). App Store page: https://apps.apple.com/app/id6822322346. 1.1 (build 20, branch `release/1.1`, already uploaded) goes in as the first update once 1.0 is out. Build 18 is also out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
+**Status (10 Nov 2026):** **Kookout 1.0 is live on the App Store** (build 19, approved and released 10 Nov after a 2.1(b) question about the "first 2,000" wording and a Developer Support escalation; case 103013652762 closed by us). App Store page: https://apps.apple.com/app/id6822322346 (free, 174 countries, localized names per language). **1.1 (build 20)** is set up in App Store Connect ("Prepare for Submission": build 20 attached, What's New and promotional text in all 7 languages, review notes carried over, manual release); waiting for Christian to press Add for Review → Submit. Note: promotional text is *not* copied to a new version; fill it in each time. Build 18 is also out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
 https://testflight.apple.com/join/4wm11wAG), with the "N other riders follow this spot" line and the founding-user
 number (shows only in App Store installs); older builds expired. Plan: get on the App Store (testing has slowed;
 more users needed). App Store texts (7 languages), privacy label answers and review notes are in `appstore/`;
@@ -125,15 +125,14 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 ## Next up
 
 Launch:
-1. **Release 1.0:** approved 10 Nov. Christian presses "Release This Version" in App Store Connect (up to 24 h before
-   it shows in the store). Listing facts: 7 languages (nb name "Kookout: Vind- og surfvarsling", da "Kookout: Vind,
+1. **1.0 released 10 Nov.** Listing facts: 7 languages (nb name "Kookout: Vind- og surfvarsling", da "Kookout: Vind,
    bølger og sne"), screenshots from `appstore/framed-6.3` (1206×2622), free in 174 countries (not mainland China),
    not on Mac, age 4+. Never mention planned pricing in the listing until it exists in the app (Apple then asks for a
    demo of the paywall; "free for the first 2,000" got 1.0 held up as a "trial").
-2. **Submit 1.1 (build 20)** as an update once 1.0 is live: new version 1.1 in App Store Connect, pick build 20,
-   "What's New" in 7 languages (widget, per-spot seasons, dates for days a week or more ahead). Then merge
-   `release/1.1` into main (until then, deploy the relay from `release/1.1`).
-3. **Landing page** (drafted 10 Nov, push once the App Store link works): kookout.no becomes `index.html` (pitch,
+2. **1.1 (build 20) ready to submit** (all filled in on 10 Nov; texts from `appstore/whats-new-1.1.md` on `release/1.1`).
+   Christian presses Add for Review → Submit. After approval and release: merge `release/1.1` into main
+   (until then, deploy the relay from `release/1.1`).
+3. **Landing page** (drafted 10 Nov, being finished in its own session; the App Store link works now): kookout.no becomes `index.html` (pitch,
    App Store button, screenshots from `img/`, en/nb), the web version moves to `forecast.html`; sternell.com/wind
    keeps the web version as its front page. The App Store button is a plain styled link; swap in Apple's official
    badge later.
