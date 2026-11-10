@@ -7,10 +7,13 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
-**Status (3 Nov 2026):** version 1.0 (build 19, submitted 19 Oct) came back 3 Nov with Guideline 2.1(b) "Information Needed": Apple read "free for the first 2,000 users" as a free trial with a paywall. Replied the same day (no IAP, no trial, everything free) and removed that wording from the listing in all 7 languages; resubmitted 3 Nov 11:07, "Waiting for Review" (manual release). TestFlight testers ("Family plus a couple guys", 6 testers; public link
-https://testflight.apple.com/join/4wm11wAG) have 1.1 build 20 since 6 Nov (widget, seasons); older builds expired. Plan: get on the App Store (testing has slowed;
-more users needed). App Store texts (7 languages), privacy label answers and review notes are in `appstore/`;
-framed screenshots in `appstore/framed`. EU status: non-trader. Not built yet: subscription/paywall.
+**Status (10 Nov 2026, evening):** **Kookout 1.0 is live on the App Store** (build 19, released 10 Nov; page
+https://apps.apple.com/app/id6822322346, free, 174 countries). **1.1 is not submitted yet:** in App Store Connect it is
+"Prepare for Submission" with **build 21** (replaced build 20 on 10 Nov), What's New and promotional text in all 7
+languages, screenshot 6 added. TestFlight: the testers ("Family plus a couple guys", 6; public link
+https://testflight.apple.com/join/4wm11wAG) have 1.1 build 20; build 21 is only in "Just me". The 1.1 code is on
+branch `release/1.1` (worktree `.claude/worktrees/release-1.1`), not merged into main. App Store texts, privacy label
+answers and review notes are in `appstore/`. EU status: non-trader. Not built yet: subscription/paywall.
 
 ## The parts
 
@@ -129,14 +132,29 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 
 ## Next up
 
-Toward the App Store launch:
-1. **In App Review, round 2:** 1.0 (build 19) was asked about the "first 2,000" wording on 3 Nov; answered, listing fixed and resubmitted the same day (11:07). To resubmit after a rejection: version page → "Update Review", then "Resubmit to App Review" on the submission. Never mention planned pricing in the listing until it exists in the app (Apple asks for a demo of the paywall). Everything is entered in
-   App Store Connect: 7 languages (nb name "Kookout: Vind- og surfvarsling", da "Kookout: Vind, bølger og sne";
-   Apple said the first choices were taken), screenshots from `appstore/framed-6.3` (Apple's required size is now
-   6.1–6.3", 1206×2622), privacy labels published, free in 174 countries (not mainland China, needs an ICP licence),
-   not on Mac, age 4+. App Accessibility left empty (optional; only claim what's tested).
-2. Watch for Apple's email. If rejected over guideline 1.2 (no in-app block): add "hide this person's spots".
-3. When approved: Christian presses Release on the day he wants; then the landing page (see Reminders).
+**Where everything is (one place, so it doesn't get confusing):**
+1. **main** = what's live: the web page (kookout.no `index.html`, web version `forecast.html`) and the 1.0 app code.
+   The 1.1 landing page waits on main as `index-1.1.html` + `img-1.1/` (not live).
+2. **release/1.1** = main of 4 Nov + all 1.1 work (widget, seasons, notification digests, dates a week ahead,
+   build 21, `GET /stats`). **Deploy the relay only from `release/1.1` until it is merged** (a deploy from main
+   drops `/widget` and seasons; that happened 3 Nov).
+3. Older branch `claude/mystifying-pike-35db35` is fully contained in `release/1.1`; nothing to do with it.
+
+**Open decisions for Christian (nothing below is done until he says so):**
+1. **Relay `GET /stats`** (commit `030260a` on `release/1.1`): `{"riders", "spots"}` active in 30 days, cached an hour,
+   for the counter on the 1.1 landing page. Written and tested, **not deployed**. Deploy from `release/1.1`.
+2. **Screenshot 7** (widget) for the 1.1 listing: the current file shows the old Lock Screen; retake with build 21 and
+   add it, or skip it.
+3. **Build 21 to the testers** ("Family plus a couple guys"): optional, one App Store Connect step.
+4. **Submit 1.1:** App Store Connect → 1.1 → Add for Review → Submit (manual release). Promotional text is not
+   copied to a new version; it's filled in for 1.1.
+5. **After Apple approves 1.1 and Christian presses Release:** merge `release/1.1` into main (CLAUDE.md will conflict:
+   keep the newest status), then make `index-1.1.html` the live `index.html` (steps further down / in Reminders).
+   1.1 should be out well before 24 Dec (apps on 1.0 get alerts all winter).
+
+Listing facts: 7 languages (nb name "Kookout: Vind- og surfvarsling", da "Kookout: Vind, bølger og sne"), screenshots
+from `appstore/framed-6.3` (1206×2622), not on Mac, age 4+, not mainland China. Never mention planned pricing in the
+listing or on the web page until it exists in the app ("free for the first 2,000" got 1.0 held up as a "trial"); just "free".
 
 **Shipping fixes after launch:** relay, `rules.js` and web-page fixes need no Apple review (deploy/push and it's
 live in minutes), so put fixes there when you can. App changes need a new build and a full review (updates
@@ -145,15 +163,6 @@ usually pass within a day); for a serious bug (crash, notifications down) ask Ap
 
 Founding users: numbers come only from App Store installs (TestFlight/Xcode have no real download); the
 `founders` table must start empty at launch (it is). Founding = number ≤ 2,000 (`FOUNDERS` in `relay/src/founders.js`).
-
-**Version 1.1** (branch `release/1.1` = main of 4 Nov + the 1.1 work; merge to main only with the 1.1 release, since
-`privacy.html` already describes the widget and seasons and deploys on push): the home screen / Lock Screen widget
-(the 3 spots good soonest; tested on Christian's iPhone 16 Pro, hourly refresh confirmed 20 Oct) and seasons (see
-Decisions). MARKETING_VERSION 1.1, build 20. **Deploy the relay from `release/1.1` until it is merged:** a deploy
-from main drops `/widget` and seasons (that happened 3 Nov). Seasons in D1 via `relay/migrate-season.sql` (done).
-On TestFlight since 6 Nov (build 20, uploaded from the `release-1.1` worktree). Left: submit after 1.0 is approved
-(What's New in `appstore/whats-new-1.1.md`). It should be out well before 24 Dec (apps on 1.0 get
-notifications all winter).
 
 Later: the landing page (see Reminders), the subscription and paywall (StoreKit, App Store Connect, tax/bank;
 switch EU status to trader first), a test copy of the relay, a pre-release checklist.
