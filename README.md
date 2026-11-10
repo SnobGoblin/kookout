@@ -1,7 +1,19 @@
 # Kookout
 
-A one-page hourly wind forecast for my wing foil spots around the Oslofjord and beyond,
-with good sessions highlighted. Live at **https://sternell.com/wind/**.
+Kookout tells wing foilers, surfers and skiers when their spots are good. The iPhone app is on the
+[App Store](https://apps.apple.com/app/id6822322346); this repository also holds the web pages, the relay and the brand.
+
+The web pages:
+
+1. **https://kookout.no/**: the landing page (`index.html`): pitch, App Store badge, screenshots and a link to the
+   web version. English, switched to Norwegian by JavaScript for nb/no/nn browsers. Images in `img/` (screenshots
+   resized from `appstore/framed-6.3`, Apple's official badges in English and Norwegian, `og.jpg` for link previews).
+   Two sections wait for Kookout 1.1 behind a `hidden` attribute: the widgets and the 30 s video
+   (`img/kookout-demo.mp4`, re-encoded from `brand/promo/kookout-cartoon.mp4` to 720×1280, ~5.6 MB).
+2. **https://kookout.no/forecast.html** and **https://sternell.com/wind/**: the web version (`forecast.html`), a
+   one-page hourly forecast for your spots with good sessions highlighted. sternell.com/wind keeps it as its front
+   page, since people have it bookmarked.
+3. **https://kookout.no/privacy.html**: privacy and support (the App Store and the app link to it).
 
 Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
 
@@ -21,7 +33,7 @@ Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
 
 ## How it works
 
-The page is `index.html` (plain HTML, CSS and JavaScript, no build step) plus `rules.js`, the rules that turn a
+The web version is `forecast.html` (plain HTML, CSS and JavaScript, no build step) plus `rules.js`, the rules that turn a
 forecast into good hours. `rules.js` is shared with the relay, whose `POST /analyse` gives the app and
 notifications exactly the same answers as the page.
 The page fetches forecasts straight from MET's
@@ -154,13 +166,15 @@ Then open http://localhost:8000.
 
 ## Deploy
 
-Automatic: every push to `main` that changes `index.html` or `apple-touch-icon.png` runs
-[the deploy workflow](.github/workflows/deploy.yml), which uploads the files to Domeneshop with SFTP.
-The FTP password is stored as the repository secret `FTP_PASSWORD`.
-You can also start it by hand under **Actions → Deploy to sternell.com → Run workflow**.
+Automatic: every push to `main` that changes a web file (`index.html`, `forecast.html`, `rules.js`, `privacy.html`,
+`img/`, …) or the workflow itself runs
+[the deploy workflow](.github/workflows/deploy.yml), which uploads the files to Domeneshop with SFTP: kookout.no gets
+`index.html` (landing page), `forecast.html` and `img/`; sternell.com/wind gets `forecast.html` as its `index.html`.
+The FTP passwords are the repository secrets `KOOKOUT_FTP_PASSWORD` and `FTP_PASSWORD`.
+You can also start it by hand under **Actions → Deploy Kookout → Run workflow**.
 
 By hand, from this folder:
 
 ```bash
-printf 'put index.html www/wind/index.html\nput apple-touch-icon.png www/wind/apple-touch-icon.png\n' | sftp sternell@ftp.domeneshop.no
+printf 'put forecast.html www/wind/index.html\nput rules.js www/wind/rules.js\n' | sftp sternell@ftp.domeneshop.no
 ```

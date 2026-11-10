@@ -7,7 +7,7 @@ name: Deploy Kookout
 on:
   push:
     branches: [main]
-    paths: [index.html, rules.js, privacy.html, personvern.html, apple-touch-icon.png]
+    paths: [index.html, forecast.html, rules.js, privacy.html, personvern.html, apple-touch-icon.png, 'img/**', .github/workflows/deploy.yml]
   workflow_dispatch: # adds a "Run workflow" button on GitHub, for deploying by hand
 
 concurrency: deploy # never run two uploads at the same time
@@ -35,20 +35,22 @@ jobs:
         env:
           SSHPASS: ${{ secrets.KOOKOUT_FTP_PASSWORD }}
         run: |
-          printf 'put rules.js www/rules.js\nput index.html www/index.html\nput privacy.html www/privacy.html\nput personvern.html www/personvern.html\nput apple-touch-icon.png www/apple-touch-icon.png\n' > upload.txt
+          # kookout.no: index.html is the landing page, forecast.html the web version. ("-mkdir": fine if it exists.)
+          printf -- '-mkdir www/img\nput img/* www/img/\nput rules.js www/rules.js\nput forecast.html www/forecast.html\nput index.html www/index.html\nput privacy.html www/privacy.html\nput personvern.html www/personvern.html\nput apple-touch-icon.png www/apple-touch-icon.png\n' > upload.txt
           sshpass -e sftp -o BatchMode=no -b upload.txt kookout@ftp.domeneshop.no
 
       - name: Upload to sternell.com/wind
         env:
           SSHPASS: ${{ secrets.FTP_PASSWORD }}
         run: |
-          printf 'put rules.js www/wind/rules.js\nput index.html www/wind/index.html\nput privacy.html www/wind/privacy.html\nput personvern.html www/wind/personvern.html\nput apple-touch-icon.png www/wind/apple-touch-icon.png\n' > upload.txt
+          # The old address keeps the web version itself as its front page (people have it bookmarked).
+          printf 'put rules.js www/wind/rules.js\nput forecast.html www/wind/index.html\nput forecast.html www/wind/forecast.html\nput privacy.html www/wind/privacy.html\nput personvern.html www/wind/personvern.html\nput apple-touch-icon.png www/wind/apple-touch-icon.png\n' > upload.txt
           sshpass -e sftp -o BatchMode=no -b upload.txt sternell@ftp.domeneshop.no
 
       - name: Check the live sites
         run: |
           curl -fsS https://sternell.com/wind/ -o live.html
-          cmp live.html index.html && echo "sternell.com/wind matches this commit."
+          cmp live.html forecast.html && echo "sternell.com/wind matches this commit."
           curl -fsS https://sternell.com/wind/rules.js -o live-rules.js
           cmp live-rules.js rules.js && echo "sternell.com/wind/rules.js matches this commit."
           # kookout.no may not be reachable until its DNS is set up, so this check only reports.
