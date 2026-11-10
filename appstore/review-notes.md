@@ -21,6 +21,10 @@ How to try it:
 2. Tap a spot to see its hourly forecast. Green hours are good by that spot's rules. Tap Edit to change the wind directions and limits.
 3. Notifications are checked hourly on our server, so a real one can take a while. To see one at once: Settings (gear icon) → Send a test notification.
 
+New in 1.1:
+4. Widget: long-press the Home Screen (or the Lock Screen → Customize) and add Kookout. It shows the user's spots that are good soonest and refreshes about once an hour; tapping a spot opens it in the app.
+5. Seasons: each spot has a season (tap a spot → Edit → Season). Outside it, good conditions don't send notifications or count in the widget; the forecast still shows.
+
 User-generated content (guideline 1.2):
 - Users can share spots (a name and a map position) and fix the name or position of shared spots. Every change is logged with the user's public name and can be undone by anyone signed in.
 - Every spot, and every change in its history, has "Report a problem" (reasons: wrong, private, offensive, other).
