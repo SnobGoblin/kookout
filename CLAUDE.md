@@ -7,7 +7,7 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
-**Status (3 Nov 2026):** version 1.0 (build 19, submitted 19 Oct) came back 3 Nov with Guideline 2.1(b) "Information Needed": Apple read "free for the first 2,000 users" as a free trial with a paywall. Replied the same day (no IAP, no trial, everything free) and removed that wording from the listing in all 7 languages; resubmitted 3 Nov 11:07, "Waiting for Review" (manual release). Build 18 is also out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
+**Status (3 Nov 2026):** version 1.0 (build 19, submitted 19 Oct) came back 3 Nov with Guideline 2.1(b) "Information Needed": Apple read "free for the first 2,000 users" as a free trial with a paywall. Replied the same day (no IAP, no trial, everything free) and removed that wording from the listing in all 7 languages; resubmitted 3 Nov 11:07, "Waiting for Review" (manual release). Still waiting 9 Nov: followed up on the Developer Support case; Apple escalated it to App Review on 10 Nov (nothing more needed from us). Build 18 is also out to TestFlight testers ("Family plus a couple guys", 6 testers; public link
 https://testflight.apple.com/join/4wm11wAG), with the "N other riders follow this spot" line and the founding-user
 number (shows only in App Store installs); older builds expired. Plan: get on the App Store (testing has slowed;
 more users needed). App Store texts (7 languages), privacy label answers and review notes are in `appstore/`;
