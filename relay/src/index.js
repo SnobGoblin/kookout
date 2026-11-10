@@ -17,6 +17,8 @@
 //   POST /reports                                      -> report a spot or a change (see reports.js)
 //   POST /founders                                     -> a founding user's number in line (see founders.js)
 //   POST /widget  {spots, units?, waveUnit?, country?}  -> the good periods of the widget's spots (see widget.js)
+//   GET /stats                      -> {riders, spots}: riders active in the last 30 days and the spots they follow,
+//                                     for the counter on kookout.no. Public (any origin), cached an hour in KV.
 //   GET /waves?lat=58.80&lon=5.55   -> wave forecast (total height in m, period, direction) about a week ahead:
 //                                     MET's Oceanforecast in Scandinavian waters, NOAA WaveWatch III elsewhere
 //
@@ -62,6 +64,7 @@ export default {
     });
 
     try {
+      if (url.pathname === "/stats" && request.method === "GET") return stats(env, ctx);
       if (url.pathname === "/obs") {
         const ids = (url.searchParams.get("ids") || "").split(",").slice(0, 20);
         const frostIds = ids.filter(id => /^SN\d+$/.test(id));
@@ -490,3 +493,16 @@ async function latest(frost, ids) {
 const round = (n, d) => n == null ? null : Math.round(n * 10 ** d) / 10 ** d;
 // Frost names are in capitals ("GULLHOLMEN"); make them read normally ("Gullholmen").
 const tidy = s => (s || "").toLowerCase().replace(/(^|[\s\-–(\/])(\p{L})/gu, (m, a, b) => a + b.toUpperCase());
+
+// Two counts for the web page, nothing per rider or per spot. KV keeps the answer an hour, so page loads don't reach D1.
+async function stats(env, ctx) {
+  const headers = { "Content-Type": "application/json", "Cache-Control": "public, max-age=3600", "Access-Control-Allow-Origin": "*" };
+  let body = await env.WAVES.get("stats");
+  if (!body) {
+    const row = await env.DB.prepare(`SELECT COUNT(DISTINCT follower) AS riders, COUNT(DISTINCT spot_id) AS spots
+      FROM followers WHERE last_active > datetime('now', '-30 days')`).first();
+    body = JSON.stringify({ riders: row?.riders ?? 0, spots: row?.spots ?? 0 });
+    ctx.waitUntil(env.WAVES.put("stats", body, { expirationTtl: 3600 }));
+  }
+  return new Response(body, { headers });
+}
