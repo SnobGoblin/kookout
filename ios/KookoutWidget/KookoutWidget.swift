@@ -18,7 +18,7 @@ struct SpotsWidget: Widget {
         }
         .configurationDisplayName(Text(verbatim: "Kookout"))
         .description("Your spots that are good soonest.")
-        .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular, .accessoryCircular, .accessoryInline])
+        .supportedFamilies([.systemMedium, .accessoryRectangular, .accessoryInline])
     }
 }
 
@@ -131,18 +131,12 @@ struct Words {
         return (powder(s) ? day(p.start, s) : "\(day(p.start, s)) \(hours(p, s))").capitalizedFirst
     }
 
-    /// Good now (not powder): "until 18" / "until 6 PM".
-    func until(_ s: WidgetStatus) -> String? {
-        guard s.goodNow, !powder(s), let p = s.period else { return nil }
-        return String(localized: "until \(hour(p.end, s))")
-    }
-
     /// Shortest, for the Lock Screen: "now", today's hours ("14–18"), or just the weekday ("Thu"; a weekday with an
-    /// hour, "Thu 07", read like a date). "–" when nothing is good.
-    func short(_ s: WidgetStatus) -> String {
+    /// hour, "Thu 07", read like a date). "–" when nothing is good. Compact: 12-hour times as "7am–12pm".
+    func short(_ s: WidgetStatus, compact: Bool = false) -> String {
         guard let p = s.period else { return "–" }
         if s.goodNow { return String(localized: "now") }
-        if isToday(p.start, s) && !powder(s) { return hours(p, s) }
+        if isToday(p.start, s) && !powder(s) { return hours(p, s, compact: compact) }
         return weekday(p.start, s)
     }
 
@@ -175,12 +169,15 @@ struct Words {
         return date.formatted(style)
     }
 
-    /// "10–15", or with a 12-hour clock "10 AM–3 PM" / "3–6 PM".
-    func hours(_ p: WidgetPeriod, _ s: WidgetStatus) -> String {
+    /// "10–15", or with a 12-hour clock "10 AM–3 PM" / "3–6 PM"; compact (the Lock Screen, when space is short)
+    /// "10am–3pm" / "3–6pm".
+    func hours(_ p: WidgetPeriod, _ s: WidgetStatus, compact: Bool = false) -> String {
         guard spots?.h12 == true else { return "\(format(p.start, s, "HH"))–\(format(p.end, s, "HH"))" }
-        return format(p.start, s, "a") == format(p.end, s, "a")
-            ? "\(format(p.start, s, "h"))–\(format(p.end, s, "h a"))"
-            : "\(format(p.start, s, "h a"))–\(format(p.end, s, "h a"))"
+        let ampm = compact ? "ha" : "h a"
+        let text = format(p.start, s, "a") == format(p.end, s, "a")
+            ? "\(format(p.start, s, "h"))–\(format(p.end, s, ampm))"
+            : "\(format(p.start, s, ampm))–\(format(p.end, s, ampm))"
+        return compact ? text.lowercased() : text
     }
     /// "12" or "12 PM".
     func hour(_ date: Date, _ s: WidgetStatus) -> String { format(date, s, spots?.h12 == true ? "h a" : "HH") }
@@ -218,12 +215,9 @@ struct SpotsWidgetView: View {
             empty
         } else {
             switch family {
-            case .systemSmall: small
-            case .systemMedium: medium
             case .accessoryRectangular: rectangular
-            case .accessoryCircular: circular
             case .accessoryInline: inline
-            default: small
+            default: medium
             }
         }
     }
@@ -231,8 +225,6 @@ struct SpotsWidgetView: View {
     /// No spots yet (or the app hasn't been opened since it got the widget).
     @ViewBuilder private var empty: some View {
         switch family {
-        case .accessoryCircular:
-            ZStack { AccessoryWidgetBackground(); Image(systemName: "wind").font(.title2) }
         case .accessoryInline:
             Text("Add your spots in Kookout")
         default:
@@ -246,27 +238,6 @@ struct SpotsWidgetView: View {
 
     /// Like the app's list: green when something good is coming, the accent colour when nothing is.
     private func iconColor(_ s: WidgetStatus) -> Color { s.period != nil ? .green : .kookout }
-
-    // Home screen, small: the soonest spot.
-    private var small: some View {
-        let s = entry.statuses[0]
-        return VStack(alignment: .leading, spacing: 2) {
-            Image(systemName: symbol(s)).font(.title3).foregroundStyle(iconColor(s))
-            Text(s.spot.name).font(.headline).lineLimit(2).minimumScaleFactor(0.8)
-            Spacer(minLength: 4)
-            Text(words.title(s)).font(.subheadline.weight(.semibold))
-                .foregroundStyle(s.goodNow ? AnyShapeStyle(.green) : AnyShapeStyle(.secondary))
-                .lineLimit(2).minimumScaleFactor(0.8)
-            if let detail = words.detail(s) {
-                Text(detail).font(.subheadline).lineLimit(1).minimumScaleFactor(0.7)
-            }
-            if let until = words.until(s) {
-                Text(until).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .widgetURL(WidgetData.link(s.spot.id))
-    }
 
     // Home screen, medium: three spots, one line each; tapping a line opens that spot.
     private var medium: some View {
@@ -297,22 +268,24 @@ struct SpotsWidgetView: View {
 
     // Lock Screen, rectangular: three short lines, the name and when. One colour only there, so "now" is in bold.
     private var rectangular: some View {
-        // All lines at one size: the largest where every line fits, and only then shortened names
-        // ("Hvide Sande, fjo… now"); the time always shows in full.
+        // All lines at one size: the largest where every line fits, then 12-hour times written short ("7am–12pm"),
+        // and only then shortened names ("Hvide Sande, fjo… now"); the time always shows in full.
         ViewThatFits(in: .horizontal) {
-            lockLines(font: .body, fit: true)
-            lockLines(font: .footnote, fit: true)
-            lockLines(font: .footnote, fit: false)
+            lockLines(font: .body, fit: true, compact: false)
+            lockLines(font: .footnote, fit: true, compact: false)
+            lockLines(font: .footnote, fit: true, compact: true)
+            lockLines(font: .caption, fit: true, compact: true)
+            lockLines(font: .caption, fit: false, compact: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .widgetURL(WidgetData.link(entry.statuses[0].spot.id))
     }
 
-    private func lockLines(font: Font, fit: Bool) -> some View {
+    private func lockLines(font: Font, fit: Bool, compact: Bool) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if !anyGood { Text("Nothing good in sight").font(.headline).lineLimit(1).minimumScaleFactor(0.7) }
             ForEach(entry.statuses.prefix(anyGood ? 3 : 2), id: \.spot.id) { s in
-                lockLine(s, font: font, fit: fit)
+                lockLine(s, font: font, fit: fit, compact: compact)
                     .fontWeight(s.goodNow ? .semibold : .regular)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(Text(verbatim: "\(s.spot.name), \(words.title(s)) \(words.detail(s) ?? "")"))
@@ -320,37 +293,15 @@ struct SpotsWidgetView: View {
         }
     }
 
-    private func lockLine(_ s: WidgetStatus, font: Font, fit: Bool) -> some View {
+    private func lockLine(_ s: WidgetStatus, font: Font, fit: Bool, compact: Bool) -> some View {
         HStack(spacing: 6) {
             Text(verbatim: s.spot.name)
                 .lineLimit(1)
+                .minimumScaleFactor(fit ? 1 : 0.85)
                 .fixedSize(horizontal: fit, vertical: false)
-            Text(verbatim: words.short(s)).lineLimit(1).fixedSize()
+            Text(verbatim: words.short(s, compact: compact)).lineLimit(1).fixedSize()
         }
         .font(font)
-    }
-
-    // Lock Screen, circular: the soonest spot; a tick when it's good now, otherwise today's hours or the weekday.
-    private var circular: some View {
-        let s = entry.statuses[0]
-        return ZStack {
-            AccessoryWidgetBackground()
-            VStack(spacing: 0) {
-                Image(systemName: symbol(s)).font(.caption)
-                if s.goodNow {
-                    Image(systemName: "checkmark").font(.title3.bold())
-                } else if let p = s.period {
-                    // Today: the hours ("14–18"); another day: just the weekday, like the rectangular one.
-                    Text(words.short(s)).font(.headline).lineLimit(1).minimumScaleFactor(0.5)
-                } else {
-                    Text(verbatim: "–").font(.title3.bold())
-                }
-            }
-            .padding(2)
-        }
-        .widgetURL(WidgetData.link(s.spot.id))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: "\(s.spot.name), \(words.title(s)) \(words.detail(s) ?? "")"))
     }
 
     // Lock Screen, one line above the clock.
@@ -368,7 +319,6 @@ struct SpotsWidgetView: View {
     }
 }
 
-#Preview(as: .systemSmall) { SpotsWidget() } timeline: { Entry.sample }
 #Preview(as: .systemMedium) { SpotsWidget() } timeline: { Entry.sample }
 #Preview(as: .accessoryRectangular) { SpotsWidget() } timeline: { Entry.sample }
 
