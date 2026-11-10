@@ -136,8 +136,8 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 3. Older branch `claude/mystifying-pike-35db35` is fully contained in `release/1.1`; nothing to do with it.
 
 **Open decisions for Christian (nothing below is done until he says so):**
-1. **Relay `GET /stats`** (commit `030260a` on `release/1.1`): `{"riders", "spots"}` active in 30 days, cached an hour,
-   for the counter on the 1.1 landing page. Written and tested, **not deployed**. Deploy from `release/1.1`.
+1. ~~Relay `GET /stats`~~ **Done 10 Nov:** deployed from `release/1.1` (version 018fb777) with Christian's OK.
+   `{"riders":19,"spots":26}` (active in 30 days), cached an hour, CORS open; `/widget`, `/analyse`, `/tz` checked after.
 2. **Screenshot 7** (widget) for the 1.1 listing: the current file shows the old Lock Screen; retake with build 21 and
    add it, or skip it.
 3. **Build 21 to the testers** ("Family plus a couple guys"): optional, one App Store Connect step.
