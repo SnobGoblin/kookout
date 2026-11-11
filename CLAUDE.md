@@ -6,7 +6,7 @@ or change. Built by Christian (owner; technical background, new to Swift and web
 details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
-breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
+breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits).
 **Status (11 Nov 2026):** **Kookout 1.1 is released** (build 21, released 11 Nov after App Review approved it;
 page https://apps.apple.com/app/id6822322346, free, 174 countries). kookout.no is the new landing page; the web forecast
 is offline. `release/1.1` is merged into main (11 Nov), so **main has everything: deploy the relay from main again**.
@@ -130,23 +130,21 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 
 ## Next up
 
-**Where everything is:** all on **main** (website, relay, 1.1 app code). `release/1.1` was merged on 11 Nov; the
-branch (local and on GitHub) and its worktree were removed. The relay deployed now is the same code as main.
+**Where everything is:** all on **main**, the only branch (website, relay, 1.1 app code); no worktrees. Deploy the
+relay from main. Launch history (1.0 approved 10 Nov after a "trial" misunderstanding, 1.1 submitted 10 Nov, released
+and merged 11 Nov) is in git log.
 
-**Open decisions for Christian (nothing below is done until he says so):**
-1. ~~Relay `GET /stats`~~ **Done 10 Nov:** deployed from `release/1.1` (version 018fb777) with Christian's OK.
-   `{"riders":19,"spots":26}` (active in 30 days), cached an hour, CORS open; `/widget`, `/analyse`, `/tz` checked after.
-2. **Screenshots 6 and 7** (widgets): **retaken 10 Nov with build 21** (`appstore/framed-6.3/6-home-widgets.png`,
-   `7-lock-widgets.png` on main; also `img/` for the landing page). Real forecasts of Los Lances, Bantham, Westerland,
-   US English. The old 7 had a cut-off inline line and a ghost copy of the widget. **Uploaded 10 Nov** (with Christian's
-   OK): 1.1 now has 7 iPhone screenshots under English (U.K.), the primary; the other 6 languages use them ("Using
-   Existing Assets").
-3. ~~Build 21 to the testers~~: **skipped** (Christian, 10 Nov); testers stay on build 20.
-4. ~~Submit 1.1~~ **Done 10 Nov ~14:15** (Claude in Chrome, Christian's OK): build 21, manual release, "release to all
-   users immediately" (phased release can still be switched on before pressing Release). Review notes got a "New in 1.1"
-   part (widget, seasons; also in `appstore/review-notes.md`). Apple says up to 48 h. **Watch for Apple's email.**
-5. ~~Release 1.1~~ **Done 11 Nov**: released by Claude with Christian's OK; landing page live, web forecast offline,
-   `release/1.1` merged into main.
+**Open, in order (ask Christian before each outward step):**
+1. **Check 1.1 reached the store** (`curl "https://itunes.apple.com/lookup?id=6822322346&country=no"` shows the version;
+   it still said 1.0 an hour after release on 11 Nov). Then watch the first App Store installs: founding-user numbers
+   should start appearing in the `founders` table, and the rider count on kookout.no (`GET /stats`) should grow.
+2. **Christian's note** on kookout.no: his own words replace Claude's draft (see Reminders).
+3. **Testers** are on TestFlight build 20: ask them to install the App Store version (it keeps their spots? check:
+   the App Store and TestFlight builds share the bundle id, so installing over it keeps the data).
+4. **Telling people:** the 30 s promo video (`brand/promo/`, cover `brand/promo/kookout-cover.png`) may be posted now
+   that 1.1 is out (Instagram/Facebook wing foil and surf groups). Never knock other forecast sites (see memory).
+5. **Link preview:** `img/og.jpg` still shows the old design (list screenshot); a new one from Kjell's photo would fit
+   the new page.
 
 Listing facts: 7 languages (nb name "Kookout: Vind- og surfvarsling", da "Kookout: Vind, bølger og sne"), screenshots
 from `appstore/framed-6.3` (1206×2622), not on Mac, age 4+, not mainland China. Never mention planned pricing in the
