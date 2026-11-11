@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kookout: Wind & Surf Alerts</title>
-  <meta name="description" content="Pick your spots, set what works there, and Kookout tells you when and where it's good. For wing foiling, kitesurfing, windsurfing, surfing and skiing. Free on iPhone.">
+  <meta name="description" content="Kookout keeps an eye on the forecast for your spots and taps you on the shoulder when it's worth a closer look. Wing foil, kite, windsurf, surf and ski. Free on iPhone.">
   <meta name="apple-itunes-app" content="app-id=6822322346">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://kookout.no/">
@@ -18,163 +18,203 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" href="apple-touch-icon.png">
   <style>
-    :root { --navy: #0E2A3B; --navy2: #164560; --orange: #FF6B2C; --text: #1b2330; --muted: #5d6877;
-            --bg: #ffffff; --card: #f3f5f8; --link: #1C6EA4; }
+    /* Archivo, the wordmark's font (SIL Open Font License, img-1.1/archivo-OFL.txt) */
+    @font-face { font-family: Archivo; src: url("img-1.1/archivo.ttf") format("truetype"); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+    :root { --navy: #0E2A3B; --orange: #FF6B2C; --text: #17202b; --muted: #5a6472; --bg: #fbfaf7; --line: #e4e0d6;
+            --cream: #f8efd2; --link: #1C6EA4; }
     @media (prefers-color-scheme: dark) {
-      :root { --text: #e6ebf2; --muted: #93a0b2; --bg: #0b1218; --card: #141d26; --link: #FF6B2C; }
+      :root { --text: #ece8df; --muted: #a2a9b3; --bg: #10161c; --line: #2a333d; --link: #FF8A57; }
     }
     * { box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
-    body { margin: 0; background: var(--bg); color: var(--text);
-           font: 17px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 18px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
     a { color: var(--link); }
-    .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3, .big { font-family: Archivo, system-ui, sans-serif; font-stretch: 118%; letter-spacing: -.015em; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 
-    /* Hero: navy, like the App Store screenshots */
-    header { background: linear-gradient(180deg, var(--navy) 0%, var(--navy2) 100%); color: #fff;
-             padding: 28px 0 0; overflow: hidden; }
-    .logo { display: block; width: 168px; height: auto; }
-    .hero { display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: end; padding-top: 40px; }
-    .hero > div { align-self: center; padding-bottom: 24px; }
-    .new { display: inline-block; background: var(--orange); color: #fff; font-weight: 700; font-size: .8rem;
-           letter-spacing: .06em; text-transform: uppercase; border-radius: 999px; padding: 3px 10px; margin: 0 0 14px; }
-    h1 { font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.08; margin: 0 0 16px; letter-spacing: -.02em; }
-    .lead { font-size: 1.15rem; color: #cfdbe5; margin: 0 0 26px; max-width: 32em; }
-    /* Apple's official badge (img/app-store-*.svg, from Apple's marketing toolbox): unaltered, at least 40 px tall */
-    .store { display: inline-block; line-height: 0; }
-    .store img { height: 54px; width: auto; }
-    .free { margin: 14px 0 24px; color: #cfdbe5; font-size: .95rem; }
-    .phone { display: block; width: 100%; height: auto; margin-bottom: -6px;
-             border-radius: 22px 22px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,.25); }
+    /* Hero: the photo as it is (3:2, all three riders at any width), the wordmark on top, the words below on navy */
+    .hero { background: var(--navy); color: #fff; }
+    .photo { position: relative; max-width: 1400px; margin: 0 auto; }
+    .photo img { display: block; width: 100%; height: auto; max-height: 720px; object-fit: cover; object-position: center 40%; }
+    .photo::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 120px; pointer-events: none;
+                     background: linear-gradient(180deg, rgba(14,42,59,.6), rgba(14,42,59,0)); }
+    .photo .logo { position: absolute; left: max(20px, calc((100% - 1000px) / 2)); top: 22px; }
+    .logo { display: block; width: 170px; height: auto; }
+    .hero-foot { padding: 34px 20px 46px; }
+    .hero h1 { font-size: clamp(2.6rem, 7.5vw, 5.4rem); font-weight: 850; line-height: .95; margin: 0 0 18px; }
+    .hero .lead { font-size: 1.2rem; max-width: 32em; margin: 0 0 24px; color: #dfe6ea; }
+    .row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .store img { height: 54px; width: auto; display: block; }
+    .free { color: #cfd9df; font-size: .95rem; margin: 0; }
+    .caption { display: block; font-size: .8rem; color: #9fb3c0; margin-top: 22px; }
 
-    /* Points */
-    .points { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; padding: 56px 0 40px; }
-    .points h2 { font-size: 1.1rem; margin: 0 0 6px; }
-    .points p { margin: 0; color: var(--muted); font-size: 1rem; }
-    .dot { display: inline-block; width: .55em; height: .55em; border-radius: 50%; background: var(--orange);
-           margin-right: .45em; vertical-align: .1em; }
+    /* Christian's note */
+    .note { max-width: 40em; margin: 72px auto 0; font-size: 1.25rem; line-height: 1.6; }
+    .note p { margin: 0 0 .9em; }
+    .note .sig { font-family: Archivo, system-ui; font-stretch: 118%; font-weight: 700; color: var(--orange); }
 
-    /* Screenshots strip */
-    .shots { display: flex; justify-content: safe center; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 8px 20px 24px;
-             margin: 0 auto; max-width: 1240px; }
-    .shots img { flex: 0 0 auto; width: 220px; height: auto; border-radius: 18px; scroll-snap-align: center;
-                 background: var(--navy); }
+    /* One big statement next to the widget, with a scribbled note */
+    .statement { display: grid; grid-template-columns: 1.2fr 1fr; gap: 150px; align-items: center; margin: 96px 0 40px; }
+    .big { font-size: clamp(1.9rem, 4.2vw, 3rem); font-weight: 800; line-height: 1.08; margin: 0 0 20px; }
+    .big em { font-style: normal; color: var(--orange); }
+    .statement p { color: var(--muted); margin: 0; max-width: 28em; }
+    .annotated { position: relative; max-width: 340px; justify-self: center; transform: rotate(1.5deg); }
+    .annotated img { display: block; width: 100%; height: auto; border-radius: 22px; box-shadow: 0 18px 50px rgba(0,0,0,.18); }
+    .scribble { position: absolute; left: -158px; top: 46%; width: 170px; color: var(--orange);
+                font-family: Archivo, system-ui; font-stretch: 75%; font-weight: 600; font-size: 1.15rem; line-height: 1.1; transform: rotate(-6deg); }
+    .scribble svg { display: block; width: 120px; height: 60px; margin: 6px 0 0 40px; }
 
-    /* The tap on the shoulder */
-    .tap { border-left: 4px solid var(--orange); padding: 4px 0 4px 20px; margin: 0 0 48px; max-width: 46em; }
-    .tap h2 { font-size: 1.35rem; margin: 0 0 6px; }
-    .tap p { margin: 0; color: var(--muted); }
+    /* The details: a loose list, not a grid of cards */
+    .details { columns: 2; column-gap: 56px; margin: 72px 0; }
+    .details div { break-inside: avoid; margin: 0 0 34px; padding-top: 14px; border-top: 2px solid var(--line); }
+    .details h3 { font-size: 1.2rem; margin: 0 0 6px; font-weight: 750; }
+    .details p { margin: 0; color: var(--muted); }
 
-    /* Widgets and the video (shown from Kookout 1.1) */
+    /* Kai in his hammock */
+    .kai { display: grid; grid-template-columns: 260px 1fr; gap: 44px; align-items: center; margin: 88px 0 0; }
+    .kai img { width: 100%; height: auto; display: block; border-radius: 18px; transform: rotate(-2deg); }
+    .kai h2, .feature h2 { font-size: clamp(1.6rem, 3.4vw, 2.3rem); font-weight: 800; line-height: 1.1; margin: 0 0 12px; }
+    .kai p, .feature p { color: var(--muted); margin: 0 0 10px; max-width: 30em; }
+
+    /* Kookout 1.1 */
     [hidden] { display: none !important; }
-    .feature { display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: center; margin: 0 0 56px; }
-    .feature h2 { font-size: 1.5rem; margin: 0 0 8px; letter-spacing: -.01em; }
-    .feature p { margin: 0 0 10px; color: var(--muted); }
-    .feature video, .feature img { display: block; width: 100%; height: auto; border-radius: 18px; background: var(--navy); }
+    .feature { display: grid; grid-template-columns: 300px 1fr; gap: 48px; align-items: center; margin: 0 0 88px; }
+    .feature.flip { grid-template-columns: 1fr 300px; }
+    .feature.flip > :first-child { order: 2; }
+    .feature img, .feature video { display: block; width: 100%; height: auto; border-radius: 20px; background: var(--navy); }
 
-    .sports { text-align: center; color: var(--muted); padding: 8px 0 40px; font-size: 1rem; }
-    .web { background: var(--card); border-radius: 16px; padding: 22px 24px; margin: 0 0 48px;
-           display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-    .web p { margin: 0; }
-    .web a.btn { white-space: nowrap; font-weight: 600; text-decoration: none; }
-    .web b { display: block; margin-bottom: 2px; }
-    .web + .web { margin-top: -32px; }
+    /* Who uses it */
+    .proof { text-align: center; margin: 0 auto 88px; max-width: 34em; }
+    .proof .num { font-family: Archivo, system-ui; font-stretch: 125%; font-weight: 900; font-size: clamp(3rem, 9vw, 5.5rem); line-height: 1; color: var(--orange); }
+    .proof p { color: var(--muted); margin: 8px 0 0; }
+    .proof blockquote { margin: 28px 0 0; font-size: 1.3rem; font-style: italic; }
+
+    /* Feedback, with Kai waving */
+    .hello { display: flex; gap: 28px; align-items: center; background: var(--cream); color: #2a2418; border-radius: 22px; padding: 26px 30px; margin: 0 0 56px; }
+    .hello img { width: 92px; height: auto; flex: none; }
+    .hello h2 { font-size: 1.5rem; margin: 0 0 6px; font-weight: 800; }
+    .hello p { margin: 0; }
+    .hello a { color: #b4471a; font-weight: 700; }
     footer { color: var(--muted); font-size: .85rem; padding: 0 0 40px; }
     footer a { color: inherit; }
 
-    @media (max-width: 760px) {
-      .hero { grid-template-columns: 1fr; gap: 8px; padding-top: 28px; }
-      .phone { width: 72%; max-width: 300px; margin: 0 auto -6px; }
-      .free { margin-bottom: 32px; }
-      .points { grid-template-columns: 1fr; gap: 22px; padding: 40px 0 28px; }
-      .shots img { width: 180px; }
-      .feature { grid-template-columns: 1fr; gap: 20px; }
-      .feature video, .feature img { max-width: 300px; margin: 0 auto; }
-      .store img { height: 48px; }
+    @media (max-width: 800px) {
+      body { font-size: 17px; }
       .logo { width: 140px; }
+      .note { margin-top: 48px; font-size: 1.12rem; }
+      .statement, .kai, .feature, .feature.flip { grid-template-columns: 1fr; gap: 26px; }
+      .feature.flip > :first-child { order: 0; }
+      .statement { margin-top: 64px; }
+      .annotated { max-width: 270px; margin-right: 0; justify-self: end; }
+      .scribble { position: static; width: auto; transform: rotate(-3deg); margin: 0 0 10px; }
+      .scribble svg { display: none; }
+      .annotated { transform: none; justify-self: center; }
+      .details { columns: 1; margin: 48px 0; }
+      .kai img, .feature img, .feature video { max-width: 280px; }
+      .hello { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .hello img { width: 64px; }
     }
   </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <!-- The wordmark: KOOKOUT with the two O's looking out (brand/kookout-wordmark-white.svg) -->
+
+<header class="hero">
+  <div class="photo">
+    <img src="img-1.1/hero.jpg" width="2000" height="1333" alt="Three wing foilers side by side on choppy grey water, autumn trees on the shore behind">
+    <!-- The wordmark: KOOKOUT with the two O's looking out -->
     <svg class="logo" viewBox="0 0 670.9 75.2" role="img" aria-label="Kookout"><path fill="#fff" d="M2.0 72.0L2.0 3.2L26.7 3.2L26.7 33.6L60.0 3.2L90.6 3.2L60.2 31.3L91.4 72.0L61.3 72.0L42.0 46.1L26.7 58.5L26.7 72.0ZM136.8 73.2Q122.7 73.2 112.4 68.9Q102.1 64.6 96.5 56.7Q90.9 48.7 90.9 37.6Q90.9 26.5 96.5 18.5Q102.1 10.5 112.4 6.2Q122.7 2.0 136.8 2.0Q151.0 2.0 161.3 6.2Q171.5 10.5 177.1 18.5Q182.7 26.5 182.7 37.6Q182.7 48.7 177.1 56.7Q171.5 64.6 161.3 68.9Q151.0 73.2 136.8 73.2ZM136.8 56.1Q141.5 56.1 145.3 54.9Q149.1 53.6 151.8 51.2Q154.5 48.9 155.9 45.7Q157.3 42.5 157.3 38.7L157.3 36.3Q157.3 32.5 155.9 29.4Q154.5 26.2 151.8 23.9Q149.1 21.6 145.3 20.3Q141.5 19.1 136.8 19.1Q132.1 19.1 128.3 20.3Q124.5 21.6 121.8 23.9Q119.1 26.2 117.7 29.4Q116.3 32.5 116.3 36.3L116.3 38.7Q116.3 42.5 117.7 45.7Q119.1 48.9 121.8 51.2Q124.5 53.6 128.3 54.9Q132.1 56.1 136.8 56.1ZM238.6 73.2Q224.5 73.2 214.2 68.9Q203.9 64.6 198.3 56.7Q192.7 48.7 192.7 37.6Q192.7 26.5 198.3 18.5Q203.9 10.5 214.2 6.2Q224.5 2.0 238.6 2.0Q252.8 2.0 263.1 6.2Q273.3 10.5 278.9 18.5Q284.5 26.5 284.5 37.6Q284.5 48.7 278.9 56.7Q273.3 64.6 263.1 68.9Q252.8 73.2 238.6 73.2ZM238.6 56.1Q243.3 56.1 247.1 54.9Q250.9 53.6 253.6 51.2Q256.3 48.9 257.7 45.7Q259.1 42.5 259.1 38.7L259.1 36.3Q259.1 32.5 257.7 29.4Q256.3 26.2 253.6 23.9Q250.9 21.6 247.1 20.3Q243.3 19.1 238.6 19.1Q233.9 19.1 230.1 20.3Q226.3 21.6 223.6 23.9Q220.9 26.2 219.5 29.4Q218.1 32.5 218.1 36.3L218.1 38.7Q218.1 42.5 219.5 45.7Q220.9 48.9 223.6 51.2Q226.3 53.6 230.1 54.9Q233.9 56.1 238.6 56.1ZM297.4 72.0L297.4 3.2L322.1 3.2L322.1 33.6L355.4 3.2L386.0 3.2L355.6 31.3L386.8 72.0L356.7 72.0L337.4 46.1L322.1 58.5L322.1 72.0ZM432.2 73.2Q418.1 73.2 407.8 68.9Q397.5 64.6 391.9 56.7Q386.3 48.7 386.3 37.6Q386.3 26.5 391.9 18.5Q397.5 10.5 407.8 6.2Q418.1 2.0 432.2 2.0Q446.4 2.0 456.7 6.2Q466.9 10.5 472.5 18.5Q478.1 26.5 478.1 37.6Q478.1 48.7 472.5 56.7Q466.9 64.6 456.7 68.9Q446.4 73.2 432.2 73.2ZM432.2 56.1Q436.9 56.1 440.7 54.9Q444.5 53.6 447.2 51.2Q449.9 48.9 451.3 45.7Q452.7 42.5 452.7 38.7L452.7 36.3Q452.7 32.5 451.3 29.4Q449.9 26.2 447.2 23.9Q444.5 21.6 440.7 20.3Q436.9 19.1 432.2 19.1Q427.5 19.1 423.7 20.3Q419.9 21.6 417.2 23.9Q414.5 26.2 413.1 29.4Q411.7 32.5 411.7 36.3L411.7 38.7Q411.7 42.5 413.1 45.7Q414.5 48.9 417.2 51.2Q419.9 53.6 423.7 54.9Q427.5 56.1 432.2 56.1ZM533.0 73.2Q518.8 73.2 509.5 69.2Q500.2 65.3 495.6 57.7Q491.0 50.0 491.0 38.9L491.0 3.2L515.7 3.2L515.7 37.8Q515.7 46.4 520.3 51.2Q524.8 56.0 533.0 56.0Q541.3 56.0 545.9 51.2Q550.4 46.4 550.4 37.8L550.4 3.2L575.1 3.2L575.1 38.9Q575.1 50.0 570.5 57.7Q565.9 65.3 556.6 69.2Q547.2 73.2 533.0 73.2ZM615.0 72.0L615.0 22.1L585.8 22.1L585.8 3.2L668.9 3.2L668.9 22.1L639.7 22.1L639.7 72.0Z"/><circle fill="#FF6B2C" cx="144.8" cy="32.6" r="7.5"/><circle fill="#FF6B2C" cx="246.6" cy="32.6" r="7.5"/></svg>
-    <div class="hero">
-      <div>
-        <p class="new" data-i18n="new">New on the App Store</p>
-        <h1 data-i18n="h1">Stop checking the forecast.</h1>
-        <p class="lead" data-i18n="lead">Pick your spots and set what works at each one. Kookout watches the forecast for you and taps you on the shoulder when and where it's good.</p>
-        <a class="store" href="https://apps.apple.com/app/id6822322346">
-          <img id="badge" src="img/app-store-en.svg" width="162" height="54" alt="Download on the App Store">
-        </a>
-        <p class="free" data-i18n="free">Free. No ads, no account needed. iPhone, iOS 17 or later.</p>
-      </div>
-      <img class="phone" src="img/1-list.jpg" width="540" height="1174" alt="The Kookout app: a list of spots, each marked when it's good">
+  </div>
+  <div class="wrap hero-foot">
+    <h1 data-i18n="h1">Know when it's on.</h1>
+    <p class="lead" data-i18n="lead">Kookout keeps an eye on the forecast for your spots and taps you on the shoulder when it's worth a closer look. Wing foil, kite, windsurf, surf and ski.</p>
+    <div class="row">
+      <a class="store" href="https://apps.apple.com/app/id6822322346"><img id="badge" src="img/app-store-en.svg" width="162" height="54" alt="Download on the App Store"></a>
+      <p class="free" data-i18n="free">Free. No ads, no account needed.</p>
     </div>
+    <span class="caption" data-i18n="caption">Three of us in Drøbak, October 2026. Photo: Kjell.</span>
   </div>
 </header>
 
 <main>
   <div class="wrap">
-    <section class="points">
-      <div><h2><span class="dot"></span><span data-i18n="p1h">Every spot has its own rules</span></h2>
-        <p data-i18n="p1">An onshore wind is great at one beach and useless at the next. Set the directions, wind, waves or fresh snow that work, spot by spot.</p></div>
-      <div><h2><span class="dot"></span><span data-i18n="p2h">Told when it's on</span></h2>
-        <p data-i18n="p2">A swoosh when good conditions come up, a gong when they're gone. Nothing at night. Spots that take a day trip or more can be weekend spots: they only count on your days off, and you hear about them days ahead.</p></div>
-      <div><h2><span class="dot"></span><span data-i18n="p3h">Made with other riders</span></h2>
-        <p data-i18n="p3">Start with popular spots near you or drop a pin anywhere. Spots are shared: once three locals follow one, their votes set its wind directions and limits, so it gets more precise the more riders use it. Keep the community's rules or set your own.</p></div>
+    <!-- Christian's note: drafted by Claude in his voice; his to rewrite. -->
+    <section class="note">
+      <p data-i18n="n1">Hi, I'm Christian. My family and I wing foil in Drøbak, on the Oslofjord.</p>
+      <p data-i18n="n2">I love the forecast sites: the wind maps, the measurements, the webcams. What wore me down was opening them every morning only to find it wasn't worth it, and missing the good days when I was busy.</p>
+      <p data-i18n="n3">So I built Kookout to tap me on the shoulder. It knows what works at my spots and tells me when they're on. Then I open my usual sites and plan the session. It's new and it has rough edges. If something's off, write to me at <a href="mailto:hi@kookout.no">hi@kookout.no</a>. I read everything.</p>
+      <p class="sig">Christian</p>
     </section>
 
-    <section class="tap">
-      <h2 data-i18n="taph">A tap on the shoulder, not another forecast site</h2>
-      <p data-i18n="tap">Kookout tells you when it's worth taking a closer look. For the details, like wind maps, measurements, webcams and the local know-how, keep using the sites and apps you already know and like.</p>
-    </section>
-
-    <!-- Kookout 1.1: the day 1.1 is in the App Store, remove "hidden" from every data-from="1.1" element and delete the data-before="1.1" ones -->
-    <section class="feature" id="widgets" data-from="1.1" hidden>
-      <img src="img/6-home-widgets.jpg" width="540" height="1174" loading="lazy" alt="Kookout's widget on the Home Screen: the spots that are good soonest">
+    <section class="kai">
+      <img src="img-1.1/kai-hammock.jpg" width="540" height="960" loading="lazy" alt="Kai the otter in a hammock, checking his phone">
       <div>
-        <h2 data-i18n="wh">Best with the widgets</h2>
-        <p data-i18n="w1">Put Kookout on your Home Screen and your Lock Screen. The spots that are good soonest are right there every time you pick up your phone, without opening anything.</p>
-        <p data-i18n="w2">That's where Kookout really shines: you see it's on before you'd even have thought to check. Long-press the Home Screen or the Lock Screen, tap Edit or Customise, and add Kookout.</p>
+        <h2 data-i18n="kh">A tap on the shoulder. Then your usual sites.</h2>
+        <p data-i18n="k1">Kookout's job is the nudge. When it says your spot is on, open the wind map, the webcam and the local chat you already trust, and plan the session from there. On the other days you can leave them closed.</p>
       </div>
     </section>
 
-    <section class="feature" id="video" data-from="1.1" hidden>
+    <section class="statement">
+      <div>
+        <p class="big" data-i18n-html="big">Torkild works from <em>southeast to southwest</em>. Larkollen wants <em>south to west-southwest</em>.</p>
+        <p data-i18n="bigp">Every spot is different. Tell Kookout what works where, and it judges every hour of the forecast against that. When the rules match, you hear a swoosh. When it's over, a gong.</p>
+      </div>
+      <div class="annotated">
+        <div class="scribble" aria-hidden="true"><span data-i18n="scribble">this is the whole point</span>
+          <svg viewBox="0 0 120 60" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 8 C 40 4, 80 18, 104 46"/><path d="M90 44 L 105 48 L 103 32"/></svg>
+        </div>
+        <img src="img/6-home-widgets.jpg" width="540" height="1174" loading="lazy" alt="Kookout's widget on the Home Screen: the spots that are good soonest">
+      </div>
+    </section>
+
+    <section class="details">
+      <div><h3 data-i18n="d1h">Far-away spots count on days off</h3>
+        <p data-i18n="d1">Mark a spot that takes a day trip as a weekend spot. It only counts on weekends and public holidays, and you hear about it days ahead.</p></div>
+      <div><h3 data-i18n="d2h">Locals make the spots better</h3>
+        <p data-i18n="d2">Spots are shared. Once three locals follow one, their votes set its wind directions and limits. Keep the community's rules or set your own.</p></div>
+      <div><h3 data-i18n="d3h">Quiet at night</h3>
+        <p data-i18n="d3">Nothing between 10 pm and 7 am. And the gong when it's over saves you a drive out for nothing.</p></div>
+      <div><h3 data-i18n="d4h">Live wind before you leave</h3>
+        <p data-i18n="d4">See what a station near the spot is measuring right now.</p></div>
+    </section>
+
+
+    <section class="feature" id="widgets">
+      <img src="img/7-lock-widgets.jpg" width="540" height="1174" loading="lazy" alt="Kookout on the Lock Screen: the spots that are good next">
+      <div>
+        <h2 data-i18n="wh">Put it on your Lock Screen.</h2>
+        <p data-i18n="w1">This is where Kookout really works. You see that it's on every time you pick up your phone, before you'd even have thought to check.</p>
+        <p data-i18n="w2">Long-press the Lock Screen or the Home Screen, tap Customise or Edit, and add Kookout.</p>
+      </div>
+    </section>
+
+    <section class="feature flip" id="video">
       <video controls playsinline preload="none" poster="img/kookout-demo.jpg" width="720" height="1280">
         <source src="img/kookout-demo.mp4" type="video/mp4">
       </video>
       <div>
         <h2 data-i18n="vh">Kookout in 30 seconds</h2>
-        <p data-i18n="v1">Gary loves his charts. He also has a job. Kai just waits for the tap on the shoulder.</p>
+        <p data-i18n="v1">Gary loves his charts. He also has a job. Kai just waits for the nudge.</p>
       </div>
     </section>
-  </div>
 
-  <div class="shots" aria-label="Screenshots">
-    <img src="img/2-notification.jpg" width="540" height="1174" loading="lazy" alt="Notifications: good tomorrow 10 AM to 4 PM">
-    <img src="img/3-forecast.jpg" width="540" height="1174" loading="lazy" alt="The forecast hour by hour, with the good hours marked">
-    <img src="img/4-rules.jpg" width="540" height="1174" loading="lazy" alt="A spot's rules: wind directions and limits">
-    <img src="img/5-add-spot.jpg" width="540" height="1174" loading="lazy" alt="Adding a spot: popular spots or a pin anywhere">
-    <img src="img/7-lock-widgets.jpg" width="540" height="1174" loading="lazy" alt="Kookout on the Lock Screen: the spots that are good next" data-from="1.1" hidden>
-  </div>
+    <!-- Live from the relay (GET /stats, cached there for an hour); the numbers here are the fallback, from the database
+         on 10 Nov 2026. The quote stays hidden until a tester has said yes to it, word for word. -->
+    <section class="proof">
+      <div class="num" id="riders">19</div>
+      <p><span data-i18n="proof1">riders used Kookout last month</span><span id="ff" data-i18n="proofff">, most of them friends and family</span>.
+        <span data-i18n="proof2">Between them they follow</span> <span id="spots">26</span> <span data-i18n="proof3">spots.</span></p>
+      <blockquote hidden data-i18n="quote">"QUOTE FROM A TESTER" (first name)</blockquote>
+    </section>
 
-  <div class="wrap">
-    <p class="sports" data-i18n="sports">Wing foiling · kitesurfing · windsurfing · surfing · skiing</p>
-    <div class="web">
-      <p><b data-i18n="fbh">Kookout is new, and your feedback shapes it.</b>
-        <span data-i18n="fb">Something off at your spot, a rule that doesn't fit, or an idea? Tell us. We read everything.</span></p>
-      <a class="btn" href="mailto:hi@kookout.no?subject=Kookout%20feedback">hi@kookout.no →</a>
-    </div>
-    <div class="web">
-      <p><span data-i18n="web">No iPhone? The forecast with the same rules works in your browser too.</span>
-        <span data-i18n="webapp" data-before="1.1">The app adds notifications and community spots that get better as locals vote, with Sign in with Apple to share your own.</span>
-        <span data-i18n="webapp11" data-from="1.1" hidden>The app adds notifications, Home and Lock Screen widgets, and community spots that get better as locals vote, with Sign in with Apple to share your own.</span></p>
-      <a class="btn" href="forecast.html" data-i18n="webbtn">Open the web version →</a>
-    </div>
+    <section class="hello">
+      <img src="img-1.1/kai-wave.jpg" width="230" height="560" alt="">
+      <div>
+        <h2 data-i18n="fbh">It's new. Tell me what's wrong.</h2>
+        <p><span data-i18n="fb">Something off at your spot, a rule that doesn't fit, an idea? Write to</span> <a href="mailto:hi@kookout.no?subject=Kookout%20feedback">hi@kookout.no</a>.</p>
+      </div>
+    </section>
+
     <footer>
-      <span data-i18n="made">Made in Norway by a wing foiler.</span>
       <span data-i18n="data">Weather data from MET Norway, the Norwegian Coastal Administration, NOAA and others.</span><br>
       <b>Kookout</b> · <a href="mailto:hi@kookout.no">hi@kookout.no</a> · <a href="privacy.html" data-i18n="privacy">Privacy and support</a>
     </footer>
@@ -184,42 +224,60 @@
 <script>
 // Norwegian for Norwegian browsers; everything else stays English. (The screenshots are English either way.)
 const NB = {
-  new: "Nyhet på App Store",
-  h1: "Slutt å sjekke værmeldingen.",
-  lead: "Velg spotene dine og sett hva som funker på hver av dem. Kookout følger med på værmeldingen for deg og prikker deg på skulderen når og hvor det er bra.",
-  free: "Gratis. Ingen reklame, ingen konto nødvendig. iPhone, iOS 17 eller nyere.",
-  p1h: "Hver spot har sine egne regler",
-  p1: "Pålandsvind er perfekt på én strand og ubrukelig på den neste. Sett retningene, vinden, bølgene eller nysnøen som funker, spot for spot.",
-  p2h: "Beskjed når det er på",
-  p2: "Et swoosh når det blir bra, en gong når det forsvinner. Ingenting om natten. Spoter som krever en dagstur eller mer, kan være helgespoter: de teller bare på fridagene dine, og du får vite det flere dager i forveien.",
-  p3h: "Laget sammen med andre utøvere",
-  p3: "Start med populære spoter i nærheten, eller sett en nål hvor som helst. Spotene deles: når tre lokale følger en spot, avgjør stemmene deres vindretningene og grensene, så den blir mer presis jo flere som bruker den. Bruk fellesskapets regler eller sett dine egne.",
-  taph: "Et prikk på skulderen, ikke enda en værside",
-  tap: "Kookout sier fra når det er verdt å ta en nærmere titt. For detaljene, som vindkart, målinger, webkameraer og lokalkunnskap, bruker du sidene og appene du allerede kjenner og liker.",
-  wh: "Best med widgetene",
-  w1: "Legg Kookout på Hjem-skjermen og Låseskjermen. Spotene som blir bra først, ligger der hver gang du tar opp telefonen, uten at du åpner noe.",
-  w2: "Det er der Kookout virkelig kommer til sin rett: du ser at det er på før du i det hele tatt har tenkt på å sjekke. Hold inne på Hjem-skjermen eller Låseskjermen, trykk Rediger eller Tilpass, og legg til Kookout.",
+  h1: "Vit når det er på.",
+  lead: "Kookout følger med på værmeldingen for spotene dine og prikker deg på skulderen når det er verdt en nærmere titt. Wingfoil, kite, windsurf, surf og ski.",
+  free: "Gratis. Ingen reklame, ingen konto nødvendig.",
+  caption: "Tre av oss i Drøbak, oktober 2026. Foto: Kjell.",
+  n1: "Hei, jeg er Christian. Familien min og jeg driver med wingfoil i Drøbak, ved Oslofjorden.",
+  n2: "Jeg er glad i værsidene: vindkartene, målingene, webkameraene. Det som slet på, var å åpne dem hver morgen bare for å finne ut at det ikke var verdt det, og å gå glipp av de gode dagene når jeg hadde det travelt.",
+  n3: "Så jeg lagde Kookout, som prikker meg på skulderen. Den vet hva som funker på spotene mine og sier fra når det er på. Så åpner jeg de vanlige sidene mine og planlegger økta. Den er ny og har noen skarpe kanter. Er noe feil, skriv til meg på <a href=\"mailto:hi@kookout.no\">hi@kookout.no</a>. Jeg leser alt.",
+  big: "Torkild funker fra <em>sørøst til sørvest</em>. Larkollen vil ha <em>sør til vest-sørvest</em>.",
+  bigp: "Hver spot er forskjellig. Fortell Kookout hva som funker hvor, så vurderer den hver time i varselet mot det. Når reglene stemmer, hører du et swoosh. Når det er over, en gong.",
+  scribble: "det er hele poenget",
+  d1h: "Spoter langt unna teller på fridager",
+  d1: "Merk en spot som krever en dagstur som helgespot. Den teller bare i helger og på helligdager, og du får vite det flere dager i forveien.",
+  d2h: "Lokale gjør spotene bedre",
+  d2: "Spotene deles. Når tre lokale følger en spot, avgjør stemmene deres vindretningene og grensene. Bruk fellesskapets regler eller sett dine egne.",
+  d3h: "Stille om natten",
+  d3: "Ingenting mellom 22 og 07. Og gongen når det er over sparer deg for en tur ut for ingenting.",
+  d4h: "Målt vind før du drar",
+  d4: "Se hva en stasjon nær spoten måler akkurat nå.",
+  kh: "Et prikk på skulderen. Så de vanlige sidene dine.",
+  k1: "Kookouts jobb er dyttet. Når den sier at spoten din er på, åpner du vindkartet, webkameraet og den lokale chatten du allerede stoler på, og planlegger økta derfra. De andre dagene kan du la dem være lukket.",
+  wh: "Legg den på Låseskjermen.",
+  w1: "Det er her Kookout virkelig funker. Du ser at det er på hver gang du tar opp telefonen, før du i det hele tatt har tenkt på å sjekke.",
+  w2: "Hold inne på Låseskjermen eller Hjem-skjermen, trykk Tilpass eller Rediger, og legg til Kookout.",
   vh: "Kookout på 30 sekunder",
-  v1: "Gary elsker kartene sine. Han har også en jobb. Kai venter bare på prikket på skulderen. (På engelsk.)",
-  fbh: "Kookout er nytt, og tilbakemeldingene dine former det.",
-  fb: "Noe som ikke stemmer på spoten din, en regel som ikke passer, eller en idé? Si fra. Vi leser alt.",
-  sports: "Wingfoil · kite · windsurf · surf · ski",
-  web: "Ikke iPhone? Værmeldingen med de samme reglene finnes i nettleseren også.",
-  webapp: "Appen gir deg i tillegg varsler og felles spoter som blir bedre når lokale stemmer, og med Logg på med Apple kan du dele dine egne.",
-  webapp11: "Appen gir deg i tillegg varsler, widgeter på Hjem-skjermen og Låseskjermen, og felles spoter som blir bedre når lokale stemmer, og med Logg på med Apple kan du dele dine egne.",
-  webbtn: "Åpne nettversjonen →",
-  made: "Laget i Norge av en wingfoiler.",
+  v1: "Gary elsker kartene sine. Han har også en jobb. Kai venter bare på dyttet. (På engelsk.)",
+  proof1: "utøvere brukte Kookout forrige måned",
+  proofff: ", de fleste venner og familie",
+  proof2: "Til sammen følger de",
+  proof3: "spoter.",
+  fbh: "Den er ny. Si fra hva som er feil.",
+  fb: "Noe som ikke stemmer på spoten din, en regel som ikke passer, en idé? Skriv til",
   data: "Værdata fra Meteorologisk institutt, Kystverket, NOAA med flere.",
   privacy: "Personvern og hjelp",
 };
+const HTML_KEYS = new Set(["n3", "big"]); // these carry a link or emphasis
 if (/^(nb|no|nn)\b/i.test(navigator.language || "")) {
   document.documentElement.lang = "nb";
   const badge = document.getElementById("badge");
   badge.src = "img/app-store-nb.svg"; badge.alt = "Last ned fra App Store";
-  for (const el of document.querySelectorAll("[data-i18n]")) {
-    const t = NB[el.dataset.i18n]; if (t) el.textContent = t;
+  for (const el of document.querySelectorAll("[data-i18n], [data-i18n-html]")) {
+    const key = el.dataset.i18n || el.dataset.i18nHtml, t = NB[key];
+    if (!t) continue;
+    if (HTML_KEYS.has(key)) el.innerHTML = t; else el.textContent = t;
   }
 }
+
+// The counter: riders active in the last 30 days and the spots they follow, from the relay. Keeps the numbers above
+// if the relay can't be reached. "Most of them friends and family" goes once it's more than that.
+fetch("https://wingfoil-relay.wingfoil-relay.workers.dev/stats").then(r => r.ok ? r.json() : null).then(s => {
+  if (!s || !Number.isFinite(s.riders) || !Number.isFinite(s.spots)) return;
+  document.getElementById("riders").textContent = s.riders;
+  document.getElementById("spots").textContent = s.spots;
+  if (s.riders > 50) document.getElementById("ff").remove();
+}).catch(() => {});
 </script>
 </body>
 </html>

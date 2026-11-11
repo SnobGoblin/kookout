@@ -3,15 +3,13 @@
 Kookout tells wing foilers, surfers and skiers when their spots are good. The iPhone app is on the
 [App Store](https://apps.apple.com/app/id6822322346); this repository also holds the web pages, the relay and the brand.
 
-The web pages:
+The website:
 
-1. **https://kookout.no/**: the landing page (`index.html`): pitch, App Store badge, screenshots and a link to the
-   web version. English, switched to Norwegian by JavaScript for nb/no/nn browsers. Images in `img/` (screenshots
-   resized from `appstore/framed-6.3`, Apple's official badges in English and Norwegian, `og.jpg` for link previews).
-   Two sections wait for Kookout 1.1 behind a `hidden` attribute: the widgets and the 30 s video
-   (`img/kookout-demo.mp4`, re-encoded from `brand/promo/kookout-cartoon.mp4` to 720×1280, ~5.6 MB).
-2. **https://kookout.no/forecast.html**: the web version (`forecast.html`), a one-page hourly forecast for your spots
-   with good sessions highlighted. (Its old address, sternell.com/wind, was deleted on 10 Nov 2026.)
+1. **https://kookout.no/**: the landing page (`index.html`): the family photo (by Kjell), a note from Christian, the
+   App Store badge, the widgets and the 30 s video. English, switched to Norwegian by JavaScript for nb/no/nn browsers.
+   Images in `img/` and `img-1.1/` (photo, Kai, Archivo for the headings). The rider count comes from the relay's
+   `GET /stats`, with the page's own numbers as a fallback.
+2. The web forecast (`forecast.html`, earlier at sternell.com/wind) was taken offline on 11 Nov 2026; it's in git history.
 3. **https://kookout.no/privacy.html**: privacy and support (the App Store and the app link to it).
 
 Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
@@ -32,12 +30,10 @@ Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
 
 ## How it works
 
-The web version is `forecast.html` (plain HTML, CSS and JavaScript, no build step) plus `rules.js`, the rules that turn a
-forecast into good hours. `rules.js` is shared with the relay, whose `POST /analyse` gives the app and
-notifications exactly the same answers as the page.
-The page fetches forecasts straight from MET's
-[Locationforecast API](https://api.met.no/weatherapi/locationforecast/2.0/documentation)
-in the browser.
+`rules.js` holds the rules that turn a forecast into good hours. It's bundled into the relay, whose `POST /analyse`
+gives the app and notifications the same answers. (Until 11 Nov 2026 a web version, `forecast.html`, used it too and
+fetched forecasts from MET's [Locationforecast API](https://api.met.no/weatherapi/locationforecast/2.0/documentation)
+in the browser; the "What it does" list above describes those rules.)
 
 ## Live wind ("Nå")
 
@@ -165,15 +161,14 @@ Then open http://localhost:8000.
 
 ## Deploy
 
-Automatic: every push to `main` that changes a web file (`index.html`, `forecast.html`, `rules.js`, `privacy.html`,
-`img/`, …) or the workflow itself runs
-[the deploy workflow](.github/workflows/deploy.yml), which uploads the files to Domeneshop with SFTP: kookout.no gets
-`index.html` (landing page), `forecast.html`, `img/` and the rest. The FTP password is the repository secret
+Automatic: every push to `main` that changes a website file (`index.html`, `privacy.html`, `img/`, `img-1.1/`, …) or
+the workflow itself runs [the deploy workflow](.github/workflows/deploy.yml), which uploads the files to Domeneshop with
+SFTP (and removes the old web forecast's files from the server if they're there). The FTP password is the repository secret
 `KOOKOUT_FTP_PASSWORD`.
 You can also start it by hand under **Actions → Deploy Kookout → Run workflow**.
 
 By hand, from this folder:
 
 ```bash
-printf 'put index.html www/index.html\nput forecast.html www/forecast.html\nput rules.js www/rules.js\n' | sftp kookout@ftp.domeneshop.no
+printf 'put index.html www/index.html\nput privacy.html www/privacy.html\n' | sftp kookout@ftp.domeneshop.no
 ```

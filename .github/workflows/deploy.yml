@@ -6,7 +6,7 @@ name: Deploy Kookout
 on:
   push:
     branches: [main]
-    paths: [index.html, forecast.html, rules.js, privacy.html, personvern.html, apple-touch-icon.png, 'img/**', .github/workflows/deploy.yml]
+    paths: [index.html, privacy.html, personvern.html, apple-touch-icon.png, 'img/**', 'img-1.1/**', .github/workflows/deploy.yml]
   workflow_dispatch: # adds a "Run workflow" button on GitHub, for deploying by hand
 
 concurrency: deploy # never run two uploads at the same time
@@ -30,15 +30,16 @@ jobs:
         env:
           SSHPASS: ${{ secrets.KOOKOUT_FTP_PASSWORD }}
         run: |
-          # kookout.no: index.html is the landing page, forecast.html the web version. ("-mkdir": fine if it exists.)
-          printf -- '-mkdir www/img\nput img/* www/img/\nput rules.js www/rules.js\nput forecast.html www/forecast.html\nput index.html www/index.html\nput privacy.html www/privacy.html\nput personvern.html www/personvern.html\nput apple-touch-icon.png www/apple-touch-icon.png\n' > upload.txt
+          # kookout.no: the landing page and its images. The web version (forecast.html, rules.js) was taken down on
+          # 11 Nov 2026; the "-rm" lines remove it from the server (fine if it's already gone).
+          printf -- '-mkdir www/img\n-mkdir www/img-1.1\nput img/* www/img/\nput img-1.1/* www/img-1.1/\nput index.html www/index.html\nput privacy.html www/privacy.html\nput personvern.html www/personvern.html\nput apple-touch-icon.png www/apple-touch-icon.png\n-rm www/forecast.html\n-rm www/rules.js\n' > upload.txt
           sshpass -e sftp -o BatchMode=no -b upload.txt kookout@ftp.domeneshop.no
 
       - name: Check the live sites
         run: |
           curl -fsS https://kookout.no/ -o live.html
           cmp live.html index.html && echo "kookout.no matches this commit."
-          curl -fsS https://kookout.no/forecast.html -o live-forecast.html
-          cmp live-forecast.html forecast.html && echo "kookout.no/forecast.html matches this commit."
-          curl -fsS https://kookout.no/rules.js -o live-rules.js
-          cmp live-rules.js rules.js && echo "kookout.no/rules.js matches this commit."
+          curl -fsS https://kookout.no/privacy.html -o live-privacy.html
+          cmp live-privacy.html privacy.html && echo "kookout.no/privacy.html matches this commit."
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://kookout.no/forecast.html)
+          echo "kookout.no/forecast.html answers $code (should be 404)"
