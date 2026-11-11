@@ -357,7 +357,9 @@ struct SpotRow: View {
         calendar.timeZone = zone
         if calendar.isDateInToday(date) { return String(localized: "today") }
         if calendar.isDateInTomorrow(date) { return String(localized: "tomorrow") }
-        var style = Date.FormatStyle.dateTime.weekday(.abbreviated)
+        // A week or more ahead the weekday alone would read as this week's: the date instead ("11 Nov")
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: .now), to: calendar.startOfDay(for: date)).day ?? 0
+        var style = days >= 7 ? Date.FormatStyle.dateTime.day().month(.abbreviated) : Date.FormatStyle.dateTime.weekday(.abbreviated)
         style.timeZone = zone
         return date.formatted(style)
     }

@@ -7,13 +7,12 @@ details of each part; this file is the short version plus how we work.
 
 **Business:** an iPhone app, free at launch, later about $10/year (see Pricing below); no paid APIs until it
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits). The web page is free.
-**Status (10 Nov 2026, evening):** **Kookout 1.0 is live on the App Store** (build 19, released 10 Nov; page
-https://apps.apple.com/app/id6822322346, free, 174 countries). **1.1 was submitted for App Review 10 Nov ~14:15** (manual release, all users at once, no phased release) with
-**build 21** (replaced build 20 on 10 Nov), What's New and promotional text in all 7
-languages, screenshots 6 (Home Screen widget) and 7 (Lock Screen) added. TestFlight: the testers ("Family plus a couple guys", 6; public link
-https://testflight.apple.com/join/4wm11wAG) have 1.1 build 20; build 21 is only in "Just me". The 1.1 code is on
-branch `release/1.1` (worktree `.claude/worktrees/release-1.1`), not merged into main. App Store texts, privacy label
-answers and review notes are in `appstore/`. EU status: non-trader. Not built yet: subscription/paywall.
+**Status (11 Nov 2026):** **Kookout 1.1 is released** (build 21, released 11 Nov after App Review approved it;
+page https://apps.apple.com/app/id6822322346, free, 174 countries). kookout.no is the new landing page; the web forecast
+is offline. `release/1.1` is merged into main (11 Nov), so **main has everything: deploy the relay from main again**.
+TestFlight testers ("Family plus a couple guys", 6; https://testflight.apple.com/join/4wm11wAG) are on build 20.
+App Store texts, privacy label answers and review notes are in `appstore/`. EU status: non-trader. Not built yet:
+subscription/paywall.
 
 ## The parts
 
@@ -27,7 +26,8 @@ answers and review notes are in `appstore/`. EU status: non-trader. Not built ye
 
 Relay files: `index.js` (forecasts, live wind, waves, holidays), `notify.js` (push via APNs), `auth.js` (Sign in
 with Apple, sessions), `community.js` (community spots, edits/history, majority vote), `reports.js` (reports,
-emailed through Resend), `founders.js` (founding-user numbers). Tests: `node relay/test-notify.mjs`, `node relay/test-community.mjs`.
+emailed through Resend), `founders.js` (founding-user numbers), `widget.js` (the widget's good periods). Tests: `node relay/test-notify.mjs`,
+`node relay/test-community.mjs`, `node relay/test-widget.mjs`.
 
 ## Decisions already made (don't relitigate without asking)
 
@@ -41,6 +41,11 @@ emailed through Resend), `founders.js` (founding-user numbers). Tests: `node rel
   Gullholmen (Kystverket). Votes count without an account, like the rules.
 - **Sharing** needs Sign in with Apple and is asked once (never on by default, never while signed out).
   Following, notifications and everything else work without an account.
+- **Seasons (decided 20 Oct 2026, for 1.1):** each spot has a season; outside it, good conditions don't count for
+  notifications or the widget (the forecast still shows), and leaving the season sends nothing. Default per spot:
+  wing and surf from 50° N 15 Mar–24 Dec, elsewhere (Fuerteventura, Brazil…) and powder all year. A vote like the
+  wind station: "Automatic" follows the community's (majority by day, from 3 active followers); each follower can
+  pick "All year" or own dates. Apps before 1.1 get notifications all year.
 - **Weekend spots:** good only on days off (weekends + public holidays of the *phone's* country, from Nager.Date),
   5 hours in a row, notifications look 5 days ahead by default.
 - **Powder:** snow counted over the day and the one before (`days`, default 2), optional "sunny days only".
@@ -125,12 +130,8 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 
 ## Next up
 
-**Where everything is (one place, so it doesn't get confusing):**
-1. **main** = what's live: the website (kookout.no landing page `index.html` + `img-1.1/`, `privacy.html`) and the 1.0 app code.
-2. **release/1.1** = main of 4 Nov + all 1.1 work (widget, seasons, notification digests, dates a week ahead,
-   build 21, `GET /stats`). **Deploy the relay only from `release/1.1` until it is merged** (a deploy from main
-   drops `/widget` and seasons; that happened 3 Nov).
-3. Older branch `claude/mystifying-pike-35db35` is fully contained in `release/1.1`; nothing to do with it.
+**Where everything is:** all on **main** (website, relay, 1.1 app code). `release/1.1` was merged on 11 Nov and is
+done; its worktree (`.claude/worktrees/release-1.1`) can be removed. The relay deployed now is the same code as main.
 
 **Open decisions for Christian (nothing below is done until he says so):**
 1. ~~Relay `GET /stats`~~ **Done 10 Nov:** deployed from `release/1.1` (version 018fb777) with Christian's OK.
@@ -144,9 +145,8 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 4. ~~Submit 1.1~~ **Done 10 Nov ~14:15** (Claude in Chrome, Christian's OK): build 21, manual release, "release to all
    users immediately" (phased release can still be switched on before pressing Release). Review notes got a "New in 1.1"
    part (widget, seasons; also in `appstore/review-notes.md`). Apple says up to 48 h. **Watch for Apple's email.**
-5. **After Apple approves 1.1 and Christian presses Release:** merge `release/1.1` into main (CLAUDE.md will conflict:
-   keep the newest status), then make `index-1.1.html` the live `index.html` (steps further down / in Reminders).
-   1.1 should be out well before 24 Dec (apps on 1.0 get alerts all winter).
+5. ~~Release 1.1~~ **Done 11 Nov**: released by Claude with Christian's OK; landing page live, web forecast offline,
+   `release/1.1` merged into main.
 
 Listing facts: 7 languages (nb name "Kookout: Vind- og surfvarsling", da "Kookout: Vind, bølger og sne"), screenshots
 from `appstore/framed-6.3` (1206×2622), not on Mac, age 4+, not mainland China. Never mention planned pricing in the

@@ -60,7 +60,8 @@
   <h3>Your spots and settings</h3>
   <p>Your spots (name, position and rules) and settings are stored on your iPhone. To work out a forecast, the app sends the
      spot's position and rules to Kookout's server, which asks the weather services and sends the answer back; that request
-     isn't kept. Copies of your spots are kept on the server only for notifications (on unless you switch them off, so for most
+     isn't kept. The home screen and Lock Screen widget does the same for your spots about once an hour, also when the app
+     isn't open (positions and rules only, no names); that isn't kept either. Copies of your spots are kept on the server only for notifications (on unless you switch them off, so for most
      people most spots are on the server) and for sharing, if you choose it. Both are described below.</p>
 
   <h3>Your location</h3>
@@ -70,7 +71,7 @@
 
   <h3>Notifications</h3>
   <p>If you allow notifications, Kookout's server stores for your phone: a random number the app makes up, the address Apple
-     gives the app for sending notifications (a "push token"), the spots that have notifications on (name, position and rules),
+     gives the app for sending notifications (a "push token"), the spots that have notifications on (name, position, rules and season),
      the app's language, units, clock and time zone, how far ahead to look, and which good periods it last told you about. It's
      used only to check your spots every hour and send notifications through Apple's push service. It isn't linked to your
      name, email or Apple ID. It's deleted when you switch notifications off for all spots or for Kookout in the iPhone's
@@ -91,10 +92,11 @@
   <p>Shared spots, and the spots that come with the app, are community spots: anyone signed in can fix their name and
      position, and every change is kept in the spot's history with the time and the public name of whoever made it. Changes
      can be undone. Each spot's wind directions and limits are the majority of the versions its followers use, and its wind
-     station for "Measured now" is the one most of its followers chose.</p>
+     station for "Measured now" is the one most of its followers chose. Its season (when it gives notifications) is likewise
+     the majority's.</p>
   <p>So that this works without an account, the app tells Kookout's server which community spots are in your list, and
-     your own wind directions and limits for them if you changed them, and the wind station you picked for them (if not
-     "Automatic"). It uses a random key the app makes, stored on the
+     your own wind directions and limits for them if you changed them, the wind station you picked for them (if not
+     "Automatic"), and your own season for them (if you set one). It uses a random key the app makes, stored on the
      server only as a scrambled (hashed) value; it isn't linked to your account or your notifications. When you remove a
      spot, you stop following it. Spots nobody follows any more disappear from the map.</p>
 

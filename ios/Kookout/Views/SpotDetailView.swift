@@ -249,7 +249,7 @@ struct LiveWindRow: View {
                 // Holfuy's own live widget (they only share their readings with station owners), folded away until opened
                 DisclosureGroup(isExpanded: $open) {
                     HolfuyWidget.Embedded(number: number)
-                        .frame(height: 175)
+                        .aspectRatio(580 / 268, contentMode: .fit)  // Holfuy's widget is 580 × about 268, scaled to the width
                         .listRowInsets(EdgeInsets())
                 } label: {
                     TwoLines(caption: "Holfuy, \(Measurement.distance(station.km * 1000))") {

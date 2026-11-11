@@ -9,14 +9,17 @@
 // nothing, and changes that arrive in different hours go out together.
 // All changes in one run go into one notification; spots with the same news (same kind, day, overlapping times) share
 // a line: "14–18: Møvik, Larkollen".
+// Only good conditions inside the spot's season count (season.js); leaving the season isn't "no longer good".
 // Nothing is sent between 22 and 07 on the phone's clock: the changes wait until the morning.
 //
 //   PUT    /devices/<id>       {token, sandbox, lang, country, units, waveUnit, h12, tz, windowHours, spots}
-//                              (a spot may set its own windowHours, e.g. weekend spots looking further ahead)
+//                              (a spot may set its own windowHours, e.g. weekend spots looking further ahead,
+//                              and a season {from: "MM-DD", to: "MM-DD"}; none: all year)
 //   DELETE /devices/<id>       stop all notifications for this phone
 //   POST   /devices/<id>/test  send a test notification
 
 import { dayKey, hourOf } from "../../rules.js";
+import { cleanSeason, inSeason } from "./season.js";
 
 const HOUR = 3600e3;
 const LANGS = ["en", "nb", "sv", "da", "de", "fr", "es"];
@@ -108,7 +111,7 @@ function cleanDevice(b) {
         !Number.isFinite(s.lat) || !Number.isFinite(s.lon) || !(s.wind || s.surf || s.powder)) return "spot with id, name, lat, lon and a rule required";
     spots.push({ id: s.id, name: s.name.slice(0, 80), lat: s.lat, lon: s.lon, alt: Number.isFinite(s.alt) ? s.alt : undefined,
                  tz: validZone(s.tz) ? s.tz : undefined, wind: s.wind ?? undefined, surf: s.surf ?? undefined, powder: s.powder ?? undefined,
-                 weekend: s.weekend === true || undefined,
+                 weekend: s.weekend === true || undefined, season: cleanSeason(s.season) ?? undefined,
                  windowHours: Number.isFinite(s.windowHours) ? Math.min(240, Math.max(1, Math.round(s.windowHours))) : undefined });
   }
   return {
@@ -182,10 +185,12 @@ function plan(device, items, old, now) {
   const quiet = hour >= 22 || hour < 7, digest = DIGEST_HOURS.includes(hour);
   const sent = {}, kept = {}, out = [];
   for (const { spot, zone, periods: all } of items) {
-    const prev = old[spot.id];
-    if (!all) { if (prev) sent[spot.id] = kept[spot.id] = prev; continue; }
+    if (!all) { if (old[spot.id]) sent[spot.id] = kept[spot.id] = old[spot.id]; continue; }
     const horizon = now + (spot.windowHours ?? device.window_hours) * HOUR;
-    const periods = all.filter(p => p.end > now && p.start < horizon);
+    // Out of season: as if it weren't good, and what we told before quietly drops out (no "no longer good")
+    const seasonal = p => inSeason(spot.season, p.start, zone);
+    const prev = old[spot.id] && { ...old[spot.id], periods: old[spot.id].periods.filter(seasonal) };
+    const periods = all.filter(p => p.end > now && p.start < horizon).filter(seasonal);
     // A spot we haven't seen before (just turned on): remember what's good now without notifying.
     if (!prev) { sent[spot.id] = kept[spot.id] = { periods, horizon }; continue; }
     const events = compare(prev, periods, now, horizon);
@@ -263,7 +268,7 @@ function render(events, device, now) {
 }
 
 // The good periods as [{start, end}] in ms. Powder: the whole powder day.
-function goodPeriods(spot, f) {
+export function goodPeriods(spot, f) {
   if (spot.wind || spot.surf) return f.good.map(p => ({ start: Date.parse(p.start), end: Date.parse(p.end) }));
   return f.powderDays.map(day => {
     const rows = f.rows.filter(r => dayKey(new Date(r.time), f.tz) === day);
@@ -301,6 +306,9 @@ function dayLabel(t, zone, lang, now) {
   const rel = n => new Intl.RelativeTimeFormat(lang, { numeric: "auto" }).format(n, "day");
   if (day === dayKey(new Date(now), zone)) return rel(0);
   if (day === dayKey(new Date(now + 24 * HOUR), zone)) return rel(1);
+  // A week or more ahead the weekday alone would read as this week's: the date instead ("11 Nov")
+  if ((Date.parse(day) - Date.parse(dayKey(new Date(now), zone))) / (24 * HOUR) >= 7)
+    return new Intl.DateTimeFormat(lang, { day: "numeric", month: "short", timeZone: zone }).format(t);
   return new Intl.DateTimeFormat(lang, { weekday: "short", timeZone: zone }).format(t);
 }
 

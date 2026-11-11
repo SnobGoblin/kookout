@@ -487,6 +487,46 @@
         }
       }
     },
+    "All year": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hele året"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hela året"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hele året"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ganzjährig"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toute l’année"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todo el año"
+          }
+        }
+      }
+    },
     "Apple didn't send what Kookout needs. Try again.": {
       "localizations": {
         "nb": {
@@ -1327,6 +1367,46 @@
         }
       }
     },
+    "Day": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dag"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dag"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dag"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jour"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Día"
+          }
+        }
+      }
+    },
     "Daylight only": {
       "localizations": {
         "da": {
@@ -2047,6 +2127,46 @@
         }
       }
     },
+    "From": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fra"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Från"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fra"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Von"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desde"
+          }
+        }
+      }
+    },
     "Good %@ %@": {
       "localizations": {
         "da": {
@@ -2686,6 +2806,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Medido ahora (%@)"
+          }
+        }
+      }
+    },
+    "Month": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Måned"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Månad"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Måned"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monat"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mois"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mes"
           }
         }
       }
@@ -3530,6 +3690,86 @@
         }
       }
     },
+    "Notifications and the widget only count good conditions in the season; the forecast always shows. Automatic: what most riders here choose (from 3 riders), at first what suits the place.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varsler og widgeten teller bare gode forhold i sesongen; værvarselet vises alltid. Automatisk: det de fleste her velger (fra 3 brukere), til da det som passer stedet."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notiser och widgeten räknar bara bra förhållanden under säsongen; prognosen visas alltid. Automatiskt: det de flesta här väljer (från 3 användare), till dess det som passar platsen."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifikationer og widgetten tæller kun gode forhold i sæsonen; prognosen vises altid. Automatisk: det, de fleste her vælger (fra 3 brugere), indtil da det, der passer til stedet."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungen und das Widget zählen nur gute Bedingungen in der Saison; die Vorhersage wird immer angezeigt. Automatisch: was die meisten hier wählen (ab 3 Nutzern), bis dahin, was zum Ort passt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les notifications et le widget ne comptent que les bonnes conditions pendant la saison ; les prévisions s’affichent toujours. Automatique : ce que choisissent la plupart des riders ici (à partir de 3), d’ici là ce qui convient au lieu."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las notificaciones y el widget solo cuentan las buenas condiciones en temporada; el pronóstico se muestra siempre. Automático: lo que elige la mayoría aquí (a partir de 3 usuarios), hasta entonces lo que conviene al lugar."
+          }
+        }
+      }
+    },
+    "Notifications and the widget only count good conditions in the season; the forecast always shows. Automatic: what suits the place.": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varsler og widgeten teller bare gode forhold i sesongen; værvarselet vises alltid. Automatisk: det som passer stedet."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notiser och widgeten räknar bara bra förhållanden under säsongen; prognosen visas alltid. Automatiskt: det som passar platsen."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifikationer og widgetten tæller kun gode forhold i sæsonen; prognosen vises altid. Automatisk: det, der passer til stedet."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungen und das Widget zählen nur gute Bedingungen in der Saison; die Vorhersage wird immer angezeigt. Automatisch: was zum Ort passt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les notifications et le widget ne comptent que les bonnes conditions pendant la saison ; les prévisions s’affichent toujours. Automatique : ce qui convient au lieu."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las notificaciones y el widget solo cuentan las buenas condiciones en temporada; el pronóstico se muestra siempre. Automático: lo que conviene al lugar."
+          }
+        }
+      }
+    },
     "Notifications are turned off for Kookout in the iPhone's Settings.": {
       "localizations": {
         "nb": {
@@ -3846,6 +4086,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Así otros podrán encontrarlos en el mapa, con su nombre, lugar y reglas. Los spots privados se quedan en tu teléfono, y puedes cambiarlo para cada spot en Editar."
+          }
+        }
+      }
+    },
+    "Own dates": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Egne datoer"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Egna datum"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Egne datoer"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eigene Daten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dates personnalisées"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fechas propias"
           }
         }
       }
@@ -4566,6 +4846,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sök efter en plats"
+          }
+        }
+      }
+    },
+    "Season": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesong"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Säsong"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sæson"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saison"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saison"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temporada"
           }
         }
       }
@@ -6490,6 +6810,46 @@
         }
       }
     },
+    "To": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Til"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Till"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Til"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bis"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hasta"
+          }
+        }
+      }
+    },
     "To change spots for everyone, sign in with Apple in Settings.": {
       "localizations": {
         "nb": {
@@ -7726,6 +8086,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "todas las direcciones"
+          }
+        }
+      }
+    },
+    "all year": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hele året"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hela året"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hele året"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ganzjährig"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "toute l’année"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "todo el año"
           }
         }
       }

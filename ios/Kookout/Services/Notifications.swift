@@ -127,11 +127,13 @@ final class Notifications {
             let wind: WindRule?, surf: SurfRule?, powder: PowderRule?
             let weekend: Bool?
             let windowHours: Int?   // weekend spots look further ahead
+            let season: Season?     // none: all year
             @MainActor init(_ s: Kookout.Spot) {
                 id = s.id; name = s.name; lat = s.latitude; lon = s.longitude; alt = s.altitude; tz = s.timeZoneID
                 wind = s.wind; surf = s.surf; powder = s.powder
                 weekend = s.weekend == true ? true : nil
                 windowHours = s.weekend == true ? Settings.shared.weekendNotifyHours : nil
+                season = s.seasonInUse.isAllYear ? nil : s.seasonInUse
             }
         }
     }

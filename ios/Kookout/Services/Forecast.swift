@@ -66,7 +66,7 @@ enum Compass {
 /// Asks Kookout's relay to work out a spot: it fetches MET's forecast (and waves for surf spots)
 /// and applies the same rules as the web page (rules.js).
 enum KookoutAPI {
-    static let relay = URL(string: "https://wingfoil-relay.wingfoil-relay.workers.dev")!
+    static let relay = WidgetData.relay
 
     /// `units` ("ms"/"kn") and `waveUnit` ("m"/"ft") decide how the rules round, like on the web page.
     static func analyse(_ spot: Spot, units: String, waveUnit: String) async throws -> SpotForecast {
@@ -90,7 +90,8 @@ enum KookoutAPI {
         let country = Locale.current.region?.identifier
     }
 
-    private struct RelaySpot: Encodable {
+    /// A spot as the relay wants it (also sent by the widget, see WidgetBridge).
+    struct RelaySpot: Encodable {
         let lat: Double, lon: Double, alt: Double?, tz: String
         let wind: WindRule?, surf: SurfRule?, powder: PowderRule?
         let weekend: Bool?

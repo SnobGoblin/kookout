@@ -9,11 +9,19 @@ options:
   # English is the base language, translated to Norwegian (Bokmål), Swedish, Danish, German, French and Spanish.
   knownRegions: [en, nb, sv, da, de, fr, es, Base]
 
+# The version and build number, shared by the app and its widget (Apple wants them the same).
+settings:
+  base:
+    MARKETING_VERSION: "1.1"
+    CURRENT_PROJECT_VERSION: "21"
+
 targets:
   Kookout:
     type: application
     platform: iOS
-    sources: [Kookout]
+    sources: [Kookout, Shared]
+    dependencies:
+      - target: KookoutWidget # the home and Lock Screen widget, embedded in the app
     # The launch screen: splash D (brand/render.swift); the app then animates it (Views/SplashView.swift)
     info:
       path: Kookout/Info.plist
@@ -25,17 +33,20 @@ targets:
           UIImageName: SplashLaunch
           UIImageRespectsSafeAreaInsets: false
         UIStatusBarStyle: UIStatusBarStyleLightContent  # white clock on the dark launch screen; the app sets its own after
+        # kookout://spot/<id>: a spot tapped in the widget opens in the app
+        CFBundleURLTypes:
+          - CFBundleURLName: com.sternell.kookout
+            CFBundleURLSchemes: [kookout]
     # Push notifications (Apple's sandbox for builds from Xcode; the App Store build switches to production)
     entitlements:
       path: Kookout/Kookout.entitlements
       properties:
         aps-environment: development
         com.apple.developer.applesignin: [Default] # Sign in with Apple, for sharing and editing spots
+        com.apple.security.application-groups: [group.com.sternell.kookout] # a folder shared with the widget
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sternell.kookout
-        MARKETING_VERSION: "1.0"
-        CURRENT_PROJECT_VERSION: "19"
         SWIFT_VERSION: "6.0"
         TARGETED_DEVICE_FAMILY: "1" # iPhone
         CODE_SIGN_STYLE: Automatic
@@ -50,3 +61,33 @@ targets:
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.weather
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO # only HTTPS, so no export-compliance questions per upload
         INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Kookout uses your location to find spots near you and to show where you are on the map."
+
+  # The home and Lock Screen widget (Kookout 1.1): the spots that are good soonest. See KookoutWidget/KookoutWidget.swift.
+  KookoutWidget:
+    type: app-extension
+    platform: iOS
+    sources: [KookoutWidget, Shared]
+    info:
+      path: KookoutWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Kookout
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: KookoutWidget/KookoutWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.sternell.kookout]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sternell.kookout.widget
+        SWIFT_VERSION: "6.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 5KZ7KF5NNH
+        GENERATE_INFOPLIST_FILE: YES
+        SKIP_INSTALL: YES
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SWIFT_EMIT_LOC_STRINGS: YES
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES

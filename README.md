@@ -100,7 +100,11 @@ can fix them, every change is logged and can be undone (History on the spot's Ed
 2 km are refused. Wind directions and limits are preferences: each follower has their own, and the
 community version is the majority's from 3 active followers (`node relay/test-community.mjs`). The wind station for
 "Measured now" works the same way: the station most followers chose ("Automatic" counts for the current one; a tie
-keeps it), starting from the catalogue's `station` where there is one (`relay/migrate-station.sql`). The app
+keeps it), starting from the catalogue's `station` where there is one (`relay/migrate-station.sql`). The season
+(when a spot gives notifications and counts in the widget; `relay/src/season.js`) too: each spot starts with a
+default (wing and surf from 50° N: 15 March–24 December; elsewhere and powder: all year), from 3 active followers
+it's the majority's (a day counts if more than half have it), and each follower can set "All year" or their own
+dates (`relay/migrate-season.sql`). The app
 follows the community spots in its list with a random key, so following works without an account.
 Moving a spot is deliberate (Edit → Move pin, a full map with a crosshair). When most riders' rules differ from
 yours, Edit suggests switching ("Most riders here use E–S"). Adding a spot within 500 m of one for the same
@@ -134,6 +138,17 @@ out at once; changes further ahead wait for a digest at 07, 12 or 18 (compared w
 so a forecast that flips back and forth in between says nothing). Each run sends at most one notification per
 phone; spots with the same news share a line ("14–18: Møvik, Larkollen"), and a notification about several
 spots carries `spots` instead of `spot`. `node relay/test-notify.mjs` checks the change detection and the digests.
+
+### Widget (version 1.1)
+
+A home screen widget (small: the soonest spot; medium: three) and Lock Screen widgets (three lines, a circle, one
+line above the clock) show the spots that are good soonest: good now first, then by when the next good period
+starts; ties keep the user's own order. The app writes its spots, settings and the good periods it worked out into
+an App Group (`group.com.sternell.kookout`, see `ios/Shared/WidgetData.swift` and `Services/WidgetBridge.swift`).
+About once an hour, and whenever the spots change, the widget asks the relay (`POST /widget`, see
+`relay/src/widget.js`; nothing is stored) and falls back on the last known periods offline. Tapping a spot opens
+it in the app (`kookout://spot/<id>`). The widget's texts are in `ios/KookoutWidget/Localizable.xcstrings`.
+`node relay/test-widget.mjs` checks the relay's side.
 
 Push needs an APNs key from the Apple Developer site (Certificates, Identifiers & Profiles → Keys → +, with
 Apple Push Notifications service). Put the key id and team id in `relay/wrangler.toml` (`APNS_KEY_ID`,

@@ -74,8 +74,14 @@ struct Spot: Identifiable, Codable, Hashable {
     /// shown with Holfuy's widget). Nil: the nearest official station with a recent reading.
     var station: String?
     var stationName: String?
+    /// The person's own season (when the spot gives notifications); nil: automatic, the community's (the majority
+    /// from 3 followers) or what suits the place (Season.standard).
+    var season: Season?
 
     var notifies: Bool { notify ?? true }
+    /// The season that counts: their own, the community's, or what suits the place.
+    var seasonInUse: Season { season ?? automaticSeason }
+    var automaticSeason: Season { community?.season ?? .standard(latitude: latitude, sport: sport.rawValue) }
     var timeZone: TimeZone { TimeZone(identifier: timeZoneID) ?? .current }
     var sport: Sport { surf != nil ? .surf : powder != nil ? .powder : .wing }
 }
