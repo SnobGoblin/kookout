@@ -19,9 +19,10 @@ final class Account {
     /// What went wrong at the last sign-in, delete or rename, shown under the button.
     private(set) var problem: String?
 
+    /// Kept in memory as well as in the Keychain, so `signedIn` is observed: when it was read straight from the
+    /// Keychain, a sign-in that left `user` unchanged (equal values don't notify) didn't update the screen.
     private var token: String? {
-        get { Keychain.read("session") }
-        set { if let newValue { Keychain.write("session", newValue) } else { Keychain.delete("session") } }
+        didSet { if let token { Keychain.write("session", token) } else { Keychain.delete("session") } }
     }
     /// Apple's id for this person, to ask Apple whether they've since stopped using Sign in with Apple for Kookout.
     private var appleUserID: String? {
@@ -30,7 +31,11 @@ final class Account {
     }
 
     private init() {
-        user = (UserDefaults.standard.data(forKey: "account")).flatMap { try? JSONDecoder().decode(User.self, from: $0) }
+        let saved = (UserDefaults.standard.data(forKey: "account")).flatMap { try? JSONDecoder().decode(User.self, from: $0) }
+        let session = Keychain.read("session")
+        // Both or neither: a name without a session (or a session left in the Keychain from a deleted install) is signed out.
+        token = saved == nil ? nil : session
+        user = session == nil ? nil : saved
     }
 
     /// The request for the Sign in with Apple button: the name only (no email address).
