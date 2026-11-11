@@ -130,8 +130,8 @@ cd relay && npx wrangler d1 execute kookout --remote --command "SELECT …"
 
 ## Next up
 
-**Where everything is:** all on **main** (website, relay, 1.1 app code). `release/1.1` was merged on 11 Nov and is
-done; its worktree (`.claude/worktrees/release-1.1`) can be removed. The relay deployed now is the same code as main.
+**Where everything is:** all on **main** (website, relay, 1.1 app code). `release/1.1` was merged on 11 Nov; the
+branch (local and on GitHub) and its worktree were removed. The relay deployed now is the same code as main.
 
 **Open decisions for Christian (nothing below is done until he says so):**
 1. ~~Relay `GET /stats`~~ **Done 10 Nov:** deployed from `release/1.1` (version 018fb777) with Christian's OK.
