@@ -17,6 +17,12 @@ struct AccountRows: View {
                 .onSubmit { Task { await account.rename(name) } }
                 .onAppear { name = account.user?.name ?? "" }
                 .onDisappear { if name != account.user?.name { Task { await account.rename(name) } } }
+        } else if account.signingIn {
+            HStack(spacing: 10) {
+                ProgressView()
+                Text("Signing in…").foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, minHeight: 48)
         } else {
             SignInWithAppleButton(.signIn) { account.configure($0) } onCompletion: { result in
                 Task { await account.finish(result) }

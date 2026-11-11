@@ -18,6 +18,9 @@ final class Account {
     var signedIn: Bool { user != nil && token != nil }
     /// What went wrong at the last sign-in, delete or rename, shown under the button.
     private(set) var problem: String?
+    /// True while the relay checks Apple's answer (a second or more after Apple's sheet closes), so the screen can
+    /// show it and a tap on "Share new spots" doesn't start a second sign-in.
+    private(set) var signingIn = false
 
     /// Kept in memory as well as in the Keychain, so `signedIn` is observed: when it was read straight from the
     /// Keychain, a sign-in that left `user` unchanged (equal values don't notify) didn't update the screen.
@@ -60,6 +63,8 @@ final class Account {
                 problem = String(localized: "Apple didn't send what Kookout needs. Try again.")
                 return
             }
+            signingIn = true
+            defer { signingIn = false }
             let body: [String: Any?] = ["identityToken": identity,
                                         "authorizationCode": credential.authorizationCode.flatMap { String(data: $0, encoding: .utf8) },
                                         "givenName": credential.fullName?.givenName]

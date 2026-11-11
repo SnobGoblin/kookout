@@ -110,6 +110,7 @@ struct SettingsView: View {
                             }
                         }
                         .foregroundStyle(.primary)
+                        .disabled(account.signingIn)
                     }
                     if account.signedIn {
                         Button("Sign out") { account.signOut() }
