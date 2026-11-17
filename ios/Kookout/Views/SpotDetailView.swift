@@ -157,25 +157,56 @@ struct HourRow: View {
     var showWaves = false
 
     var body: some View {
-        HStack(spacing: 8) {
-            Text(timeLabel)
-                .monospacedDigit()
-                .foregroundStyle(hour.good ? .primary : .secondary)
-                .fixedSize()
-                .frame(minWidth: 52, alignment: .leading)
-            Text(Units.temp(hour.temp))
-                .monospacedDigit()
-                .lineLimit(1)
-                .fixedSize() // never wrap "10°" (bold or large text)
-                .frame(minWidth: 36, alignment: .trailing)
-            if showWaves {
-                Text(waveLabel)
-                    .monospacedDigit()
-                    .foregroundStyle(.blue)
-                    .lineLimit(1)
-                    .fixedSize()
+        // One line when it fits. With large text (and the wave column) it doesn't: then the time with the
+        // temperature and waves, and the wind on a line of its own; at the very largest sizes, three lines.
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) {
+                time.frame(minWidth: 52, alignment: .leading)
+                temp.frame(minWidth: 36, alignment: .trailing)
+                waves
+                Spacer(minLength: 8)
+                wind
             }
-            Spacer()
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 8) { time; Spacer(minLength: 8); temp; waves }
+                HStack(spacing: 8) { Spacer(minLength: 0); wind }
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                time
+                HStack(spacing: 8) { temp; waves }
+                wind
+            }
+        }
+        .font(.callout)
+    }
+
+    private var time: some View {
+        Text(timeLabel)
+            .monospacedDigit()
+            .foregroundStyle(hour.good ? .primary : .secondary)
+            .lineLimit(1)
+            .fixedSize()
+    }
+
+    private var temp: some View {
+        Text(Units.temp(hour.temp))
+            .monospacedDigit()
+            .lineLimit(1)
+            .fixedSize() // never wrap "10°" (bold or large text)
+    }
+
+    @ViewBuilder private var waves: some View {
+        if showWaves {
+            Text(waveLabel)
+                .monospacedDigit()
+                .foregroundStyle(.blue)
+                .lineLimit(1)
+                .fixedSize()
+        }
+    }
+
+    private var wind: some View {
+        HStack(spacing: 8) {
             // "5 (9)": mean wind and gusts. MET has no gusts outside the Nordic countries: then just "5".
             Text(hour.gust.map { "\(Units.wind(hour.wind)) (\(Units.wind($0)))" } ?? Units.wind(hour.wind))
                 .monospacedDigit()
@@ -190,7 +221,6 @@ struct HourRow: View {
                 .fixedSize() // never wrap "WNW"
                 .frame(minWidth: 44, alignment: .leading)
         }
-        .font(.callout)
     }
 
     private var waveLabel: String {
