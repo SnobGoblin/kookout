@@ -383,23 +383,21 @@ async function noaaWaves(lat, lon) {
 // NOAA's 0.5° grid leaves out enclosed seas (the whole Mediterranean). There we use NOAA's newer GFS-Wave on a 0.25°
 // grid (~25 km), from the IOOS data server (OPeNDAP, answered as text; NOAA itself only publishes GRIB files).
 // That server is slow per time step (~0.3 s) but not per area, so a request never waits for it: a spot asking for
-// waves goes on a list, and the 3-hourly job fetches one box per region, every 3 hours for a week ahead, and stores
+// waves goes on a list (one KV key per spot, `gfsw-want:…`, gone after 14 days without a request; one shared list
+// would lose spots, as KV doesn't promise that a read sees a write made seconds before), and the 3-hourly job fetches one box per region, every 3 hours for a week ahead, and stores
 // each spot's series in KV. A new spot there gets its waves within 3 hours; they're renewed every 6.
 const GFSW = "https://eds.ioos.us/thredds/dodsC/ioos/gfswave/global/Best";
 const GFSW_H = "Significant_height_of_combined_wind_waves_and_swell_surface", GFSW_P = "Primary_wave_mean_period_surface";
-const GFSW_WANTED = "gfsw-wanted";              // { key: { lat, lon, asked } }
+const GFSW_WANT = "gfsw-want:";                // + the spot's key; metadata { lat, lon, asked }
 const GFSW_FRESH_MS = 6 * 3600e3;
 const gfswKey = (lat, lon) => `gfsw:${lat.toFixed(2)}:${lon.toFixed(2)}`;
 
 export async function storedGfsWaves(lat, lon, env) {
   [lat, lon] = [Math.round(lat * 100) / 100, Math.round(lon * 100) / 100];
   const key = gfswKey(lat, lon);
-  const [stored, wanted] = await Promise.all([env.WAVES.get(key, "json"), env.WAVES.get(GFSW_WANTED, "json")]);
-  const list = wanted ?? {};
-  if (!list[key] || Date.now() - list[key].asked > 86400e3) { // on the list (and still wanted: noted once a day)
-    list[key] = { lat, lon, asked: Date.now() };
-    await env.WAVES.put(GFSW_WANTED, JSON.stringify(list));
-  }
+  const [stored, want] = await Promise.all([env.WAVES.get(key, "json"), env.WAVES.getWithMetadata(GFSW_WANT + key)]);
+  if (!want?.metadata || Date.now() - want.metadata.asked > 86400e3) // on the list, renewed at most once a day
+    await env.WAVES.put(GFSW_WANT + key, "", { metadata: { lat, lon, asked: Date.now() }, expirationTtl: 14 * 86400 });
   if (!stored?.data) return null;
   return { ...stored.data, points: stored.data.points.filter(pt => Date.parse(pt.time) > Date.now() - 3600e3) };
 }
@@ -425,15 +423,12 @@ export function parseAscii(text) {
 
 // The 3-hourly job: fetch the wanted spots that are due, one box per region.
 export async function refreshGfsWaves(env) {
-  const list = (await env.WAVES.get(GFSW_WANTED, "json")) ?? {};
-  const now = Date.now();
-  const gone = Object.keys(list).filter(k => now - list[k].asked > 14 * 86400e3); // nobody asked for two weeks
-  gone.forEach(k => delete list[k]);
-  if (gone.length) await env.WAVES.put(GFSW_WANTED, JSON.stringify(list));
-  const due = [];
-  for (const [key, w] of Object.entries(list)) {
-    const stored = await env.WAVES.get(key, "json");
-    if (!stored || now - stored.fetched > GFSW_FRESH_MS - 600e3) due.push({ key, ...w });
+  const { keys } = await env.WAVES.list({ prefix: GFSW_WANT });
+  const now = Date.now(), due = [];
+  for (const { name, metadata } of keys) {
+    if (!metadata) continue;
+    const key = name.slice(GFSW_WANT.length), stored = await env.WAVES.get(key, "json");
+    if (!stored || now - stored.fetched > GFSW_FRESH_MS - 600e3) due.push({ key, lat: metadata.lat, lon: metadata.lon });
   }
   for (const box of gfswBoxes(due)) await fetchGfsBox(box, env).catch(e => console.log("GFS-Wave:", e.message));
 }

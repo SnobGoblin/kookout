@@ -28,7 +28,7 @@ Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
   Scandinavian waters and NOAA's global WaveWatch III elsewhere (via the relay's `/waves`). That 0.5° grid
   leaves out enclosed seas (the whole Mediterranean): there the relay uses NOAA GFS-Wave 0.25° from the IOOS
   data server, which is slow per time step, so the 3-hourly job fetches it for the spots that asked (one box per
-  region) and stores it in KV (`gfsw:*`, list in `gfsw-wanted`). A new spot there gets waves within 3 hours.
+  region) and stores it in KV (`gfsw:*`; the spots that asked: `gfsw-want:*`). A new spot there gets waves within 3 hours.
 - **Powder** in Hemsedal highlighted (blue): >10 mm in a day, below +2°, wind under 8 m/s
 
 ## How it works
