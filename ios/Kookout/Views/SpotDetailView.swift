@@ -159,12 +159,21 @@ struct HourRow: View {
     var body: some View {
         // One line when it fits. With large text (and the wave column) it doesn't: then the time with the
         // temperature and waves, and the wind on a line of its own; at the very largest sizes, three lines.
+        // The one line may close up (no minimum gap, tighter spacing) before giving up, so that a wider row ("5 (10)")
+        // doesn't go to two lines while its neighbours stay on one at ordinary large text sizes.
         ViewThatFits(in: .horizontal) {
             HStack(spacing: 8) {
                 time.frame(minWidth: 52, alignment: .leading)
                 temp.frame(minWidth: 36, alignment: .trailing)
                 waves
-                Spacer(minLength: 8)
+                Spacer(minLength: 0)
+                wind
+            }
+            HStack(spacing: 4) {
+                time
+                temp
+                waves
+                Spacer(minLength: 0)
                 wind
             }
             VStack(alignment: .leading, spacing: 2) {
