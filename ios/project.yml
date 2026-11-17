@@ -12,8 +12,8 @@ options:
 # The version and build number, shared by the app and its widget (Apple wants them the same).
 settings:
   base:
-    MARKETING_VERSION: "1.1"
-    CURRENT_PROJECT_VERSION: "21"
+    MARKETING_VERSION: "1.2"
+    CURRENT_PROJECT_VERSION: "22"
 
 targets:
   Kookout:
