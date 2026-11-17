@@ -223,16 +223,18 @@ async function kvNear(lat, lon) {
 }
 
 // ---- Working out a spot (the forecast, waves, time zone and the shared rules) -------------
-// waves: also fetch waves for a wind spot, just to show them (the app asks, from 1.2). Surf spots always get them.
-// Wind spots get MET's waves only (Scandinavian waters, fine enough for fjords and bays): NOAA's 0.5° grid answers
-// from open sea up to ~50 km away, which would put ocean swell on a flat-water lagoon. Elsewhere: no waves shown.
+// waves: also fetch waves for a wind spot, just to show them (the app asks, from 1.2, only where wave height is
+// switched on). Surf spots always get them. The same sources as surf: MET in Scandinavian waters, NOAA elsewhere.
+// NOAA's 0.5° grid answers from open sea up to ~50 km away, which would put ocean swell on a flat-water lagoon; the
+// per-spot switch (off by default, the community's vote) keeps it off where that's wrong. A wind spot isn't judged
+// on waves, so it waits at most 2.5 s for NOAA: a new place gets its waves from the next request on.
 async function analyseSpot(spot, units = "ms", waveUnit = "m", env, ctx, country, { waves: wantWaves = false } = {}) {
   const tz = spot.tz ?? tzlookup(spot.lat, spot.lon);
   const query = `lat=${spot.lat.toFixed(4)}&lon=${spot.lon.toFixed(4)}` + (spot.alt != null ? `&altitude=${Math.round(spot.alt)}` : "");
   const [forecastRes, waves, daysOff] = await Promise.all([
     fetch(`https://api.met.no/weatherapi/locationforecast/2.0/complete?${query}`, { headers: NWS_HEADERS, cf: { cacheTtl: 600 } }),
     spot.surf ? surfWaves(spot.lat, spot.lon, env, ctx)
-      : wantWaves && spot.wind ? metWaves(spot.lat, spot.lon).catch(() => null) : null,
+      : wantWaves && spot.wind ? surfWaves(spot.lat, spot.lon, env, ctx, 2500).catch(() => null) : null,
     spot.weekend ? daysOffFor(country, env).catch(() => undefined) : undefined,
   ]);
   if (!forecastRes.ok) throw new Error(`MET forecast: ${forecastRes.status}`);
@@ -280,7 +282,8 @@ export async function daysOffFor(country, env) {
 }
 
 // The same waves as /waves: MET in Scandinavia (with NOAA's period), NOAA elsewhere.
-async function surfWaves(lat, lon, env, ctx) {
+// maxWait: how long to wait for NOAA where MET has no waves (8 s for surf spots, which are judged on them).
+async function surfWaves(lat, lon, env, ctx, maxWait = 8000) {
   const noaaFetch = storedNoaaWaves(lat, lon, env, ctx).catch(() => null);
   const met = await metWaves(lat, lon);
   // Where MET has the heights, NOAA only adds the period: don't keep the user waiting for NOAA's slow first
@@ -288,7 +291,7 @@ async function surfWaves(lat, lon, env, ctx) {
   // Elsewhere NOAA is all we have, but its server is sometimes down: show the forecast without waves after 8 s
   // rather than keep the app spinning. Either way the fetch finishes in the background for the next request.
   ctx.waitUntil(noaaFetch);
-  const noaa = await Promise.race([noaaFetch, new Promise(resolve => setTimeout(() => resolve(null), met ? 2500 : 8000))]);
+  const noaa = await Promise.race([noaaFetch, new Promise(resolve => setTimeout(() => resolve(null), met ? 2500 : maxWait))]);
   if (met && noaa) {
     const periods = noaa.points.map(pt => ({ t: Date.parse(pt.time), period: pt.period }));
     for (const pt of met.points) {

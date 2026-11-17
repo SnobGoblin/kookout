@@ -73,7 +73,8 @@ enum KookoutAPI {
         var request = URLRequest(url: relay.appending(path: "analyse"))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode(AnalyseRequest(spot: .init(spot), units: units, waveUnit: waveUnit))
+        request.httpBody = try JSONEncoder().encode(AnalyseRequest(spot: .init(spot), units: units, waveUnit: waveUnit,
+                                                                   waves: spot.showsWaves))
         request.timeoutInterval = 40 // the first wave forecast for a new place can be slow
 
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -86,8 +87,8 @@ enum KookoutAPI {
         let spot: RelaySpot
         let units: String
         let waveUnit: String
-        /// Waves for wind spots too (shown in the forecast, not judged). Surf spots always get them.
-        let waves = true
+        /// Waves for a wind spot where wave height is switched on (shown, not judged). Surf spots always get them.
+        let waves: Bool
         /// The phone's region, whose public holidays are days off for weekend spots.
         let country = Locale.current.region?.identifier
     }
