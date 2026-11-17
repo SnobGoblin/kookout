@@ -25,7 +25,10 @@ Forecast data from [yr.no](https://www.yr.no) / MET Norway (CC BY 4.0).
   - Torkild (Drøbak): on mostly sunny days 4 (8), or a steady 5+, is enough
 - **Good surf** highlighted (🏄): total wave height at least X m, wind at most Y m/s from chosen
   (e.g. offshore) directions, for 2+ hours in daylight. Waves come from MET's Oceanforecast in
-  Scandinavian waters and NOAA's global WaveWatch III elsewhere (via the relay's `/waves`).
+  Scandinavian waters and NOAA's global WaveWatch III elsewhere (via the relay's `/waves`). That 0.5° grid
+  leaves out enclosed seas (the whole Mediterranean): there the relay uses NOAA GFS-Wave 0.25° from the IOOS
+  data server, which is slow per time step, so the 3-hourly job fetches it for the spots that asked (one box per
+  region) and stores it in KV (`gfsw:*`, list in `gfsw-wanted`). A new spot there gets waves within 3 hours.
 - **Powder** in Hemsedal highlighted (blue): >10 mm in a day, below +2°, wind under 8 m/s
 
 ## How it works

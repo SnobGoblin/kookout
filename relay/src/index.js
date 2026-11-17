@@ -45,7 +45,8 @@ const WIND = ["wind_speed", "wind_from_direction", "max(wind_speed_of_gust PT10M
 export default {
   // Every 3 hours (see wrangler.toml): refresh the stored NOAA wave forecasts. Every hour: notifications.
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(event.cron === "7 * * * *" ? notifyAll(env, analyseSpot) : refreshStoredWaves(env));
+    ctx.waitUntil(event.cron === "7 * * * *" ? notifyAll(env, analyseSpot)
+      : Promise.all([refreshStoredWaves(env), refreshGfsWaves(env)]));
   },
 
   async fetch(request, env, ctx) {
@@ -284,7 +285,9 @@ export async function daysOffFor(country, env) {
 // The same waves as /waves: MET in Scandinavia (with NOAA's period), NOAA elsewhere.
 // maxWait: how long to wait for NOAA where MET has no waves (8 s for surf spots, which are judged on them).
 async function surfWaves(lat, lon, env, ctx, maxWait = 8000) {
-  const noaaFetch = storedNoaaWaves(lat, lon, env, ctx).catch(() => null);
+  // Where NOAA's 0.5° grid has nothing (the Mediterranean …): GFS-Wave 0.25°, as stored by the 3-hourly job
+  const noaaFetch = storedNoaaWaves(lat, lon, env, ctx).catch(() => null)
+    .then(d => d ?? storedGfsWaves(lat, lon, env).catch(() => null));
   const met = await metWaves(lat, lon);
   // Where MET has the heights, NOAA only adds the period: don't keep the user waiting for NOAA's slow first
   // fetch of a new place (it finishes in the background and is used from the next request on).
@@ -374,6 +377,134 @@ async function erddap(query) {
 }
 async function noaaWaves(lat, lon) {
   try { return await noaaWavesRaw(lat, lon); } catch { return null; }
+}
+
+// ---- Enclosed seas: NOAA GFS-Wave 0.25° -------------------------------------------------------------------
+// NOAA's 0.5° grid leaves out enclosed seas (the whole Mediterranean). There we use NOAA's newer GFS-Wave on a 0.25°
+// grid (~25 km), from the IOOS data server (OPeNDAP, answered as text; NOAA itself only publishes GRIB files).
+// That server is slow per time step (~0.3 s) but not per area, so a request never waits for it: a spot asking for
+// waves goes on a list, and the 3-hourly job fetches one box per region, every 3 hours for a week ahead, and stores
+// each spot's series in KV. A new spot there gets its waves within 3 hours; they're renewed every 6.
+const GFSW = "https://eds.ioos.us/thredds/dodsC/ioos/gfswave/global/Best";
+const GFSW_H = "Significant_height_of_combined_wind_waves_and_swell_surface", GFSW_P = "Primary_wave_mean_period_surface";
+const GFSW_WANTED = "gfsw-wanted";              // { key: { lat, lon, asked } }
+const GFSW_FRESH_MS = 6 * 3600e3;
+const gfswKey = (lat, lon) => `gfsw:${lat.toFixed(2)}:${lon.toFixed(2)}`;
+
+export async function storedGfsWaves(lat, lon, env) {
+  [lat, lon] = [Math.round(lat * 100) / 100, Math.round(lon * 100) / 100];
+  const key = gfswKey(lat, lon);
+  const [stored, wanted] = await Promise.all([env.WAVES.get(key, "json"), env.WAVES.get(GFSW_WANTED, "json")]);
+  const list = wanted ?? {};
+  if (!list[key] || Date.now() - list[key].asked > 86400e3) { // on the list (and still wanted: noted once a day)
+    list[key] = { lat, lon, asked: Date.now() };
+    await env.WAVES.put(GFSW_WANTED, JSON.stringify(list));
+  }
+  if (!stored?.data) return null;
+  return { ...stored.data, points: stored.data.points.filter(pt => Date.parse(pt.time) > Date.now() - 3600e3) };
+}
+
+async function opendap(query) {
+  const res = await fetch(`${GFSW}${query}`, { headers: NWS_HEADERS, signal: AbortSignal.timeout(120000) });
+  if (!res.ok) throw new Error(`GFS-Wave: ${res.status}`);
+  return res.text();
+}
+// "-----\nName.Name[3][1][1]\n[0][0], 0.81, …" → { Name: [0.81, …], time: […] } (values in [time][lat][lon] order)
+export function parseAscii(text) {
+  const out = {};
+  for (const block of (text.split(/^-{10,}$/m)[1] ?? "").split(/\n\s*\n/)) {
+    const [head, ...lines] = block.trim().split("\n");
+    const name = head?.match(/^(\w+)(?:\.(\w+))?\[/);
+    if (!name) continue;
+    const key = name[2] && name[2] !== name[1] ? `${name[1]}.${name[2]}` : name[1];
+    out[key] = lines.join(",").split(",").map(v => v.trim()).filter(v => v && !v.startsWith("["))
+      .map(v => v === "NaN" ? null : Number(v));
+  }
+  return out;
+}
+
+// The 3-hourly job: fetch the wanted spots that are due, one box per region.
+export async function refreshGfsWaves(env) {
+  const list = (await env.WAVES.get(GFSW_WANTED, "json")) ?? {};
+  const now = Date.now();
+  const gone = Object.keys(list).filter(k => now - list[k].asked > 14 * 86400e3); // nobody asked for two weeks
+  gone.forEach(k => delete list[k]);
+  if (gone.length) await env.WAVES.put(GFSW_WANTED, JSON.stringify(list));
+  const due = [];
+  for (const [key, w] of Object.entries(list)) {
+    const stored = await env.WAVES.get(key, "json");
+    if (!stored || now - stored.fetched > GFSW_FRESH_MS - 600e3) due.push({ key, ...w });
+  }
+  for (const box of gfswBoxes(due)) await fetchGfsBox(box, env).catch(e => console.log("GFS-Wave:", e.message));
+}
+
+// Spots grouped into boxes of at most 15° × 30° (the Mediterranean is two or three).
+export function gfswBoxes(spots) {
+  const boxes = [];
+  for (const s of spots) {
+    const fits = b => Math.max(b.n, s.lat) - Math.min(b.s, s.lat) <= 15 && Math.max(b.e, s.lon) - Math.min(b.w, s.lon) <= 30;
+    const b = boxes.find(fits);
+    if (b) Object.assign(b, { n: Math.max(b.n, s.lat), s: Math.min(b.s, s.lat), e: Math.max(b.e, s.lon), w: Math.min(b.w, s.lon) }).spots.push(s);
+    else boxes.push({ n: s.lat, s: s.lat, e: s.lon, w: s.lon, spots: [s] });
+  }
+  return boxes;
+}
+
+async function fetchGfsBox(box, env) {
+  // Time: "hours since" a start that moves as the archive rolls on, so read it each time.
+  const since = (await opendap(".das")).match(/\btime \{[^}]*?units "Hour since ([^"]+)"/)?.[1];
+  const hours = parseAscii(await opendap(".ascii?time")).time ?? [];
+  if (!since || !hours.length) return;
+  const t0 = Date.parse(since), at = i => t0 + hours[i] * 3600e3;
+  // Every 3 hours from now to a week ahead, as index runs (hourly near the start, 3-hourly further on)
+  const picked = [];
+  for (let i = 0; i < hours.length; i++) {
+    if (at(i) < Date.now() - 3 * 3600e3 || at(i) > Date.now() + 7.5 * 86400e3) continue;
+    if (!picked.length || hours[i] - hours[picked.at(-1)] >= 3) picked.push(i);
+  }
+  const runs = [];
+  for (const i of picked) {
+    const r = runs.at(-1);
+    if (r && (r.n === 1 || i - r.last === r.step)) { if (r.n === 1) r.step = i - r.last; r.last = i; r.n++; }
+    else runs.push({ first: i, last: i, step: 1, n: 1 });
+  }
+  // The box with a 0.75° margin (to find a cell at sea); split where it crosses 0° (the data runs 0–360°)
+  const rows = [Math.max(0, Math.floor((90 - box.n - 0.75) * 4)), Math.min(720, Math.ceil((90 - box.s + 0.75) * 4))];
+  const [w, e] = [box.w - 0.75, box.e + 0.75];
+  const cols = w < 0 && e >= 0 ? [[Math.floor((360 + w) * 4), 1439], [0, Math.ceil(e * 4)]]
+             : [[Math.floor((((w % 360) + 360) % 360) * 4), Math.ceil((((e % 360) + 360) % 360) * 4)]];
+  const series = box.spots.map(() => ({ cell: null, h: [], p: [] }));
+  for (const [c0, c1] of cols) {
+    const width = c1 - c0 + 1, height = rows[1] - rows[0] + 1, slab = `[${rows[0]}:1:${rows[1]}][${c0}:1:${c1}]`;
+    const grids = [];
+    for (const r of runs) {
+      const t = `[${r.first}:${r.step}:${r.last}]`;
+      const d = parseAscii(await opendap(`.ascii?${GFSW_H}${t}${slab},${GFSW_P}${t}${slab}`));
+      for (let k = 0; k < r.n; k++) grids.push({ h: d[GFSW_H]?.slice(k * width * height, (k + 1) * width * height) ?? [],
+                                                  p: d[GFSW_P]?.slice(k * width * height, (k + 1) * width * height) ?? [] });
+    }
+    // Each spot: the nearest cell at sea (within 0.75°) in this part of the box
+    box.spots.forEach((s, n) => {
+      const lon360 = ((s.lon % 360) + 360) % 360, cosLat = Math.cos(s.lat * Math.PI / 180);
+      for (let k = 0; k < width * height; k++) {
+        if (grids[0]?.h[k] == null) continue;
+        const cLat = 90 - (rows[0] + Math.floor(k / width)) / 4, cLon = (c0 + k % width) / 4;
+        const dLon = Math.min(Math.abs(cLon - lon360), 360 - Math.abs(cLon - lon360));
+        const dist = Math.hypot(cLat - s.lat, dLon * cosLat);
+        if (dist <= 0.75 && (!series[n].cell || dist < series[n].cell.dist)) series[n] = {
+          cell: { dist, lat: cLat, lon: cLon > 180 ? cLon - 360 : cLon },
+          h: grids.map(g => g.h[k]), p: grids.map(g => g.p[k]) };
+      }
+    });
+  }
+  const now = Date.now();
+  await Promise.all(box.spots.map((s, n) => {
+    const { cell, h, p } = series[n];
+    const points = cell ? picked.map((i, k) => ({ time: new Date(at(i)).toISOString().replace(".000", ""),
+      height: h[k] == null ? null : round(h[k], 2), period: p[k] == null ? null : round(p[k], 1) })).filter(pt => pt.height != null) : [];
+    const data = points.length ? { source: "NOAA GFS-Wave", km: round(distanceKm(s.lat, s.lon, cell.lat, cell.lon), 0), points } : null;
+    return env.WAVES.put(s.key, JSON.stringify({ fetched: now, lat: s.lat, lon: s.lon, data }), { expirationTtl: 7 * 86400 });
+  }));
 }
 async function noaaWavesRaw(lat, lon) {
   if (Math.abs(lat) > 77) return null;
