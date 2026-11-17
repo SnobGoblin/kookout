@@ -217,8 +217,8 @@ struct SpotEditView: View {
                                                 set: { spot.waves = $0 == spot.automaticWaves ? nil : $0 }))
         } footer: {
             Text(isCommunity
-                 ? "Shows the wave forecast next to the wind (Scandinavian waters only). Unless you change it, it follows what most riders here choose (from 3 riders)."
-                 : "Shows the wave forecast next to the wind (Scandinavian waters only).")
+                 ? "Shows the wave forecast next to the wind. Unless you change it, it follows what most riders here choose (from 3 riders)."
+                 : "Shows the wave forecast next to the wind.")
         }
     }
 

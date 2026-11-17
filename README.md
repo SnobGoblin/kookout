@@ -109,7 +109,7 @@ default (wing and surf from 50° N: 15 March–24 December; elsewhere and powder
 it's the majority's (a day counts if more than half have it), and each follower can set "All year" or their own
 dates (`relay/migrate-season.sql`). Wave heights on a wind spot's forecast (Edit → Wave height, from 1.2) are a
 vote like the station: off by default, on for the catalogue's `"waves": true` spots (Ørekroken, Larkollen, Apelviken,
-Träslövsläge), the majority's from 3 active followers (`relay/migrate-waves.sql`). Waves come from the same sources as
+Träslövsläge, Hvide Sande havet, Klitmøller Nordstrand), the majority's from 3 active followers (`relay/migrate-waves.sql`). Waves come from the same sources as
 for surf (MET in Scandinavian waters, NOAA elsewhere); NOAA's coarse grid can put ocean swell on sheltered water,
 which is why the switch is off by default. The app
 follows the community spots in its list with a random key, so following works without an account.
