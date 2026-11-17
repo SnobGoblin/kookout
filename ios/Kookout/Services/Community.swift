@@ -33,6 +33,8 @@ enum Community {
         var stationName: String?
         /// The community's season (nil: not heard yet, e.g. saved before seasons existed).
         var season: Season?
+        /// Whether the community shows wave heights on this wind spot (nil: not heard yet, apps before 1.2's relay).
+        var waves: Bool?
         struct Edit: Codable, Hashable { let field: String; let at: Date; let by: String? }
     }
 
@@ -59,7 +61,8 @@ enum Community {
             // and their own season (none: they go with the community's)
             return ["id": spot.id, "rule": own ? (ruleJSON(spot) ?? NSNull()) : NSNull(),
                     "station": spot.station ?? NSNull(), "stationName": spot.stationName ?? NSNull(),
-                    "season": spot.season.map { ["from": $0.from, "to": $0.to] as Any } ?? NSNull()]
+                    "season": spot.season.map { ["from": $0.from, "to": $0.to] as Any } ?? NSNull(),
+                    "waves": spot.waves ?? NSNull()] // own choice for wave heights (none: the community's)
         }]
         guard let answer = await call("PUT", "following", body: body) as? [String: Any],
               let rows = answer["spots"] as? [[String: Any]] else { return }
@@ -134,7 +137,8 @@ enum Community {
                         catalogue: r["catalogue"] as? Bool ?? false, lastEdit: edit,
                         station: r["station"] as? String, stationName: r["stationName"] as? String,
                         season: (r["season"] as? [String: String]).flatMap { s in
-                            s["from"].flatMap { from in s["to"].map { Season(from: from, to: $0) } } })
+                            s["from"].flatMap { from in s["to"].map { Season(from: from, to: $0) } } },
+                        waves: r["waves"] as? Bool)
         }
     }
 

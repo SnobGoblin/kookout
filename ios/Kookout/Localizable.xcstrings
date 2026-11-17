@@ -5570,42 +5570,42 @@
         }
       }
     },
-    "Snow over %lld mm": {
+    "Precipitation over %lld mm": {
       "localizations": {
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Snø over %lld mm"
+            "value": "Nedbør over %lld mm"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Snö över %lld mm"
+            "value": "Nederbörd över %lld mm"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sne over %lld mm"
+            "value": "Nedbør over %lld mm"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Schnee über %lld mm"
+            "value": "Niederschlag über %lld mm"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Neige au-delà de %lld mm"
+            "value": "Précipitations > %lld mm"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nieve por encima de %lld mm"
+            "value": "Precipitación > %lld mm"
           }
         }
       }
@@ -8698,6 +8698,126 @@
           "stringUnit": {
             "state": "translated",
             "value": "… med byar minst"
+          }
+        }
+      }
+    },
+    "Shows the wave forecast next to the wind (Scandinavian waters only).": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viser bølgevarselet ved siden av vinden (bare i skandinaviske farvann)."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visar vågprognosen bredvid vinden (bara i skandinaviska vatten)."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viser bølgeudsigten ved siden af vinden (kun i skandinaviske farvande)."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigt die Wellenvorhersage neben dem Wind (nur in skandinavischen Gewässern)."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affiche la prévision des vagues à côté du vent (eaux scandinaves uniquement)."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muestra la previsión de olas junto al viento (solo en aguas escandinavas)."
+          }
+        }
+      }
+    },
+    "Shows the wave forecast next to the wind (Scandinavian waters only). Unless you change it, it follows what most riders here choose (from 3 riders).": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viser bølgevarselet ved siden av vinden (bare i skandinaviske farvann). Hvis du ikke endrer det, følger det det de fleste utøverne her velger (fra 3 utøvere)."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visar vågprognosen bredvid vinden (bara i skandinaviska vatten). Om du inte ändrar det följer det vad de flesta åkarna här väljer (från 3 åkare)."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viser bølgeudsigten ved siden af vinden (kun i skandinaviske farvande). Medmindre du ændrer det, følger det, hvad de fleste udøvere her vælger (fra 3 udøvere)."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigt die Wellenvorhersage neben dem Wind (nur in skandinavischen Gewässern). Solange du es nicht änderst, gilt, was die meisten Rider hier wählen (ab 3 Ridern)."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affiche la prévision des vagues à côté du vent (eaux scandinaves uniquement). Sauf si vous le changez, c’est le choix de la plupart des riders ici (à partir de 3 riders)."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muestra la previsión de olas junto al viento (solo en aguas escandinavas). Si no lo cambias, sigue lo que elige la mayoría de los riders aquí (a partir de 3 riders)."
+          }
+        }
+      }
+    },
+    "Wave height": {
+      "localizations": {
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bølgehøyde"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Våghöjd"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bølgehøjde"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wellenhöhe"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hauteur des vagues"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altura de las olas"
           }
         }
       }

@@ -8,7 +8,8 @@
 //
 // spot:        { lat, lon, wind? , surf?, powder? }  with the rules described below
 // metForecast: MET's Locationforecast "complete" JSON
-// waves:       the relay's /waves answer ({ points: [{ time, height, period }] }), or null
+// waves:       the relay's /waves answer ({ points: [{ time, height, period }] }), or null. Surf spots are judged
+//              on it; for other spots the heights are only put on the rows (shown in the app's forecast).
 // units:       "ms" or "kn"  (wind is judged on the rounded numbers in this unit, as shown on screen)
 // waveUnit:    "m" or "ft"   (likewise for wave heights)
 // zone:        the spot's time zone, e.g. "Pacific/Honolulu" (undefined = the computer's own)
@@ -49,7 +50,8 @@ export function analyse(spot, data, waves, { units = "ms", waveUnit = "m", zone,
   const wv = m => waveShown(m, waveUnit);
   const rows = toRows(data, zone);
   markDaylight(rows, spot, zone);
-  if (spot.surf) { addWaves(rows, waves); judgeSurf(rows, spot.surf, w, wv); }
+  if (waves) addWaves(rows, waves); // surf spots; wind spots too when the app asks (shown only, not judged)
+  if (spot.surf) judgeSurf(rows, spot.surf, w, wv);
   if (spot.wind) judgeWind(rows, spot.wind, w, zone);
   if (spot.powder) judgePowder(rows, spot.powder, zone);
   if (spot.weekend) keepDaysOff(rows, daysOff, zone);

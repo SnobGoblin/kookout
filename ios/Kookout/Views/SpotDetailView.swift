@@ -10,6 +10,11 @@ struct SpotDetailView: View {
     @State private var focus: Date??
 
     private var forecast: SpotForecast? { store.forecasts[spot.id] }
+    /// Surf spots always show waves; wind spots when switched on (the person's or the community's choice) and the
+    /// forecast has any (MET has wave forecasts in Scandinavian waters only, and none on lakes).
+    private var showWaves: Bool {
+        current.sport == .surf || (current.showsWaves && forecast?.rows.contains { $0.wave != nil } == true)
+    }
     /// The latest saved version of the spot (it may have been edited since this screen opened).
     private var current: Spot { store.spots.first { $0.id == spot.id } ?? spot }
 
@@ -28,7 +33,7 @@ struct SpotDetailView: View {
                 ForEach(days, id: \.day) { group in
                     Section {
                         ForEach(group.hours) { hour in
-                            HourRow(hour: hour, spot: current)
+                            HourRow(hour: hour, spot: current, showWaves: showWaves)
                                 .listRowBackground(hour.good ? Color.goodRow : nil)
                         }
                     } header: {
@@ -149,6 +154,7 @@ private struct DayHeader: View {
 struct HourRow: View {
     let hour: ForecastHour
     let spot: Spot
+    var showWaves = false
 
     var body: some View {
         HStack(spacing: 8) {
@@ -162,7 +168,7 @@ struct HourRow: View {
                 .lineLimit(1)
                 .fixedSize() // never wrap "10°" (bold or large text)
                 .frame(minWidth: 36, alignment: .trailing)
-            if spot.sport == .surf {
+            if showWaves {
                 Text(waveLabel)
                     .monospacedDigit()
                     .foregroundStyle(.blue)
@@ -191,6 +197,8 @@ struct HourRow: View {
         guard let wave = hour.wave else { return "–" }
         // e.g. "1,5 m · 16s" (the unit once, then the period)
         let height = "\(Units.wave(wave)) \(Units.waveUnit)"
+        // Wind spots: just the height (the period matters for surfing, and the row is already wide with gusts)
+        guard spot.sport == .surf else { return height }
         return hour.period.map { "\(height) · \(Int($0.rounded()))s" } ?? height
     }
 

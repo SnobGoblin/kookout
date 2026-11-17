@@ -13,8 +13,8 @@ struct ForecastHour: Identifiable, Hashable, Decodable {
     let gust: Double?         // m/s, only given in the hourly part
     let dir: String           // compass direction the wind comes from, e.g. "SSW"
     let deg: Double           // degrees, where the wind comes from
-    let wave: Double?         // m, surf spots only
-    let period: Double?       // s, surf spots only
+    let wave: Double?         // m, surf spots and (shown only) wind spots
+    let period: Double?       // s
     let daylight: Bool
     let good: Bool
     let snow: Bool
@@ -86,6 +86,8 @@ enum KookoutAPI {
         let spot: RelaySpot
         let units: String
         let waveUnit: String
+        /// Waves for wind spots too (shown in the forecast, not judged). Surf spots always get them.
+        let waves = true
         /// The phone's region, whose public holidays are days off for weekend spots.
         let country = Locale.current.region?.identifier
     }

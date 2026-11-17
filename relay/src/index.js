@@ -8,7 +8,7 @@
 //                                     in the US also NOAA's National Weather Service),
 //                                     plus Holfuy stations within 50 km (number, name, distance)
 //   GET /obs?ids=SN17280,KV:8925059,NWS:KDLS,NDBC:FTPC1  -> the latest reading for the given stations
-//   POST /analyse  {spot, units?, waveUnit?} -> the spot's forecast with the good hours marked, using the same
+//   POST /analyse  {spot, units?, waveUnit?, waves?} -> the spot's forecast with the good hours marked, using the same
 //                                     rules as the web page (rules.js). For the app and notifications.
 //   GET /tz?lat=21.28&lon=-157.83   -> the place's time zone, e.g. {"tz":"Pacific/Honolulu"} (worked out locally)
 //   PUT/DELETE /devices/<id>, POST /devices/<id>/test  -> notifications for a phone (see notify.js)
@@ -116,7 +116,7 @@ export default {
         const spot = body?.spot;
         if (!spot || !Number.isFinite(spot.lat) || !Number.isFinite(spot.lon) || !(spot.wind || spot.surf || spot.powder))
           return reply({ error: "spot with lat, lon and a wind, surf or powder rule required" }, 400);
-        return reply(await analyseSpot(spot, body.units, body.waveUnit, env, ctx, body.country));
+        return reply(await analyseSpot(spot, body.units, body.waveUnit, env, ctx, body.country, { waves: body.waves === true }));
       }
 
       if (url.pathname === "/tz") {
@@ -223,12 +223,16 @@ async function kvNear(lat, lon) {
 }
 
 // ---- Working out a spot (the forecast, waves, time zone and the shared rules) -------------
-async function analyseSpot(spot, units = "ms", waveUnit = "m", env, ctx, country) {
+// waves: also fetch waves for a wind spot, just to show them (the app asks, from 1.2). Surf spots always get them.
+// Wind spots get MET's waves only (Scandinavian waters, fine enough for fjords and bays): NOAA's 0.5° grid answers
+// from open sea up to ~50 km away, which would put ocean swell on a flat-water lagoon. Elsewhere: no waves shown.
+async function analyseSpot(spot, units = "ms", waveUnit = "m", env, ctx, country, { waves: wantWaves = false } = {}) {
   const tz = spot.tz ?? tzlookup(spot.lat, spot.lon);
   const query = `lat=${spot.lat.toFixed(4)}&lon=${spot.lon.toFixed(4)}` + (spot.alt != null ? `&altitude=${Math.round(spot.alt)}` : "");
   const [forecastRes, waves, daysOff] = await Promise.all([
     fetch(`https://api.met.no/weatherapi/locationforecast/2.0/complete?${query}`, { headers: NWS_HEADERS, cf: { cacheTtl: 600 } }),
-    spot.surf ? surfWaves(spot.lat, spot.lon, env, ctx) : null,
+    spot.surf ? surfWaves(spot.lat, spot.lon, env, ctx)
+      : wantWaves && spot.wind ? metWaves(spot.lat, spot.lon).catch(() => null) : null,
     spot.weekend ? daysOffFor(country, env).catch(() => undefined) : undefined,
   ]);
   if (!forecastRes.ok) throw new Error(`MET forecast: ${forecastRes.status}`);

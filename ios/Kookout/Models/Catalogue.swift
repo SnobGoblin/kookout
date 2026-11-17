@@ -19,6 +19,15 @@ enum Catalogue {
         return rows.map(\.entry)
     }()
 
+    /// The built-in wind spots open to waves, where wave heights show on the forecast until the followers vote
+    /// otherwise ("waves": true in Catalogue.json).
+    static let wavesOn: Set<String> = {
+        guard let url = Bundle.main.url(forResource: "Catalogue", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let rows = try? JSONDecoder().decode([Row].self, from: data) else { return [] }
+        return Set(rows.filter { $0.waves == true }.map(\.id))
+    }()
+
     /// How far away a popular spot still counts as nearby.
     static let nearbyMeters = 200_000.0
 
@@ -42,6 +51,7 @@ enum Catalogue {
         let altitude: Double?
         let minWave: Double?
         let maxWind: Double?
+        let waves: Bool?
 
         var entry: Entry {
             var spot = Spot(id: id, name: name, latitude: lat, longitude: lon, altitude: altitude, timeZoneID: tz)

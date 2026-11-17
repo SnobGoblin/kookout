@@ -92,6 +92,8 @@ struct SpotEditView: View {
 
             seasonSection
 
+            if spot.sport == .wing { wavesSection }
+
             Section {
                 Button("Delete spot", role: .destructive) { confirmDelete = true }
             }
@@ -208,6 +210,18 @@ struct SpotEditView: View {
                 })
     }
 
+    /// On or off; back to automatic (the community's choice) when it matches it, so it follows later votes.
+    private var wavesSection: some View {
+        Section {
+            Toggle("Wave height", isOn: Binding(get: { spot.waves ?? spot.automaticWaves },
+                                                set: { spot.waves = $0 == spot.automaticWaves ? nil : $0 }))
+        } footer: {
+            Text(isCommunity
+                 ? "Shows the wave forecast next to the wind (Scandinavian waters only). Unless you change it, it follows what most riders here choose (from 3 riders)."
+                 : "Shows the wave forecast next to the wind (Scandinavian waters only).")
+        }
+    }
+
     private var seasonSection: some View {
         Section {
             Picker("Season", selection: seasonChoice) {
@@ -322,7 +336,7 @@ struct SpotEditView: View {
 
     private var powderSection: some View {
         Section("Powder") {
-            Stepper("Snow over \(Int(spot.powder!.mm)) mm",
+            Stepper("Precipitation over \(Int(spot.powder!.mm)) mm",
                     value: Binding(get: { spot.powder!.mm }, set: { spot.powder!.mm = $0 }), in: 0...100)
             Stepper(spot.powder!.days ?? 2 == 1 ? String(localized: "Counted on the day itself")
                                                  : String(localized: "Counted over \(spot.powder!.days ?? 2) days"),

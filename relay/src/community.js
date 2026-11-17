@@ -5,9 +5,10 @@
 // A phone follows the spots in its list that are community spots. Followers are known by a hash of a random key the
 // app makes (not their account), so following works without signing in. See schema.sql for the tables.
 //
-//   PUT  /following            {key, spots: [{id, rule|null, station?, season?}]}  the community spots this phone has
-//                              (rule: its own version, or null when it follows the community's; season: its own dates,
-//                              or null for the community's, see season.js). Returns their community versions.
+//   PUT  /following            {key, spots: [{id, rule|null, station?, season?, waves?}]}  the community spots this phone
+//                              has (rule: its own version, or null when it follows the community's; season: its own dates,
+//                              or null for the community's, see season.js; waves: true/false to show wave heights on a
+//                              wind spot, or null for the community's). Returns their community versions.
 //   GET  /spots?lat&lon        community spots within ~300 km (not the built-in ones, which the app has itself)
 //   POST /spots/<id>           {name?, lat?, lon?}  fix the name or position for everyone (signed in)
 //   GET  /spots/<id>/history   the log
@@ -48,22 +49,23 @@ async function following(request, env, reply) {
   const wanted = new Map(b.spots.filter(s => typeof s?.id === "string" && s.id.length <= 64)
                                  .map(s => [s.id, { rule: s.rule && typeof s.rule === "object" ? JSON.stringify(s.rule) : null,
                                                     station: text(s.station, 64), stationName: text(s.stationName, 100),
-                                                    season: own(s.season) }]));
+                                                    season: own(s.season),
+                                                    waves: typeof s.waves === "boolean" ? Number(s.waves) : null }]));
   const ids = [...wanted.keys()];
   const known = ids.length ? (await env.DB.prepare(`SELECT * FROM spots WHERE status = 'active' AND id IN (${ids.map(() => "?").join(",")})`)
     .bind(...ids).all()).results : [];
-  const before = (await env.DB.prepare("SELECT spot_id, rule, station, season FROM followers WHERE follower = ?").bind(follower).all()).results;
+  const before = (await env.DB.prepare("SELECT spot_id, rule, station, season, waves FROM followers WHERE follower = ?").bind(follower).all()).results;
   const had = new Map(before.map(f => [f.spot_id, f]));
 
   const writes = [], touched = new Set();
   for (const spot of known) {
-    const { rule, station, stationName, season } = wanted.get(spot.id);
+    const { rule, station, stationName, season, waves } = wanted.get(spot.id);
     const old = had.get(spot.id);
-    if (!old || old.rule !== rule || old.station !== station || old.season !== season) touched.add(spot.id);
-    writes.push(env.DB.prepare(`INSERT INTO followers (spot_id, follower, rule, station, station_name, season, last_active) VALUES (?, ?, ?, ?, ?, ?, ?)
+    if (!old || old.rule !== rule || old.station !== station || old.season !== season || old.waves !== waves) touched.add(spot.id);
+    writes.push(env.DB.prepare(`INSERT INTO followers (spot_id, follower, rule, station, station_name, season, waves, last_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(spot_id, follower) DO UPDATE SET rule = excluded.rule, station = excluded.station,
-          station_name = excluded.station_name, season = excluded.season, last_active = excluded.last_active`)
-      .bind(spot.id, follower, rule, station, station ? stationName : null, season, now));
+          station_name = excluded.station_name, season = excluded.season, waves = excluded.waves, last_active = excluded.last_active`)
+      .bind(spot.id, follower, rule, station, station ? stationName : null, season, waves, now));
   }
   for (const f of before) if (!known.some(s => s.id === f.spot_id)) { // no longer in their list: unfollowed
     writes.push(env.DB.prepare("DELETE FROM followers WHERE spot_id = ? AND follower = ?").bind(f.spot_id, follower));
@@ -77,12 +79,12 @@ async function following(request, env, reply) {
   return reply({ spots: await Promise.all(fresh.map(s => describe(env, s))) });
 }
 
-/// After followers change: recount the community rules, wind station and season, and retire a spot nobody follows any more.
+/// After followers change: recount the community rules, wind station, season and wave heights, and retire a spot nobody follows any more.
 async function settle(env, id) {
   const spot = await env.DB.prepare("SELECT * FROM spots WHERE id = ?").bind(id).first();
   if (!spot) return;
   const since = new Date(Date.now() - ACTIVE_DAYS * 86400e3).toISOString();
-  const { results } = await env.DB.prepare("SELECT rule, station, station_name, season FROM followers WHERE spot_id = ? AND last_active >= ?")
+  const { results } = await env.DB.prepare("SELECT rule, station, station_name, season, waves FROM followers WHERE spot_id = ? AND last_active >= ?")
     .bind(id, since).all();
   if (!results.length && !spot.catalogue) {
     await env.DB.prepare("UPDATE spots SET status = 'gone', updated = ? WHERE id = ?").bind(new Date().toISOString(), id).run();
@@ -107,16 +109,23 @@ async function settle(env, id) {
   if (JSON.stringify(season) !== JSON.stringify(currentSeason))
     await env.DB.prepare("UPDATE spots SET season = ?, updated = ? WHERE id = ?")
       .bind(season ? JSON.stringify(season) : null, new Date().toISOString(), id).run();
+
+  // Wave heights on a wind spot: on or off, like the station ("Automatic" agrees with the current choice)
+  const waves = majorityChoice(results.map(r => r.waves ?? spot.waves), spot.waves);
+  if (waves !== spot.waves)
+    await env.DB.prepare("UPDATE spots SET waves = ?, updated = ? WHERE id = ?").bind(waves, new Date().toISOString(), id).run();
 }
 
-/// The station most followers chose (null: the nearest, "Automatic"). A tie keeps the current one. Exported for tests.
-export function majorityStation(votes, current) {
+/// What most followers chose: a station (null: the nearest, "Automatic"), or wave heights on/off (1/0). A tie keeps
+/// the current one. Exported for tests.
+export function majorityChoice(votes, current) {
   const count = new Map();
   for (const v of votes) count.set(v ?? null, (count.get(v ?? null) ?? 0) + 1);
   const most = Math.max(...count.values());
   const leaders = [...count].filter(([, n]) => n === most).map(([v]) => v);
   return leaders.length === 1 ? leaders[0] : current ?? null;
 }
+export const majorityStation = majorityChoice;
 
 /// The majority's rule: compass points included by more than half, the median of each number, the majority's yes/no,
 /// and settings only some have (the sunny-day limits, powder days) when more than half have them. Exported for tests.
@@ -153,7 +162,7 @@ async function describe(env, s) {
   const by = s.created_by ? (await env.DB.prepare("SELECT name FROM users WHERE id = ?").bind(s.created_by).first())?.name : null;
   return { id: s.id, name: s.name, lat: s.lat, lon: s.lon, alt: s.alt, tz: s.tz, sport: s.sport, rule: JSON.parse(s.rule),
            by: by || null, followers, catalogue: !!s.catalogue, station: s.station ?? null, stationName: s.station_name ?? null,
-           season: s.season ? JSON.parse(s.season) : ALL_YEAR,
+           season: s.season ? JSON.parse(s.season) : ALL_YEAR, waves: !!s.waves,
            lastEdit: last ? { field: last.field, at: last.at, by: last.name || null } : null };
 }
 

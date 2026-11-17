@@ -28,6 +28,11 @@ check("station: promoted P, one picks X", majorityStation(["X", "P", "P"], "P"),
 check("station: promoted P, all three pick X", majorityStation(["X", "X", "X"], "P"), "X");
 check("station: tie keeps the current one", majorityStation(["X", "Y", "P", "P", "X", "Y"].slice(0, 4), "P"), "P");
 check("station: X and Y tie, current not among them", majorityStation(["X", "Y"], "P"), "P");
+import { majorityChoice } from "./src/community.js";
+check("waves: off, 2 of 3 turn on", majorityChoice([1, 1, 0], 0), 1);
+check("waves: on, automatic votes keep it on", majorityChoice([0, 1, 1], 1), 1);
+check("waves: on, 2 of 3 turn off", majorityChoice([0, 0, 1], 1), 0);
+check("waves: tie keeps the current", majorityChoice([0, 1, 0, 1], 1), 1);
 
 // The community's season: the days more than half have in theirs (null: all year), as one stretch.
 import { majoritySeason, inSeason, cleanSeason, defaultSeason } from "./src/season.js";

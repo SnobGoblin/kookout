@@ -77,8 +77,13 @@ struct Spot: Identifiable, Codable, Hashable {
     /// The person's own season (when the spot gives notifications); nil: automatic, the community's (the majority
     /// from 3 followers) or what suits the place (Season.standard).
     var season: Season?
+    /// Wave heights on a wind spot's forecast: the person's own choice, or nil for automatic (the community's, the
+    /// majority from 3 followers; at first on only for built-in spots open to waves). Surf spots always show them.
+    var waves: Bool?
 
     var notifies: Bool { notify ?? true }
+    var automaticWaves: Bool { community?.waves ?? Catalogue.wavesOn.contains(id) }
+    var showsWaves: Bool { sport == .surf || (sport == .wing && (waves ?? automaticWaves)) }
     /// The season that counts: their own, the community's, or what suits the place.
     var seasonInUse: Season { season ?? automaticSeason }
     var automaticSeason: Season { community?.season ?? .standard(latitude: latitude, sport: sport.rawValue) }
