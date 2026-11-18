@@ -154,6 +154,8 @@ listing or on the web page until it exists in the app ("free for the first 2,000
 live in minutes), so put fixes there when you can. App changes need a new build and a full review (updates
 usually pass within a day); for a serious bug (crash, notifications down) ask Apple for an expedited review
 (App Store Connect form; use sparingly). Consider a phased release (7 days, pausable) for bigger updates.
+**Release option (decided 18 Nov 2026):** from 1.3 on, choose "Automatically release this version" when submitting
+(1.0–1.2 were released by hand).
 
 Founding users: numbers come only from App Store installs (TestFlight/Xcode have no real download); the
 `founders` table must start empty at launch (it is). Founding = number ≤ 2,000 (`FOUNDERS` in `relay/src/founders.js`).
