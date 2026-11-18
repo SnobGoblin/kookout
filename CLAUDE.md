@@ -9,7 +9,7 @@ details of each part; this file is the short version plus how we work.
 breaks even, except Cloudflare Workers Paid ($5/month, since 16 Oct, for the hourly run's limits).
 **Status (11 Nov 2026):** **Kookout 1.1 is released** (build 21, released 11 Nov after App Review approved it;
 page https://apps.apple.com/app/id6822322346, free, 174 countries). kookout.no is the new landing page; the web forecast
-is offline. **Kookout 1.2** (wave height on wind spots; build 24) was submitted for review 17 Nov 2026, manual release, not phased. `release/1.1` is merged into main (11 Nov), so **main has everything: deploy the relay from main again**.
+is offline. **Kookout 1.2** (wave height on wind spots; build 24) was approved and released 18 Nov 2026. `release/1.1` is merged into main (11 Nov), so **main has everything: deploy the relay from main again**.
 TestFlight testers ("Family plus a couple guys", 6; https://testflight.apple.com/join/4wm11wAG) are on build 20.
 App Store texts, privacy label answers and review notes are in `appstore/`. EU status: non-trader. Not built yet:
 subscription/paywall.
