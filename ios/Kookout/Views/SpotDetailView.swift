@@ -163,15 +163,15 @@ struct HourRow: View {
         // doesn't go to two lines while its neighbours stay on one at ordinary large text sizes.
         ViewThatFits(in: .horizontal) {
             HStack(spacing: 8) {
-                time.frame(minWidth: 52, alignment: .leading)
-                temp.frame(minWidth: 36, alignment: .trailing)
+                alignedTime.frame(minWidth: 52, alignment: .leading)
+                alignedTemp
                 waves
                 Spacer(minLength: 0)
                 wind
             }
             HStack(spacing: 4) {
-                time
-                temp
+                alignedTime
+                alignedTemp
                 waves
                 Spacer(minLength: 0)
                 wind
@@ -189,12 +189,31 @@ struct HourRow: View {
         .font(.callout)
     }
 
+    /// The time in a column as wide as the widest single hour ("22:00", or "10 pm" on a 12-hour clock), so
+    /// "1 pm" and "12 pm" rows line up. Spans of several hours ("09–12") are just as wide or wider: no template.
+    @ViewBuilder private var alignedTime: some View {
+        if hour.hours > 1 { time } else {
+            Text(Self.widestHour).monospacedDigit().lineLimit(1).fixedSize().hidden()
+                .overlay(alignment: .leading) { time }
+        }
+    }
+    private static var widestHour: String {
+        Units.time(Calendar.current.date(bySettingHour: 22, minute: 0, second: 0, of: .now) ?? .now, zone: .current)
+    }
+
     private var time: some View {
         Text(timeLabel)
             .monospacedDigit()
             .foregroundStyle(hour.good ? .primary : .secondary)
             .lineLimit(1)
             .fixedSize()
+    }
+
+    /// The temperature in a column as wide as "-10°" at the current text size, so "0°" and "-1°" rows keep the
+    /// waves and wind lined up (a fixed width in points doesn't grow with large or bold text).
+    private var alignedTemp: some View {
+        Text(verbatim: "-10°").monospacedDigit().lineLimit(1).fixedSize().hidden()
+            .overlay(alignment: .trailing) { temp }
     }
 
     private var temp: some View {
@@ -324,7 +343,7 @@ private struct TwoLines<Top: View>: View {
             top.lineLimit(1).minimumScaleFactor(0.8)
             Text(verbatim: caption)
                 .font(.caption).foregroundStyle(.secondary)
-                .lineLimit(1).minimumScaleFactor(0.8)
+                .lineLimit(2).minimumScaleFactor(0.9) // a long station name wraps rather than cutting off "… ago"
         }
     }
 }
